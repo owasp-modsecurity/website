@@ -1,0 +1,44 @@
+######################## custom scripts & styles ####################
+
+# Add custom assets relative to /static or via https
+logo_on_white: "images/logo/horizontal.png"
+logo_on_black: "images/logo/horizontal.png"
+custom_js: []
+custom_css: []
+
+######################## custom config ####################
+
+### default social share image (can also be set per lang) ###
+images: ["/img/social-share.png"]
+
+crs:
+  release_url_prefix: "https://github.com/owasp-modsecurity/ModSecurity/releases/tag"
+  latest_major_version: "3.0.12"
+
+github:
+  repo_url: "https://github.com/coreruleset/website/blob/main"
+  show_edit_link: true
+
+social_links:
+  devstats: ""
+  discord: ""
+  facebook: ""
+  flickr: ""
+  github: "https://github.com/coreruleset"
+  instagram: ""
+  landscape: ""
+  linkedin: "https://www.linkedin.com/company/owasp-crs"
+  mastodon: ""
+  pinterest: ""
+  rss: ""
+  slack: "https://owasp.slack.com/archives/CBKGH8A5P"
+  stackoverflow: ""
+  threads: ""
+  twitter: "https://twitter.com/coreruleset"
+  x: "https://x.com/coreruleset"
+  youtube: "https://www.youtube.com/channel/UCIoIEzbm34kczIvVyPGYBfg"
+
+# Makes the header sticky on tall screens
+sticky_header: true
+# Enable search in header UI
+show_search: true

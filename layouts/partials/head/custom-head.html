@@ -1,0 +1,6 @@
+{{ partial "head/matomo-analytics.html" . }}
+<!-- Add RSS feed -->
+{{ with .OutputFormats.Get "rss" -}}
+  {{ printf `<link rel=%q type=%q href=%q title=%q>` .Rel .MediaType.Type .Permalink site.Title | safeHTML }}
+{{ end }}
+<!-- End Path: layouts/partials/head/custom-head.html -->

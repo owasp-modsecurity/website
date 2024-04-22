@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="{{ .Language.Lang }}">
+    {{- partial "head.html" . -}}
+    <body class="{{ urlize .Type }} page-{{ .Kind }}">
+        {{- partial "accessibility.html" . -}}
+        {{- partial "header.html" . -}}
+        
+        <section id="content" class="container wrap" {{ if .IsPage }}data-pagefind-body{{ end }}>
+            {{ if ne .Params.showHeader false }}
+                <header>
+                    {{ if and (eq .Kind "page") (ne .Section "") }}
+                    {{- partial "breadcrumb.html" . -}}
+                    {{ end }}
+                    <h1 class="title">{{ .Title }}</h1>
+                </header>
+            {{ end }}
+            {{ if or (eq .Kind "section") (eq .Kind "home") }}
+            <div class="content">
+            {{ else }}
+            <article class="content">
+            {{ end }}
+            {{- block "main" . }}{{ .Content }}{{- end }}
+            {{ if or (eq .Kind "section") (eq .Kind "home") }}
+            </div>
+            {{ else }}
+            </article>
+            {{ end }}
+        </section>
+        {{- partial "footer.html" . -}}
+    </body>
+</html>

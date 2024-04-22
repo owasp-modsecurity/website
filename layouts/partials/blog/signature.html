@@ -1,0 +1,16 @@
+{{- $allAuthors := .Site.Data.authors }}
+{{- $authorKey := .Params.author }}
+{{- $authorData := index $allAuthors $authorKey }}
+
+{{ with $authorData }}
+<div class="blog-item__signature">
+    {{ if .img }}
+    <img
+        caption="{{ .name }}"
+        loading="lazy"
+        src="{{ relURL .img }}"
+    />
+    {{- end }}
+    {{ .name }}{{ with .twitter }} / [<a href="https://twitter.com/{{ . }}">@{{ . }}</a>]{{ end }}
+</div>
+{{ end }}

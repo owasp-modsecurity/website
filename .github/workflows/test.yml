@@ -1,0 +1,70 @@
+name: test syntax
+
+on:
+  # Runs on pull requests targeting the default branch
+  pull_request:
+    branches: [main]
+
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+
+# Default to bash
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # Build job
+  syntax-check:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.123.8
+    steps:
+      - name: Install Hugo CLI
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+      - name: Install Dart Sass
+        run: sudo snap install dart-sass
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install Node.js dependencies
+        run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
+
+      - name: Build with Hugo
+        env:
+          # For maximum backward compatibility with Hugo modules
+          HUGO_ENVIRONMENT: testing
+          HUGO_ENV: testing
+        run: |
+          hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
+          hugo -s subsite/docs --baseURL "${{ steps.pages.outputs.base_url }}/docs/"
+          mv subsite/docs/public public/docs
+          npx -y pagefind --site public
+
+      - name: Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@c053181aa0c3d17606addfe97a9075a32723548a # for v1.9.3
+        with:
+          args: --no-progress -u "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0" -E './content/**/*.md'
+          jobSummary: true
+
+              #      - name: Create Issue From File
+              #if: env.lychee_exit_code != 0
+              #uses: peter-evans/create-issue-from-file@v5
+              #permissions:
+              #issues: write
+              #with:
+              #title: Link Checker Report
+              #content-filepath: ./lychee/out.md
+              #labels: report, automated issue
+

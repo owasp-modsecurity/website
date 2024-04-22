@@ -1,0 +1,12 @@
+{{- $source := "scss/styles.scss" }}
+{{- $target := "css/styles.css" }}
+{{- $fontsPath := printf "%sfonts" .Site.BaseURL }}
+{{ $vars := merge site.Params.style (dict "fonts-path" $fontsPath) }}
+{{ $options := (dict "targetPath" $target "vars" $vars "transpiler" "dartsass") }}
+{{ if eq hugo.Environment "production" }}
+    {{ $options = merge $options (dict "outputStyle" "compressed" "enableSourceMap" false) }}
+{{ else }}
+    {{ $options = merge $options (dict "outputStyle" "nested" "enableSourceMap" true) }}
+{{ end }}
+{{ $style := resources.Get $source | resources.ExecuteAsTemplate "scss/template.scss" . | resources.ToCSS $options | resources.PostCSS (dict "config" "postcss.config.js") | resources.Fingerprint "sha512" }}
+<link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}" media="all">
