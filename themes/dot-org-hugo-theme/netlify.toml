@@ -1,0 +1,13 @@
+[build]
+publish = "exampleSite/public"
+command = "cd exampleSite && npm install && hugo --environment=production --themesDir=../.. --baseURL ${DEPLOY_PRIME_URL}  && npx -y pagefind --site public"
+
+[build.environment]
+NODE_VERSION = "18.14.0"
+HUGO_VERSION = "0.115.4"
+HUGO_THEME = "repo"
+
+[[headers]]
+  for = "/*"
+    [headers.values]
+      Access-Control-Allow-Origin = "*"

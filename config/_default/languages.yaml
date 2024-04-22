@@ -1,0 +1,84 @@
+en:
+  languageName: English
+  weight: 1
+  ### copyright (markdown can be used) ###
+  copyright: "Copyright &copy; {{< current_year >}} Modsecurity Project. All Rights Reserved."
+  title: "Modsecurity Project"
+  params:
+    description: "The 1st Line Of Defense"
+    ### accessibility ###
+    # accessibility:
+    #   skip_text: "Skip to content"
+    #   help_text: "Accessibility Statement"
+    #   help_url: "/example-page/"
+    ### calls to action ###
+    # main_cta:
+    #   text: "Join"
+    #   link: "/example-page/"
+    # footer_cta:
+    #   text: "Join us"
+    #   link: "/example-page/"
+    github_edit: "Edit this page on GitHub"
+  ### example menu showing children ###
+  menu:
+    main:
+    - identifier: "blog"
+      name: "Blog"
+      url: "/blog/"
+      weight: 1
+    - identifier: "bloglist"
+      name: "All posts"
+      url: "/blog/"
+      weight: 1
+      post: "History"
+      parent: "blog"
+    - identifier: "news"
+      name: "News"
+      url: "tags/modsecurity-news/"
+      weight: 1
+      post: "See the latest news"
+      parent: "blog"
+    - identifier: "portraits"
+      name: "Developer Portraits"
+      url: "tags/developer-portrait/"
+      weight: 2
+      post: "Known our developers"
+      parent: "blog"
+    - identifier: "videos"
+      name: "Videos"
+      url: "/videos/"
+      weight: 2
+    - identifier: "docs"
+      name: "Documentation"
+      weight: 3
+    - identifier: "installation"
+      name: "Installing"
+      url: "/docs/deployment/install/"
+      weight: 1
+      post: "How to deploy Modsecurity"
+      parent: "docs"
+    - identifier: "fulldoc"
+      name: "Deep Dive"
+      post: "See our full documentation"
+      url: "/docs/"
+      weight: 2
+      parent: "docs"
+    - identifier: "contributing"
+      name: "Contributing"
+      url: "/docs/development/contribution_guidelines/"
+      weight: 3
+      post: "Learn how to contribute"
+      parent: "docs"
+    - identifier: "faq"
+      name: "FAQs"
+      url: "/faq/"
+      weight: 4
+    - identifier: "Support"
+      name: "Support"
+      url: "/support/"
+      weight: 5
+    - identifier: "donate"
+      name: "Donate"
+      url: "https://owasp.org/donate?reponame=www-project-modsecurity&title=OWASP+ModSecurity"
+      weight: 6
+

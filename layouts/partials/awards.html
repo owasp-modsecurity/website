@@ -1,0 +1,13 @@
+{{ with .Site.Data.awards }}
+    <h3>Awards</h3>
+    {{ range . }}
+        <img
+            caption="{{ .caption }}"
+            width="300"
+            height="150"
+            loading="lazy"
+            src="{{ .Site.BaseURL }}{{ .src }}"
+            link="{{ .link }}"
+        />
+    {{ end }}
+{{ end }}

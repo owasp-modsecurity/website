@@ -1,0 +1,21 @@
+{{- with site.Params.Services.MatomoAnalytics }}
+{{- if hugo.IsProduction }}
+<!-- Matomo -->
+<script type="text/javascript">
+    var _paq = window._paq = window._paq || [];
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//{{ .URL }}/";
+      _paq.push(['setTrackerUrl', u+'matomo.php']);
+      _paq.push(['setSiteId', '{{ .ID }}']);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <!-- End Matomo Code -->
+  <!-- Matomo Image Tracker-->
+<img referrerpolicy="no-referrer-when-downgrade" src="//{{ .URL }}/matomo.php?idsite={{ .ID }}&rec=1" style="border:0" alt="" />
+<!-- End Matomo -->
+{{- end }}
+{{- end -}}

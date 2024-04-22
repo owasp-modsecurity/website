@@ -1,0 +1,53 @@
+name = "Dot-Org"
+license = "MIT"
+licenselink = "https://github.com/cncf/dot-org-hugo-theme/blob/main/LICENSE"
+description = "This modern, accesible, performant theme is ideal for powering the website of a small organization"
+homepage = "https://dot-org-hugo-theme-demo.netlify.app/"
+demosite = "https://dot-org-hugo-theme-demo.netlify.app/"
+min_version = "0.110.0"
+theme_version = "0.1.4"
+
+tags = [
+  "accessibility",
+  "accessible",
+  "archive",
+  "blog",
+  "clean",
+  "company",
+  "light",
+  "modern",
+  "multilingual",
+  "performance",
+  "project",
+  "responsive",
+  "simple",
+  "white",
+]
+
+features = [
+  "accessible",
+  "blog",
+  "buttons",
+  "card",
+  "columns",
+  "custom-css",
+  "custom-js",
+  "faq",
+  "favicon",
+  "iframe",
+  "mega-menu",
+  "minified-assets",
+  "mobile-menu",
+  "multilingual",
+  "responsive",
+  "search",
+  "shortcodes",
+  "single-column",
+  "social-icons",
+  "table-of-contents",
+  "youtube",
+]
+
+[author]
+  name = "CNCF"
+  homepage = "https://www.cncf.io/"

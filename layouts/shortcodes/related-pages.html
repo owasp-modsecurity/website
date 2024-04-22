@@ -1,0 +1,14 @@
+{{ with $tag := .Get 0 }}
+  {{ with where site.RegularPages "Params.tags" "intersect" (slice $tag) }}
+    {{ with where . "Permalink" "ne" $.Page.Permalink }}
+      <h2>Related pages:</h2>
+      <ul>
+        {{ range . }}
+          <li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
+        {{ end }}
+      </ul>
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{ errorf "The %q shortcode requires a tag name as parameter. See %s" .Name .Position }}
+{{ end }}

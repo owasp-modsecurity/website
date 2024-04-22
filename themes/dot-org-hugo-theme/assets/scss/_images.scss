@@ -1,0 +1,19 @@
+// Responsive Images by default.
+img {
+	margin: 0;
+	max-width: 100%;
+	height: auto;
+}
+
+figure {
+	margin-block-start: 0;
+	margin-block-end: 0;
+	margin-inline-start: 0;
+	margin-inline-end: 0;
+}
+
+figcaption {
+	font-style: italic;
+	font-size: 14px;
+	color: var(--gray-800);
+}

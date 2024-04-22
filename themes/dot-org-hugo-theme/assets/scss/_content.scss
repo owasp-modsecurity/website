@@ -1,0 +1,36 @@
+// Specific rules to page content.
+.content {
+    > * {
+        max-width: var(--content-width);
+    }
+
+    .full-width,
+    div,
+    iframe {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    // Code block restriction.
+    div.highlight {
+        max-width: var(--content-width);
+    }
+
+    // Stops links pushing out container.
+    a {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-all;
+        word-break: break-word;
+        hyphens: auto;
+    }
+
+    // Fixes nested UL spacing - see TOC.
+    ul ul {
+        margin-top: 12px;
+    }
+}

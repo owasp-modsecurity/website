@@ -1,0 +1,32 @@
+---
+######################## default configuration ####################
+# Your theme name
+theme: "dot-org-hugo-theme"
+# Title of your website (required).
+title: "Modsecurity Project"
+# Default time zone for time stamps; use any valid tz database name: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
+timeZone: "Europe/London"
+
+enableEmoji: true
+######################## i18n ####################
+# Auto-detect Chinese/Japanese/Korean Languages in the content. see: https://gohugo.io/getting-started/configuration/#hascjklanguage
+hasCJKLanguage: false
+# Set default content directory for multilingual
+contentDir: content/
+# Set fallback if international version is not available
+defaultContentLanguage: en
+# Set the default language as the root rather than in folder i.e. don't use /en/
+defaultContentLanguageInSubdir: false
+
+######################## privacy & speed ####################
+# Enable do not track, no cookies on Video embeds
+privacy:
+  youtube:
+    privacyEnhanced: true
+  vimeo:
+    enableDNT: true
+
+# Links
+permalinks:
+  page:
+    blog: /:year:month:day/:slug/

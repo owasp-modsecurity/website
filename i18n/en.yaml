@@ -1,0 +1,74 @@
+---
+hero1:
+  other: OWASP Modsecurity
+
+hero2:
+  other: Project
+
+subhero:
+  other: The 1st Line of Defense
+
+explainerText:
+  other: |
+    [ModSecurity](https://www.modsecurity.org/) is an open source, cross-platform web application firewall (WAF) module. 
+    Known as the "Swiss Army Knife" of WAFs, it enables web application defenders to gain 
+    visibility into HTTP(S) traffic and provides a power rules language and API to implement 
+    advanced protections.
+
+explainerButton:
+  other: About
+
+sectionTitle:
+  other: Getting Started
+
+sectionTitle1:
+  other: |
+    The most important usage scenarios
+sectionText1:
+  other: |
+    - Real-time application security monitoring and access control
+    - Full HTTP traffic logging
+    - Continuous passive security assessment
+    - Web application hardening
+sectionButton1:
+  other: Download
+
+sectionTitle2:
+  other: Guiding Principles
+sectionText2:
+  other: |
+    - Flexibility
+    - Passiveness
+    - Predictability
+    - Quality over quantity
+
+sectionButton2:
+  other: Getting Started
+
+sectionTitle3:
+  other: Community
+sectionText3:
+  other: |
+    :wave: Be part of a vibrant and welcoming community.
+
+    :world_map: Join us on Slack for discussions, see GitHub for our projects, or follow
+    us on Twitter.
+
+    :100: Our dev-on-duty program financed by sponsors guarantees 1st level support via multiple channels.
+
+    :dizzy: Annual develop retreats bring the developers together for a full week where we hack away at the rule set.
+
+    :call_me_hand: We are always looking for new contributors and developers. 
+
+
+sectionButton3:
+  other: Community
+
+social_link_title:
+  other: Follow us on social media
+
+videoUnsupported:
+  other: Your browser does not support the video tag.
+
+by:
+  other: By
