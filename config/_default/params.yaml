@@ -16,7 +16,7 @@ crs:
   latest_major_version: "3.0.12"
 
 github:
-  repo_url: "https://github.com/coreruleset/website/blob/main"
+  repo_url: "https://github.com/owasp-modsecurity/website/blob/main"
   show_edit_link: true
 
 social_links:
@@ -24,19 +24,19 @@ social_links:
   discord: ""
   facebook: ""
   flickr: ""
-  github: "https://github.com/coreruleset"
+  github: "https://github.com/owasp-modsecurity"
   instagram: ""
   landscape: ""
-  linkedin: "https://www.linkedin.com/company/owasp-crs"
+  linkedin: "https://www.linkedin.com/company/owasp"
   mastodon: ""
   pinterest: ""
   rss: ""
   slack: "https://owasp.slack.com/archives/CBKGH8A5P"
   stackoverflow: ""
   threads: ""
-  twitter: "https://twitter.com/coreruleset"
-  x: "https://x.com/coreruleset"
-  youtube: "https://www.youtube.com/channel/UCIoIEzbm34kczIvVyPGYBfg"
+  twitter: ""
+  x: ""
+  youtube: ""
 
 # Makes the header sticky on tall screens
 sticky_header: true

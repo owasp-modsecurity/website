@@ -2,10 +2,6 @@
 
 This repository contains the website for the OWASP Modsecurity Project.
 
-## For users of the CRS
-
-The generated website is automatically updated at https://coreruleset.org/. If you intend to _contribute_ to the website, the rest of this page will guide you through it.
-
 ## Requirements
 
 You can edit the documentation on your local system. You will need is the latest [Hugo binary](https://gohugo.io/getting-started/installing/) for your OS (Windows, Linux, Mac), and a working NodeJS compiler (required by the theme we use).
@@ -19,17 +15,12 @@ After getting hugo, just clone this repository to work locally. This way you can
 To clone, use the *recursive* option so you will be getting also the theme to render the pages properly:
 
 ```bash
-git clone --recursive git@github.com:coreruleset/website.git
+git clone --recursive git@github.com/owasp-modsecurity/website/.git
 ```
 
-We use two subrepos:
-- the theme
-- the documentation subrepo, which is built with a different theme
-
-If you just want to edit documentation (not the website), you can do it in the [documentation repo](https://github.com/coreruleset/documentation/)
+We use the theme subrepo.
 
 ## Editing locally
-
 You will need:
 - hugo binary
 - nodejs (for generating css files)
@@ -63,11 +54,11 @@ Then check your edits on http://localhost:1313/.
 
 ## Online Preview
 
-Any merged updates are pushed to [coreruleset.github.io](coreruleset.github.io/website/) for preview.
+Any merged updates are pushed to [owasp-modsecurity.github.io](owasp-modsecurity.github.io/website/) for preview.
 
 ## Authors
 
-Because users are `git` users now (there is no user "logged"), there is a [mapping between authors and github users](https://github.com/coreruleset/website/blob/main/data/authors.yaml). If you want to collaborate, please add your github username as the key, and your data below. See the examples in that file.
+Because users are `git` users now (there is no user "logged"), there is a [mapping between authors and github users](https://github.com/owasp-modsecurity/website/blob/main/data/authors.yaml). If you want to collaborate, please add your github username as the key, and your data below. See the examples in that file.
 
 ## Sending changes for review
 

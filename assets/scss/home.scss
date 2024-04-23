@@ -47,7 +47,7 @@ $mobile-max: 999px;
                 font-size: 75px;
             }
             @media (min-width: $min-desktop) {
-                margin-block-end: 60px;
+                margin-block-end: 120px;
             }
         }
         &__col1 {
@@ -80,7 +80,7 @@ $mobile-max: 999px;
         .button {
             margin-bottom: 50px;
             @media (min-width: $min-desktop) {
-                margin-bottom: 100px;
+                margin-bottom: 50px;
             }
         }
 

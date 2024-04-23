@@ -1,8 +1,9 @@
 ---
 hero1:
-  other: OWASP Modsecurity
-
+  other: OWASP
 hero2:
+  other: Modsecurity
+hero3:
   other: Project
 
 subhero:
@@ -15,6 +16,15 @@ explainerText:
     visibility into HTTP(S) traffic and provides a power rules language and API to implement 
     advanced protections.
 
+promotionHero:
+  other: The most widespread open source WAF
+
+promotionText:
+  other: |
+    Used by businesses, government organizations, internet service providers, and commercial WAF vendors alike on 
+    millions of domains all over the world. The engine, coupled with OWASP CRS - the dominant WAF rule set, 
+    undeniably raises the level of protection against HTTP attacks to a higher level.
+
 explainerButton:
   other: About
 
@@ -23,7 +33,7 @@ sectionTitle:
 
 sectionTitle1:
   other: |
-    The most important usage scenarios
+    Usage scenarios
 sectionText1:
   other: |
     - Real-time application security monitoring and access control
@@ -34,7 +44,7 @@ sectionButton1:
   other: Download
 
 sectionTitle2:
-  other: Guiding Principles
+  other: Principles
 sectionText2:
   other: |
     - Flexibility
@@ -53,10 +63,6 @@ sectionText3:
 
     :world_map: Join us on Slack for discussions, see GitHub for our projects, or follow
     us on Twitter.
-
-    :100: Our dev-on-duty program financed by sponsors guarantees 1st level support via multiple channels.
-
-    :dizzy: Annual develop retreats bring the developers together for a full week where we hack away at the rule set.
 
     :call_me_hand: We are always looking for new contributors and developers. 
 

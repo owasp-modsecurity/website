@@ -3,16 +3,8 @@
   <div class="columns hero-grid">
     <div class="hero-grid__col1">
       <h1 class="title">
-        {{ i18n "hero1" }}<br /><span class="darker">{{ i18n "hero2" }}</span>
+        {{ i18n "hero1" }}<br /><span class="darker">{{ i18n "hero2" }}</span> {{ i18n "hero3" }}
       </h1>
-
-      <h2 class="subhero">{{ i18n "subhero" }}</h2>
-
-      <p class="shortened-width">{{ i18n "explainerText" | markdownify }}</p>
-
-      {{ with $crs }}
-      <a href="{{ printf "%s/v%s" .release_url_prefix .latest_major_version }}" class="button">Get latest: {{ .latest_major_version }}</a>
-      {{ end }}
     </div>
     <div class="hero-grid__col2">
       <img
@@ -25,6 +17,29 @@
       />
     </div>
   </div>
+
+  <div class="columns hero-grid">
+    <div class="hero-grid__col1">
+      <h2 class="subhero">{{ i18n "subhero" }}</h2>
+
+      <p class="shortened-width">{{ i18n "explainerText" | markdownify }}</p>
+
+      {{ with $crs }}
+      <a href="{{ printf "%s/v%s" .release_url_prefix .latest_major_version }}" class="button">Get latest: {{ .latest_major_version }}</a>
+      {{ end }}
+    </div>
+    <div class="hero-grid__col1">
+      <h2 class="subhero">{{ i18n "promotionHero" }}</h2>
+
+      <p class="shortened-width">{{ i18n "promotionText" | markdownify }}</p>
+
+      {{ with $crs }}
+      <a href="/developers/" class="button">Become a part of it!</a>
+      {{ end }}
+    </div>
+  </div>
+
+  {{ partial "owasp.html" . }}
 
   <h3 class="h4">{{ i18n "sectionTitle" | markdownify }}</h3>
 
@@ -50,11 +65,7 @@
     </div>
   </div>
 
-  <hr />
-
   {{ partial "latest-news.html" . }}
-
-  <hr />
 
   {{ partial "sponsors.html" . }}
 
