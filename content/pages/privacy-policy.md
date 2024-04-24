@@ -71,7 +71,7 @@ Our project keeps its privacy policy under regular review and places any updates
 
 If you have any questions about our project's privacy policy, the data we hold on you, or you would like to exercise one of your data protection rights, then please understand that we're a volunteer driven project trying to write rules to protect our users from malicious attacks. That is our priority. But feel free to contact us and we'll make sure we have a response for you in due time.
 
-Please email us at <info@coreruleset.org>.
+Please email us at <modsecurity@owasp.org>.
 
 ### How to contact the appropriate authority?
 

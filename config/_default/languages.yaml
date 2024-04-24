@@ -38,12 +38,6 @@ en:
       weight: 1
       post: "See the latest news"
       parent: "blog"
-    - identifier: "portraits"
-      name: "Developer Portraits"
-      url: "tags/developer-portrait/"
-      weight: 2
-      post: "Known our developers"
-      parent: "blog"
     - identifier: "videos"
       name: "Videos"
       url: "/videos/"
@@ -53,29 +47,29 @@ en:
       weight: 3
     - identifier: "installation"
       name: "Installing"
-      url: "/docs/deployment/install/"
+      url: "https://github.com/owasp-modsecurity/ModSecurity/wiki/Compilation-recipes-for-v3.x"
       weight: 1
       post: "How to deploy Modsecurity"
       parent: "docs"
     - identifier: "fulldoc"
-      name: "Deep Dive"
-      post: "See our full documentation"
-      url: "/docs/"
+      name: "Configuration"
+      post: "See how to configure ModSecurity "
+      url: "https://github.com/owasp-modsecurity/ModSecurity/wiki/ModSecurity-Frequently-Asked-Questions-%28FAQ%29#user-content-Configuring_ModSecurity"
       weight: 2
       parent: "docs"
-    - identifier: "contributing"
-      name: "Contributing"
-      url: "/docs/development/contribution_guidelines/"
+    - identifier: "support"
+      name: "Support"
+      url: "/support/"
       weight: 3
       post: "Learn how to contribute"
       parent: "docs"
+    - identifier: "Developers"
+      name: "Developers"
+      url: "/developers/"
+      weight: 4
     - identifier: "faq"
       name: "FAQs"
       url: "/faq/"
-      weight: 4
-    - identifier: "Support"
-      name: "Support"
-      url: "/support/"
       weight: 5
     - identifier: "donate"
       name: "Donate"
