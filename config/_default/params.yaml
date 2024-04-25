@@ -13,7 +13,8 @@ images: ["/img/social-share.png"]
 
 crs:
   release_url_prefix: "https://github.com/owasp-modsecurity/ModSecurity/releases/tag"
-  latest_major_version: "3.0.12"
+  latest_v2_major_version: "2.9.7"
+  latest_v3_major_version: "3.0.12"
 
 github:
   repo_url: "https://github.com/owasp-modsecurity/website/blob/main"
