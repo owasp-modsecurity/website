@@ -54,7 +54,7 @@ Then check your edits on http://localhost:1313/.
 
 ## Online Preview
 
-Any merged updates are pushed to [owasp-modsecurity.github.io](owasp-modsecurity.github.io/website/) for preview.
+Any merged updates are pushed to [owasp-modsecurity.github.io](https://owasp-modsecurity.github.io/website/) for preview.
 
 ## Authors
 
