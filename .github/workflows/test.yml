@@ -47,8 +47,6 @@ jobs:
           HUGO_ENV: testing
         run: |
           hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
-          hugo -s subsite/docs --baseURL "${{ steps.pages.outputs.base_url }}/docs/"
-          mv subsite/docs/public public/docs
           npx -y pagefind --site public
 
       - name: Link Checker
