@@ -1,4 +1,4 @@
-# CRS Project Website Repository
+# OWASP ModSecurity Project Website Repository
 
 This repository contains the website for the OWASP Modsecurity Project.
 
