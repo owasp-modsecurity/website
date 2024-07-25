@@ -53,7 +53,7 @@ The right to access - You have the right to request copies of your personal data
 
 The right to erasure - You have the right to request that we erase your personal data, under certain conditions.
 
-If you make a request, we have one month to respond to you. If you would like to exercise any of these rights, please contact us at <info@coreruleset.org>.
+If you make a request, we have one month to respond to you. If you would like to exercise any of these rights, please contact us at <modsecurity@owasp.org>.
 
 ### How do we use cookies?
 
