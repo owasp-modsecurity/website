@@ -1,5 +1,5 @@
 {{ define "main" }}
-  {{- $crs := $.Site.Params.crs -}}
+  {{- $modsecurity := $.Site.Params.modsecurity -}}
   <div class="columns hero-grid">
     <div class="hero-grid__col1">
       <h1 class="title">
@@ -24,9 +24,9 @@
 
       <p class="shortened-width">{{ i18n "explainerText" | markdownify }}</p>
 
-      {{ with $crs }}
-      <a href="{{ printf "%s/v%s" .release_url_prefix .latest_v2_major_version }}" class="button">Get latest v2: {{ .latest_v2_major_version }}</a>
-      <a href="{{ printf "%s/v%s" .release_url_prefix .latest_v3_major_version }}" class="button">Get latest v3: {{ .latest_v3_major_version }}</a>
+      {{ with $modsecurity }}
+      <a href="{{ printf "%s/v%s" .release_tag_url_prefix .latest_v2_major_version }}" class="button">Get latest v2: {{ .latest_v2_major_version }}</a>
+      <a href="{{ printf "%s/v%s" .release_tag_url_prefix .latest_v3_major_version }}" class="button">Get latest v3: {{ .latest_v3_major_version }}</a>
       {{ end }}
     </div>
     <div class="hero-grid__col1">
@@ -34,7 +34,7 @@
 
       <p class="shortened-width">{{ i18n "promotionText" | markdownify }}</p>
 
-      {{ with $crs }}
+      {{ with $modsecurity }}
       <a href="/developers/" class="button">Become a part of it!</a>
       {{ end }}
     </div>
@@ -48,7 +48,7 @@
     <div class="card">
       <h2>{{ i18n "sectionTitle1" }}</h2>
       <p>{{ i18n "sectionText1" | markdownify }}</p>
-      <a href="{{ printf "%s/v%s" $crs.release_url_prefix $crs.latest_major_version }}" class="button">{{ i18n "sectionButton1" }}</a>
+      <p><a href="{{ printf "%s" $modsecurity.release_url_prefix }}" class="button">{{ i18n "sectionButton1" }}</a></p>
     </div>
 
     <div class="card">
