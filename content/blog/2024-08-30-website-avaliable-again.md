@@ -16,6 +16,6 @@ When Trustwave handed over control of the [project](https://owasp.org/blog/2024/
 
 The time has come, after July 1st we started the transfer of domain ownership.
 
-A few days ago, all the processes were completed, and finally we was able to publish the new website. Thanks to all participants from Trustwave and OWASP for their help.
+A few days ago, all the processes were completed, and finally we are able to publish the new website. Thanks to all participants from Trustwave and OWASP for their help.
 
 Our goal is to communicate all important news and development-related information here in the future.
