@@ -1,5 +1,5 @@
 ---
-title: 'ModSecurity.org: website abailable again'
+title: 'ModSecurity.org: website available again'
 date: '2024-08-30T14:00:00+02:00'
 author: airween
 categories:
