@@ -73,6 +73,10 @@ strong {
 2. Correct the odd 'em' font sizing in all browsers.
 */
 
+article > pre > code {
+	font-size: 0.7em;
+}
+
 code,
 kbd,
 samp,
@@ -264,3 +268,11 @@ Add the correct display in Chrome and Safari.
 summary {
 	display: list-item;
 }
+
+article > pre > code {
+	font-size: 0.7em;
+	background-color: #AAAAAA;
+	padding: 2px;
+}
+
+
