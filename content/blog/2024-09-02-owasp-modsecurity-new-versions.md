@@ -1,6 +1,6 @@
 ---
-title: 'New versions - 2024 August'
-date: '2024-09-01T17:30:00+02:00'
+title: 'New versions - 2024 September'
+date: '2024-09-03T12:00:00+02:00'
 author: airween
 ---
 
