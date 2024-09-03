@@ -10,5 +10,5 @@ build:
 params:
   services:
     matomoAnalytics:
-      id: "4"
+      id: "5"
       url: "piwik.netnea.com/matomo"
