@@ -5,7 +5,7 @@ en:
   copyright: "Copyright &copy; {{< current_year >}} Modsecurity Project. All Rights Reserved."
   title: "Modsecurity Project"
   params:
-    description: "The 1st Line Of Defense"
+    description: "Open Source Web Application Firewall"
     ### accessibility ###
     # accessibility:
     #   skip_text: "Skip to content"
