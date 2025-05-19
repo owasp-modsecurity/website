@@ -24,7 +24,7 @@
   "homepage": "https://github.com/owasp-modsecurity/website/#readme",
   "dependencies": {
     "autoprefixer": "^10.4.21",
-    "hugo-extended": "^0.145.0",
+    "hugo-extended": "^0.147.3",
     "postcss": "^8.5.3",
     "postcss-cli": "^11.0.1"
   },
