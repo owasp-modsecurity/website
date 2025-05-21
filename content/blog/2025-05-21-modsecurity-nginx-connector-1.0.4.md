@@ -24,7 +24,6 @@ The latest release was almost three years ago, meanwhile some relevant features 
 #### Important change in log format
 
 Please note that there was an important change in logformat. Here is the explanation what changed.
-
 Old behavior: if ModSecurity catches an attack then it produces log entries. The problem is that the `[hostname]` field contains the server's IP address - which carries no information at all:
 
 ```
@@ -36,6 +35,7 @@ At the end of the line, Nginx (and not ModSecurity) puts other fields, like serv
 The other advantage of this patch that now the fields will be the same as in case of mod_security2, so parsing the lines (hopefully) will be easier.
 
 Here is the new logformat:
+
 ```
 ModSecurity: Warning. ... [hostname "foobar.com"] [uri "/"] ...
 ```
