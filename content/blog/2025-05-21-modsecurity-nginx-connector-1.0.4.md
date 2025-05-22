@@ -41,5 +41,3 @@ ModSecurity: Warning. ... [hostname "foobar.com"] [uri "/"] ...
 The `[hostname]` field now contains the `Host` field from the request, or if it does not exist, the virtual host's context name (`server`). This change ensures that the `[hostname]` field contains helpful information and that the host information will no longer be truncated from long log lines.
 
 The other advantage of this patch that now the fields will be the same as in mod_security2, so parsing the lines will (hopefully) be easier. Remember to update your log parsers to accomodate for this change.
-
-Ervin Hegedüs
