@@ -6,13 +6,13 @@
     position: relative;
     &.sticky {
         position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
         // remove sticky on smaller screens.
         @media (min-width: 515px) and (max-height: 615px) {
             position: relative;
         }
-        top: 0;
-        left: 0;
-        right: 0;
     }
     &:after {
         content: "";

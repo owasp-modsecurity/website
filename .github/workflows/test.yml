@@ -19,7 +19,7 @@ jobs:
   syntax-check:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.123.8
+      HUGO_VERSION: 0.152.2
     steps:
       - name: Install Hugo CLI
         run: |
