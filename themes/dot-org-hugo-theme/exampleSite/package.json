@@ -27,9 +27,11 @@
     "hugo-extended": "^0.117.0",
     "netlify-cli": "^23.11.1",
     "postcss": ">=8.4.31",
-    "postcss-cli": "^10.1.0"
+    "postcss-cli": "^10.1.0",
+    "glob": ">=10.5.0"
   },
   "devDependencies": {
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "glob": ">=10.5.0"
   }
 }
