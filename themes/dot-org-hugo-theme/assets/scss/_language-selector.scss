@@ -38,10 +38,10 @@
             &::after {
                 // opening menu.
                 transition: transform 0.1s ease-in;
+                transform: rotate(180deg) translateY(-50%);
                 @media (prefers-reduced-motion: reduce) {
                     transition: none;
                 }
-                transform: rotate(180deg) translateY(-50%);
             }
         }
     }
@@ -61,10 +61,10 @@
     line-height: 40px;
     vertical-align: middle;
     padding-right: 20px; // min space for word and chevron.
+    transition: color 0.5s ease;
     @media (min-width: $min-desktop) {
         padding-right: 10px; // as per other menu items.
     }
-    transition: color 0.5s ease;
     @media (prefers-reduced-motion: reduce) {
         transition: none;
     }
