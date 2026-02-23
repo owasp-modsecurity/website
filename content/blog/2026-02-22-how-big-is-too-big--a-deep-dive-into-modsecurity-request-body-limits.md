@@ -26,7 +26,7 @@ I changed the engine a little to demonstrate the behavior - it always shows the 
 I think the first question is which constraint is "stronger", what the engine checks first.
 
 Consider we have a simple JSON file with length of 120 bytes:
-```
+```bash
 $ cat payloadmin4.json 
 [1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456]
 
@@ -35,7 +35,7 @@ $ ls -l payloadmin4.json
 ```
 
 Now let's set the restrictions to extremely low to see what happens if I send the above file:
-```
+```apache
 SecRequestBodyLimit 115
 SecRequestBodyNoFilesLimit 110
 ```
@@ -43,7 +43,7 @@ SecRequestBodyNoFilesLimit 110
 The `NoFiles` limit is usually lower than the "single" one — we'll see why below.
 
 Now let's send the request:
-```
+```bash
 $ curl -v -H "Content-Type: application/json" -X POST --data @payloadmin4.json http://localhost
 ...
 > POST / HTTP/1.1
@@ -54,7 +54,7 @@ $ curl -v -H "Content-Type: application/json" -X POST --data @payloadmin4.json h
 > Content-Length: 120
 ```
 and check the log:
-```
+```bash
 ModSecurity: Request body (Content-Length (120)) is larger than the configured limit (115).
 ```
 
@@ -62,12 +62,12 @@ As you can see, the first limitation the engine checks is `SecRequestBodyLimit`.
 
 Now set `SecRequestBodyLimit` higher than the body size and check again:
 
-```
+```apache
 SecRequestBodyLimit 130
 SecRequestBodyNoFilesLimit 110
 ```
 Send the request again and check the log:
-```
+```bash
 ModSecurity: Request body no files data length (120) is larger than the configured limit (110).
 ```
 Now the no-files limitation was exceeded — we set the limit to 110, but the payload is 120 bytes.
@@ -93,7 +93,7 @@ If we send a JSON request, it's not a file upload, so the entire JSON payload co
 
 If we create a smaller file and try to send it, it works as we expect:
 
-```
+```bash
 $ cat payloadmin2.json 
 [1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456]
 
@@ -101,7 +101,7 @@ $ ls -la payloadmin2.json
 -rw-rw-r-- 1 airween airween 103 febr  15 19.58 payloadmin2.json
 ```
 Now we have a JSON file with 103 bytes. Send it:
-```
+```bash
 $ curl -v -H "Content-Type: application/json" -X POST --data @payloadmin2.json http://localhost
 ...
 > POST / HTTP/1.1
@@ -117,7 +117,7 @@ Got 200, no issue, hooray.
 Note that the behavior is the same if you send XML or URL-encoded requests.
 
 And now try to send the same file but as a file upload - for this we can use the multipart request, and the `-F` switch for `curl`:
-```
+```bash
 $ curl -v -F "upload=@payloadmin2.json" http://localhost
 ...
 > POST / HTTP/1.1
@@ -129,14 +129,14 @@ $ curl -v -F "upload=@payloadmin2.json" http://localhost
 ```
 
 The request size is 325 bytes, and we got:
-```
+```apache
 Request body no files data length (118) is larger than the configured limit (110)
 ```
 
 Hmmm... where do the 325 bytes and 118 bytes come from? The JSON file is only 103 bytes.
 
 The 325 bytes is the size of the multipart request. In this type, the client splits the files into multiple parts and adds boundaries. This additional content increases the request size from 103 to 325 bytes, like this:
-```
+```plain
 --------------------------yR5iNnu9lY48kNvLTbqOiH
 Content-Disposition: form-data; name="upload"; filename="payloadmin2.json"
 Content-Type: application/octet-stream
@@ -146,22 +146,22 @@ Content-Type: application/octet-stream
 
 ```
 The length of this request, including line endings (CRLF), is 325 bytes in total. Without boundaries, we have this part:
-```
+```plain
 Content-Disposition: form-data; name="upload"; filename="payloadmin2.json"
 Content-Type: application/octet-stream
 
 [1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456]
 ```
 We also need to count the CRLFs. The total size of this part is 221 bytes — still not 103 or 118 bytes. Let's count the non-file parts of the request:
-```
+```plain
 Content-Disposition: form-data; name="upload"; filename="payloadmin2.json"\r\n
 ```
 This is a 76 bytes long string.
-```
+```plain
 Content-Type: application/octet-stream\r\n
 ```
 This is 40 bytes. And finally, an empty line:
-```
+```plain
 \r\n
 ```
 where the length is 2.
@@ -191,7 +191,7 @@ Yes, yes.
 Let's see how this works.
 
 I have three files:
-```
+```bash
 $ cat file1.json
 [1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456]
 
@@ -208,21 +208,21 @@ $ ls -la file1.json file2.json file3.json
 ```
 
 Create a rule that checks the files' content:
-```
+```apache
 SecRule FILES_TMP_CONTENT "@rx attack" "id:192372,log,deny"
 ```
 and just for sure, increase the extreme lower value to a bit higher:
-```
+```apache
 SecRequestBodyLimit 400
 SecRequestBodyNoFilesLimit 350
 ```
 
 Now send the multipart request, but be sure that the file with content "attack" is the first (this means the file is under the limit):
-```
+```bash
 $ curl -v -F "upload1=@file3.json" -F "upload2=@file2.json" -F "upload3=@file1.json" http://localhost
 ```
 Check the log:
-```
+```bash
 ModSecurity: Request body (Content-Length (671)) is larger than the configured limit (400).
 ...
 ModSecurity: Warning. Pattern match "attack" at FILES_TMP_CONTENT:upload1.
@@ -230,11 +230,11 @@ ModSecurity: Warning. Pattern match "attack" at FILES_TMP_CONTENT:upload1.
 What we see here is that the engine warns us that the size exceeds the configured limit, but since the admin set the limit action to `ProcessPartial`, it continues processing. It then inspects the first file (which contains the pattern "attack") and the rule fires.
 
 Let's change the order of the files:
-```
+```bash
 $ curl -v -F "upload1=@file1.json" -F "upload2=@file2.json" -F "upload3=file3.json" http://localhost
 ```
 and check the log:
-```
+```bash
 ModSecurity: Request body (Content-Length (780)) is larger than the configured limit (400).
 ```
 Oops — the rule didn't fire.
@@ -254,10 +254,4 @@ Back to PRs. The main concept is to extend this behavior to other payloads, such
 There is currently no way to avoid the 413 error for JSON/XML or URL-encoded requests. Even in `DetectionOnly` mode, if the engine reaches the `SecRequestBodyNoFilesLimit` limit, the client will receive a 413 error.
 
 This would let clients send oversized payloads during a testing period while the administrator collects logs.
-
-
-
-
-
-
 
