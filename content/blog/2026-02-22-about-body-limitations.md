@@ -4,7 +4,7 @@ date: '2026-02-22T00:00:00+02:00'
 author: airween
 ---
 
-Have you ever wondered what exactly the request body limits means in ModSecurity and how do they work?
+Have you ever wondered what exactly the request body limits mean in ModSecurity and how they work?
 
 <!--more-->
 
