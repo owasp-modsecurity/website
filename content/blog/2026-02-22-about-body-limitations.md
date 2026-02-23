@@ -1,5 +1,5 @@
 ---
-title: 'About body limitations'
+title: 'How Big Is Too Big? A Deep Dive into ModSecurity Request Body Limits'
 date: '2026-02-22T00:00:00+02:00'
 author: airween
 ---
