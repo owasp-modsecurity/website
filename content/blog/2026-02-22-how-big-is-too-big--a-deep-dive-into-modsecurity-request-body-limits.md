@@ -23,7 +23,7 @@ I think it would be good to know what the community's expectations are for this 
 
 For the following, I've modified the engine a little to demonstrate the behaviour - it always shows the amount by which a limit has been exceeded, and the limit itself.
 
-I think the first question to examine  is which constraint is "stronger", i.e., which limit does the engine check first.
+I think the first question to examine is which constraint is "stronger", i.e., which limit does the engine check first.
 
 Consider a simple JSON file with a length of 120 bytes:
 ```bash
@@ -211,7 +211,7 @@ Create a rule that checks the files' content:
 ```apache
 SecRule FILES_TMP_CONTENT "@rx attack" "id:192372,log,deny"
 ```
-and just for sure, increase the extreme lower value to a bit higher:
+and just in case, increase the extremely low limits a bit:
 ```apache
 SecRequestBodyLimit 400
 SecRequestBodyNoFilesLimit 350
@@ -243,13 +243,13 @@ This is what the `ProcessPartial` does.
 
 #### Why was this feature added?
 
-To understand the situation, please read the [documentation](https://github.com/owasp-modsecurity/ModSecurity/wiki/Reference-Manual-(v2.x)#secrequestbodylimitaction):
+The [documentation](https://github.com/owasp-modsecurity/ModSecurity/wiki/Reference-Manual-(v2.x)#secrequestbodylimitaction) explains why `ProcessPartial` was added to the engine:
 
 >_By default, ModSecurity will reject a request body that is longer than specified. This is problematic especially when ModSecurity is being run in DetectionOnly mode and the intent is to be totally passive and not take any disruptive actions against the transaction. With the ability to choose what happens once a limit is reached, site administrators can choose to inspect only the first part of the request, the part that can fit into the desired limit, and let the rest through. This is not ideal from a possible evasion issue perspective, however it may be acceptable under certain circumstances._
 
 #### Extend this behavior
 
-Back to PRs. The main concept is to extend this behavior to other payloads, such as JSON, XML, and URL-encoded data. The proposed directive is `SecRequestBodyNoFilesLimitAction` and would follow the behavior of `SecRequestBodyLimitAction`, but another option is to extend the existing directive's behavior to cover JSON/XML and URL-encoded requests.
+Back to PRs. The main concept of the open PRs is to extend this behavior to other payloads, such as JSON, XML, and URL-encoded data. The proposed directive is `SecRequestBodyNoFilesLimitAction` and would follow the behavior of `SecRequestBodyLimitAction`, but another option is to extend the existing directive's behavior to cover JSON/XML and URL-encoded requests.
 
 There is currently no way to avoid the 413 error for JSON/XML or URL-encoded requests. Even in `DetectionOnly` mode, if the engine reaches the `SecRequestBodyNoFilesLimit` limit, the client will receive a 413 error.
 
