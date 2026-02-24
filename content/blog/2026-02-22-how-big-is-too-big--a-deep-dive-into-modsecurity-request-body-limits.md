@@ -10,22 +10,22 @@ Have you ever wondered what exactly the request body limits mean in ModSecurity 
 
 As you probably know, ModSecurity has two limits on the size of the request body: [SecRequestBodyLimit](https://github.com/owasp-modsecurity/ModSecurity/wiki/Reference-Manual-(v2.x)#secrequestbodylimit) and [SecRequestBodyNoFilesLimit](https://github.com/owasp-modsecurity/ModSecurity/wiki/Reference-Manual-(v2.x)#secrequestbodynofileslimit).
 
-There is also a handler for a special case, what to do if the body size is larger than expected - [SecRequestBodyLimitAction](https://github.com/owasp-modsecurity/ModSecurity/wiki/Reference-Manual-(v2.x)#secrequestbodylimitaction).
+There is also a handler for the case, when the request body size is larger than expected - [SecRequestBodyLimitAction](https://github.com/owasp-modsecurity/ModSecurity/wiki/Reference-Manual-(v2.x)#secrequestbodylimitaction).
 
 Two new PRs (for [v3](https://github.com/owasp-modsecurity/ModSecurity/pull/3476) and for [v2](https://github.com/owasp-modsecurity/ModSecurity/pull/3483)) have recently appeared on GH, from Hiroaki Nakamura ([@hnakamur](https://github.com/hnakamur)), where he tried to improve the behavior of these limits.
 
 
-Under the PR [3483](https://github.com/owasp-modsecurity/ModSecurity/pull/3483) we discussed a lot about how could he make that better, and we are a bit stuck.
+We've had a long discussion ([3483](https://github.com/owasp-modsecurity/ModSecurity/pull/3483)) about how the current behaviour can be improved, and we are a bit stuck.
 
 I think it would be good to know what the community's expectations are for this feature, but first, let me explain how these restrictions work in reality.
 
 #### A really simple example
 
-I changed the engine a little to demonstrate the behavior - it always shows the size that exceeds the limit, and the limit itself.
+For the following, I've modified the engine a little to demonstrate the behaviour - it always shows the amount by which a limit has been exceeded, and the limit itself.
 
-I think the first question is which constraint is "stronger", what the engine checks first.
+I think the first question to examine  is which constraint is "stronger", i.e., which limit does the engine check first.
 
-Consider we have a simple JSON file with length of 120 bytes:
+Consider a simple JSON file with a length of 120 bytes:
 ```bash
 $ cat payloadmin4.json 
 [1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456,1234567890123456]
@@ -34,13 +34,13 @@ $ ls -l payloadmin4.json
 -rw-rw-r-- 1 airween airween 120 febr  15 19.45 payloadmin4.json
 ```
 
-Now let's set the restrictions to extremely low to see what happens if I send the above file:
+Now let's set the limits to very low values to see what happens when I send the above file:
 ```apache
 SecRequestBodyLimit 115
 SecRequestBodyNoFilesLimit 110
 ```
 
-The `NoFiles` limit is usually lower than the "single" one — we'll see why below.
+`SecRequestBodyNoFilesLimit` limit is usually lower than `SecRequestBodyLimit` — we'll see why below.
 
 Now let's send the request:
 ```bash
@@ -58,9 +58,9 @@ and check the log:
 ModSecurity: Request body (Content-Length (120)) is larger than the configured limit (115).
 ```
 
-As you can see, the first limitation the engine checks is `SecRequestBodyLimit`. If the body is bigger than the configured value, the engine blocks the request immediately.
+As you can see, the first limit the engine checks is `SecRequestBodyLimit`. If the body is bigger than the configured value, the engine blocks the request immediately.
 
-Now set `SecRequestBodyLimit` higher than the body size and check again:
+Now we'll set `SecRequestBodyLimit` higher than `SecRequestBodyNoFilesLimit` and check again:
 
 ```apache
 SecRequestBodyLimit 130
@@ -74,7 +74,7 @@ Now the no-files limitation was exceeded — we set the limit to 110, but the pa
 
 **Conclusion**: The first variable that the engine checks is the `SecRequestBodyLimit`, and the second one is the `SecRequestBodyNoFilesLimit`.
 
-#### What's the difference between the two limitations?
+#### What's the difference between the two limits on the request body size?
 
 The `SecRequestBodyLimit` controls the **entire request body size**, no matter what's the request's `Content-Type`.
 
