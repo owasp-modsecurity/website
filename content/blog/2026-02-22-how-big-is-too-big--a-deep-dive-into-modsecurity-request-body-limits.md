@@ -247,7 +247,7 @@ The [documentation](https://github.com/owasp-modsecurity/ModSecurity/wiki/Refere
 
 >_By default, ModSecurity will reject a request body that is longer than specified. This is problematic especially when ModSecurity is being run in DetectionOnly mode and the intent is to be totally passive and not take any disruptive actions against the transaction. With the ability to choose what happens once a limit is reached, site administrators can choose to inspect only the first part of the request, the part that can fit into the desired limit, and let the rest through. This is not ideal from a possible evasion issue perspective, however it may be acceptable under certain circumstances._
 
-#### Extend this behavior
+#### Improved handler behavior
 
 Back to PRs. The main concept of the open PRs is align the "action" directives with the "limit" directives. The proposed directive is `SecRequestBodyNoFilesLimitAction` and would follow the behavior of `SecRequestBodyLimitAction`, but another option is to extend the existing directive's behavior to handle the case where `SecRequestBodyNoFilesLimit` is exceeded.
 
