@@ -76,7 +76,7 @@ Now the no-files limitation was exceeded — we set the limit to 110, but the pa
 
 #### What's the difference between the two limits on the request body size?
 
-The `SecRequestBodyLimit` controls the **entire request body size**, no matter what's the request's `Content-Type`.
+The `SecRequestBodyLimit` controls the **entire request body size**, regardless of the request's `Content-Type` or `Transfer-Encoding`.
 
 The `SecRequestBodyNoFilesLimit` as the documentation [says](https://github.com/owasp-modsecurity/ModSecurity/wiki/Reference-Manual-(v2.x)#secrequestbodynofileslimit):
 >_"Configures the maximum request body size ModSecurity will accept for buffering, excluding the size of any files being transported in the request."_
