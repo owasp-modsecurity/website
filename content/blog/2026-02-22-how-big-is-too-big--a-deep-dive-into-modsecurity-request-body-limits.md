@@ -249,9 +249,9 @@ The [documentation](https://github.com/owasp-modsecurity/ModSecurity/wiki/Refere
 
 #### Extend this behavior
 
-Back to PRs. The main concept of the open PRs is to extend this behavior to other payloads, such as JSON, XML, and URL-encoded data. The proposed directive is `SecRequestBodyNoFilesLimitAction` and would follow the behavior of `SecRequestBodyLimitAction`, but another option is to extend the existing directive's behavior to cover JSON/XML and URL-encoded requests.
+Back to PRs. The main concept of the open PRs is align the "action" directives with the "limit" directives. The proposed directive is `SecRequestBodyNoFilesLimitAction` and would follow the behavior of `SecRequestBodyLimitAction`, but another option is to extend the existing directive's behavior to handle the case where `SecRequestBodyNoFilesLimit` is exceeded.
 
-There is currently no way to avoid the 413 error for JSON/XML or URL-encoded requests. Even in `DetectionOnly` mode, if the engine reaches the `SecRequestBodyNoFilesLimit` limit, the client will receive a 413 error.
+Additionally, we have been discussing the issue that there is currently no way to avoid the 413 error for requests that trigger `SecRequestBodyNoFilesLimit`, even in `DetectionOnly` mode.
 
 This would let clients send oversized payloads during a testing period while the administrator collects logs.
 
