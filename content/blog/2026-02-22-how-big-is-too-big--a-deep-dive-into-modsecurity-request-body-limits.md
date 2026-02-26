@@ -249,7 +249,7 @@ The [documentation](https://github.com/owasp-modsecurity/ModSecurity/wiki/Refere
 
 #### Improved handler behavior
 
-Back to PRs. The main concept of the open PRs is align the "action" directives with the "limit" directives. The proposed directive is `SecRequestBodyNoFilesLimitAction` and would follow the behavior of `SecRequestBodyLimitAction`, but another option is to extend the existing directive's behavior to handle the case where `SecRequestBodyNoFilesLimit` is exceeded.
+Back to PRs. The main concept of the open PRs is to align the "action" directives with the "limit" directives. The proposed new directive is `SecRequestBodyNoFilesLimitAction` and would follow the behavior of `SecRequestBodyLimitAction`, but another option is to extend the existing directive's behavior to handle the case where `SecRequestBodyNoFilesLimit` is exceeded.
 
 Additionally, we have been discussing the issue that there is currently no way to avoid the 413 error for requests that trigger `SecRequestBodyNoFilesLimit`, even in `DetectionOnly` mode.
 
