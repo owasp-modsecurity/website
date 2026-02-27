@@ -87,11 +87,11 @@ Now we can see why the NoFiles limit is lower than the total limit. File uploads
 
 #### Understanding the excluded size
 
-Okay, but what is the term _"excluding the size of any files being transported"_?
+Okay, but what does _"excluding the size of any files being transported"_ mean exactly?
 
-If we send a JSON request, it's not a file upload, so the entire JSON payload counts against this directive — recall when we set `SecRequestBodyLimit` to 130 and the no-files limit blocked the request.
+When we send a JSON request, it's not a file upload, so the entire JSON payload counts against `SecRequestBodyNoFilesLimit` — recall when we set `SecRequestBodyLimit` to 130 and the no-files limit blocked the request.
 
-If we create a smaller file and try to send it, it works as we expect:
+If we create a smaller payload and try to send it, it works as we expect:
 
 ```bash
 $ cat payloadmin2.json 
@@ -116,7 +116,7 @@ Got 200, no issue, hooray.
 
 Note that the behavior is the same if you send XML or URL-encoded requests.
 
-And now try to send the same file but as a file upload - for this we can use the multipart request, and the `-F` switch for `curl`:
+And now try sending the same payload but as a file upload - for this we can use the multipart request, and the `-F` switch for `curl`:
 ```bash
 $ curl -v -F "upload=@payloadmin2.json" http://localhost
 ...
@@ -133,7 +133,7 @@ The request size is 325 bytes, and we got:
 Request body no files data length (118) is larger than the configured limit (110)
 ```
 
-Hmmm... where do the 325 bytes and 118 bytes come from? The JSON file is only 103 bytes.
+Hmmm... where did the 325 bytes and 118 bytes come from? The JSON file is only 103 bytes.
 
 The 325 bytes is the size of the multipart request. In this type, the client splits the files into multiple parts and adds boundaries. This additional content increases the request size from 103 to 325 bytes, like this:
 ```plain
@@ -168,17 +168,17 @@ where the length is 2.
 
 76 + 40 + 2 = 118.
 
-This is the "magic" part that the engine _excludes_ from the payload. If there are multiple files to upload, each file will have a section like this, and these sections make up the overhead that the engine compares against the `SecRequestBodyNoFilesLimit` value.
+As you can see, every byte that is not part of the file content counts against the `SecRequestBodyNoFilesLimit`. If there are multiple files to upload, each file will have a section like this, and these sections make up the overhead that the engine compares against the `SecRequestBodyNoFilesLimit` value.
 
 With the default settings, ModSecurity allows 12.5MB for `SecRequestBodyLimit` and 128kB for `SecRequestBodyNoFilesLimit` - see the [recommended](https://github.com/owasp-modsecurity/ModSecurity/blob/v2/master/modsecurity.conf-recommended#L45-L46) config file. This means:
-* if the content type of the request is JSON, XML, or URL-encoded, then `SecRequestBodyNoFilesLimit` (the lower value) will be applied (even if the payload is extremely large, because this limit is much lower)
-* if the content type is multipart, then the total size is checked against `SecRequestBodyLimit` **and** the non-file portion against `SecRequestBodyNoFilesLimit`
+* if the content type of the request is JSON, XML, or URL-encoded, then `SecRequestBodyNoFilesLimit` (the lower value) will be the effective limit (even if the payload is extremely large, because this limit is much lower)
+* if the content type is multipart, then the total size is checked against `SecRequestBodyLimit` **and** the non-file portion against `SecRequestBodyNoFilesLimit`, i.e., it mainly depends on the size of the uploaded file which limit will be reached first
 
-**A very important note**: both configuration directives have a hard-coded limit in the v2 engine, which is 1GB (see the documentation above). In v3, there is no hard-coded limit, which is the expected behavior. We will remove this limit from v2 soon.
+**A very important note**: both configuration directives have a hard-coded limit in the v2 engine, which is 1GB (see the documentation above). In v3, there is no hard-coded limit, which is the expected behavior (there are, of course, hard limits with respect to the hardware and memory word size). We will remove this hard-coded limit from v2 soon.
 
-#### A mysterious SecRequestBodyLimitAction directive
+#### The mysterious SecRequestBodyLimitAction directive
 
-As I mentioned above, ModSecurity has a directive to handle this case: `SecRequestBodyLimitAction`. The possible values are `Reject` (the default) or `ProcessPartial`. This describes what the engine should do when the body exceeds the configured limit — with default values, what to do if the payload is greater than 12.5 MB.
+As I mentioned above, ModSecurity has a directive to handle the case where the size of the request body exceeds one of the configured limits: `SecRequestBodyLimitAction`. The allowed values for the directive are `Reject` (the default) or `ProcessPartial`.
 
 `Reject` is clear: it terminates the connection with status 413.
 
