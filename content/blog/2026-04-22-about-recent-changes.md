@@ -1,10 +1,10 @@
 ---
-title: 'About CVE 2026-30923 and 2026-30923'
+title: 'About CVE 2026-30923 and 2026-84226'
 date: '2026-04-28T00:00:00+02:00'
 author: airween
 ---
 
-We would like to share our take on [CVE-2026-30923](https://nvd.nist.gov/vuln/detail/CVE-2026-30923) and [CVE-2026-30923](https://nvd.nist.gov/vuln/detail/CVE-2026-30923), which were published on April 28, 2026, as well as some additional issues that were fixed.
+We would like to share our take on [CVE-2026-30923](https://nvd.nist.gov/vuln/detail/CVE-2026-30923) and [CVE-2026-42268](https://nvd.nist.gov/vuln/detail/CVE-2026-84226), which were published on April 22, 2026, as well as some additional issues that were fixed.
 
 <!--more-->
 
@@ -37,7 +37,7 @@ curl "localhost/?test=a"
 
 The security advisory for the vulnerability is available on [GitHub](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-qrjc-3jpc-3h2g).
 
-#### CVE-2026-30923
+#### CVE-2026-42268
 
 The second reported vulnerability was an unsigned integer underflow in the `@verifySSN`, `@verifyCPF` and `@verifySVNR` operators (in libmodsecurity3 only). As with the first vulnerability, the segmentation fault caused by the underflow could be abused by an attacker to disrupt the service (DoS).
 
