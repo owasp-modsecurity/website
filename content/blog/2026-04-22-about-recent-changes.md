@@ -1,10 +1,10 @@
 ---
-title: 'About CVE 2026-30923 and 2026-84226'
+title: 'About CVE 2026-30923 and 2026-42268'
 date: '2026-04-28T00:00:00+02:00'
 author: airween
 ---
 
-We would like to share our take on [CVE-2026-30923](https://nvd.nist.gov/vuln/detail/CVE-2026-30923) and [CVE-2026-42268](https://nvd.nist.gov/vuln/detail/CVE-2026-84226), which were published on April 22, 2026, as well as some additional issues that were fixed.
+We would like to share our take on [CVE-2026-30923](https://nvd.nist.gov/vuln/detail/CVE-2026-30923) and [CVE-2026-42268](https://nvd.nist.gov/vuln/detail/CVE-2026-42268), which were published on April 22, 2026, as well as some additional issues that were fixed.
 
 <!--more-->
 
