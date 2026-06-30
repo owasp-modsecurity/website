@@ -26,7 +26,7 @@ The severity of this vulnerability is high, score is 8.6.
 
 #### CVE-2026-52761
 
-The second reported vulnerability (CVE-2026-52761) was a wrong behavior in `utf8toUnicode` on **i386** architecture. **The issue exists only on this architecture and can't be triggered other arhitectures.**
+The second reported vulnerability (CVE-2026-52761) was a wrong behavior in `utf8toUnicode` on **i386** architecture. **The issue exists only on this architecture and can't be triggered other architectures.**
 
 The security advisory is available on [GitHub](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-qjgm-7gp4-f8qq).
 
