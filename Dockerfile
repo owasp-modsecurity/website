@@ -8,10 +8,11 @@ ARG SASS_VERSION=latest
 
 RUN apt-get install ca-certificates jq
 
-RUN URL=$(curl -s https://api.github.com/repos/gohugoio/hugo/releases/${HUGO_VERSION} | jq -r ".assets[] | select(.name | test(\"${VARIANT}.*Linux-64bit.tar.gz\")) | .browser_download_url") && \
-    wget -O ${HUGO_VERSION}.tar.gz "${URL}" && \
-    tar xf ${HUGO_VERSION}.tar.gz && \
-    mv hugo* /usr/bin/hugo
+RUN URL=$(curl -sS https://api.github.com/repos/gohugoio/hugo/releases/${HUGO_VERSION} | jq -r ".assets[] | select(.name | test(\"^${VARIANT}_[0-9].*Linux-64bit[.]tar[.]gz$\")) | .browser_download_url") && \
+    test -n "${URL}" && \
+    wget -O hugo.tar.gz "${URL}" && \
+    tar xf hugo.tar.gz hugo && \
+    mv hugo /usr/bin/hugo
 
 RUN URL=$(curl -s https://api.github.com/repos/sass/dart-sass/releases/${SASS_VERSION} | jq -r ".assets[] | select(.name | test(\".*linux-x64-musl.tar.gz\")) | .browser_download_url") && \
     wget -O ${SASS_VERSION}.tar.gz "${URL}" && \
