@@ -14,14 +14,16 @@ RUN URL=$(curl -sS https://api.github.com/repos/gohugoio/hugo/releases/${HUGO_VE
     tar xf hugo.tar.gz hugo && \
     mv hugo /usr/bin/hugo
 
-RUN URL=$(curl -s https://api.github.com/repos/sass/dart-sass/releases/${SASS_VERSION} | jq -r ".assets[] | select(.name | test(\".*linux-x64-musl.tar.gz\")) | .browser_download_url") && \
-    wget -O ${SASS_VERSION}.tar.gz "${URL}" && \
-    tar xf ${SASS_VERSION}.tar.gz && \
-    mv dart-sass/sass /usr/bin/sass
+RUN URL=$(curl -s https://api.github.com/repos/sass/dart-sass/releases/${SASS_VERSION} | jq -r ".assets[] | select(.name | test(\".*linux-x64[.]tar[.]gz$\")) | .browser_download_url") && \
+    test -n "${URL}" && \
+    wget -O sass.tar.gz "${URL}" && \
+    tar xf sass.tar.gz && \
+    mv dart-sass /opt/dart-sass
 
 FROM mcr.microsoft.com/devcontainers/javascript-node
 COPY --from=build /usr/bin/hugo /usr/bin
-COPY --from=build /usr/bin/sass /usr/bin
+COPY --from=build /opt/dart-sass /opt/dart-sass
+RUN ln -s /opt/dart-sass/sass /usr/bin/sass
 EXPOSE 1313
 WORKDIR /src
 CMD ["/usr/bin/hugo", "serve", "--bind", "0.0.0.0"]
