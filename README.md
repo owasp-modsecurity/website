@@ -52,6 +52,56 @@ hugo serve
 
 Then check your edits on http://localhost:1313/.
 
+## Using the Docker image
+
+If you would rather not install Hugo and NodeJS on your system, the `Dockerfile` in this repository builds an image that already contains
+everything needed to render the site: the Hugo *extended* binary, `dart-sass`, and NodeJS.
+
+### Building the image
+
+From the root of your clone:
+
+```sh
+docker build -t owasp-modsecurity-website .
+```
+
+The build accepts three arguments, all of which default to the newest release:
+
+| Argument        | Default          | Description                                              |
+| --------------- | ---------------- | -------------------------------------------------------- |
+| `VARIANT`       | `hugo_extended`  | Hugo flavour to install: `hugo` or `hugo_extended`.       |
+| `HUGO_VERSION`  | `latest`         | A Hugo release, e.g. `tags/v0.152.2`.                    |
+| `SASS_VERSION`  | `latest`         | A `dart-sass` release, e.g. `tags/1.97.0`.               |
+
+To pin the versions instead of tracking the newest releases:
+
+```sh
+docker build \
+  --build-arg HUGO_VERSION=tags/v0.152.2 \
+  --build-arg SASS_VERSION=tags/1.97.0 \
+  -t modsecurity-website .
+```
+
+### Serving the site locally
+
+The image does not contain the website — mount your clone into `/src` (the image's working directory) and publish Hugo's port.
+Make sure you cloned *recursively*, otherwise the theme in `themes/` will be missing.
+
+The theme generates its CSS with PostCSS, so the NodeJS dependencies have to be installed once before Hugo can render the pages:
+
+```sh
+docker run --rm -it -v "$PWD:/src" owasp-modsecurity-website npm install
+```
+
+Then start the development server:
+
+```sh
+docker run --rm -it -p 1313:1313 -v "$PWD:/src" owasp-modsecurity-website
+```
+
+Now open http://localhost:1313/ in the browser. Edits you make on your system are picked up by Hugo inside the container,
+and the browser refreshes just like a local `hugo serve`.
+
 ## Online Preview
 
 Any merged updates are pushed to [owasp-modsecurity.github.io](https://owasp-modsecurity.github.io/website/) for preview.
