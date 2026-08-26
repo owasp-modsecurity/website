@@ -23,4 +23,4 @@ COPY --from=build /usr/bin/hugo /usr/bin
 COPY --from=build /usr/bin/sass /usr/bin
 EXPOSE 1313
 WORKDIR /src
-CMD ["/usr/bin/hugo server"]
+CMD ["/usr/bin/hugo", "serve", "--bind", "0.0.0.0"]
