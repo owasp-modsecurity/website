@@ -1,0 +1,81 @@
+name: test container
+
+on:
+  # Runs on pull requests targeting the default branch
+  pull_request:
+    branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+
+# Default to bash
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # Builds the image from the Dockerfile, serves the site with it and checks that the container actually answers requests.
+  # Mirrors the steps documented in the "Using the Docker image" section of the README.
+  container-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Build the image
+        run: docker build -t owasp-modsecurity-website:ci .
+
+      - name: Install Node.js dependencies inside the container
+        run: docker run --rm -v "$PWD:/src" owasp-modsecurity-website:ci npm install
+
+      - name: Serve the site from the container
+        run: |
+          docker run -d --name website -p 1313:1313 -v "$PWD:/src" \
+            owasp-modsecurity-website:ci
+
+      - name: Wait for Hugo to answer
+        run: |
+          for i in {1..60}; do
+            if curl -fsS --max-time 10 -o /dev/null http://localhost:1313/; then
+              echo "Hugo answered after ${i} attempt(s)."
+              exit 0
+            fi
+            if [ -z "$(docker ps -q -f name=website)" ]; then
+              echo "::error::The container exited before Hugo started serving."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "::error::No answer on http://localhost:1313/ after 5 minutes."
+          exit 1
+
+      - name: Request the home page
+        run: |
+          curl -fsS --max-time 60 http://localhost:1313/ -o home.html
+          grep -q "<title>Modsecurity Project</title>" home.html
+
+      - name: Request the generated stylesheet
+        # The stylesheet is built by dart-sass and PostCSS inside the container,
+        # so serving it proves the whole tool chain of the image is working.
+        run: |
+          css="$(grep -o '/css/styles\.[^"]*\.css' home.html | head -1)"
+          if [ -z "${css}" ]; then
+            echo "::error::The home page does not reference a generated stylesheet."
+            exit 1
+          fi
+          curl -fsS --max-time 60 "http://localhost:1313${css}" -o styles.css
+          test -s styles.css
+
+      - name: Container logs
+        if: always()
+        run: docker logs website || true
+
+      - name: Stop the container
+        if: always()
+        run: docker rm -f website || true
