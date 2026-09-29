@@ -10,18 +10,18 @@ The OWASP ModSecurity team is pleased to announce the release of ModSecurity-ngi
 
 The previous version has been released almost three years ago, and meanwhile some important features were added to the connector.
 
-##### Contributors:
+## Contributors:
 
 @brandonpayton, @theseion, @liudongmiao, @eduar-hte, @airween
 
-#### Major changes:
+## Major changes:
 
 * added a workflow for Github CI (@theseion, @airween)
 * added Windows port (@eduar-hte)
 * fix recovery context after internal redirect (@liudongmiao, @airween)
 * set correct hostname in log produced by nginx (@airween)
 
-#### Important change in the log format
+## Important change in the log format
 
 Please note that there was an important change in log format.
 

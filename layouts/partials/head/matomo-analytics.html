@@ -1,21 +1,23 @@
+{{- /* Project override of the theme partial, for two reasons:
+
+       1. The bootstrap is not an inline <script>. It is compiled from
+          assets/js/matomo.js, fingerprinted and SRI-guarded, which is what lets
+          head/csp.html ship `script-src 'self'` without 'unsafe-inline'.
+
+       2. No <img> tracking beacon. The theme emits one as a no-JS fallback, and
+          plain HTML cannot honour Do Not Track, an opt-out, or a consent decision
+          taken later — there is no hook to hang one on, and it sends its hit even
+          on a browser the JavaScript tracker correctly stays silent for. It also
+          closes <head>, per the HTML parsing spec, making the order of everything
+          after it load-bearing.
+
+          The cost is that visitors without JavaScript go uncounted, which is the
+          right trade: a hit nothing can suppress is worse than a missing hit. */ -}}
 {{- with site.Params.Services.MatomoAnalytics }}
 {{- if hugo.IsProduction }}
 <!-- Matomo -->
-<script type="text/javascript">
-    var _paq = window._paq = window._paq || [];
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function() {
-      var u="//{{ .URL }}/";
-      _paq.push(['setTrackerUrl', u+'matomo.php']);
-      _paq.push(['setSiteId', '{{ .ID }}']);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-    })();
-  </script>
-  <!-- End Matomo Code -->
-  <!-- Matomo Image Tracker-->
-<img referrerpolicy="no-referrer-when-downgrade" src="//{{ .URL }}/matomo.php?idsite={{ .ID }}&rec=1" style="border:0" alt="" />
+{{ $js := resources.Get "js/matomo.js" | resources.ExecuteAsTemplate "js/matomo.js" . | resources.Minify | fingerprint }}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 <!-- End Matomo -->
 {{- end }}
 {{- end -}}

@@ -1,0 +1,34 @@
+{{- /*
+  Click-to-load video facade. Params (dict): id, title, poster.
+
+  `poster` is a path under assets/, not static/: Hugo can then read the image's
+  real dimensions for the width/height attributes, fingerprint it, and — the
+  point of the guard below — fail the build if it is missing, rather than
+  shipping a broken player.
+
+  The poster is hosted here rather than fetched from i.ytimg.com so that the
+  page contacts no third party before the visitor chooses to watch. See
+  assets/js/video-facade.js.
+*/ -}}
+{{- $id := .id -}}
+{{- $title := .title | default "Video" -}}
+{{- if not .poster -}}
+  {{- errorf "video-facade: video %q has no poster. Add one under assets/images/video/ and pass it as `poster`." $id -}}
+{{- end -}}
+{{- $poster := resources.Get .poster -}}
+{{- if not $poster -}}
+  {{- errorf "video-facade: poster %q not found under assets/ (video %q)" .poster $id -}}
+{{- end -}}
+{{- $poster = $poster | fingerprint -}}
+<div class="video-facade" data-video-facade data-video-id="{{ $id }}" data-video-title="{{ $title }}">
+  <button class="video-facade__button" type="button">
+    <img class="video-facade__poster" src="{{ $poster.RelPermalink }}" width="{{ $poster.Width }}" height="{{ $poster.Height }}" alt="" loading="lazy" decoding="async">
+    <span class="video-facade__play" aria-hidden="true"></span>
+    <span class="screen-reader-text">{{ i18n "videoPlay" }}: {{ $title }}</span>
+  </button>
+  {{- /* No JavaScript: the visitor goes to YouTube themselves, on the nocookie
+         domain, which is their decision rather than the page's. */ -}}
+  <noscript>
+    <a class="lite-youtube-fallback" href="https://www.youtube-nocookie.com/watch?v={{ $id }}">{{ $title }} on YouTube</a>
+  </noscript>
+</div>

@@ -1,0 +1,18 @@
+{{- /*
+  Page <h1>. The blog section title is split on " & " and rendered as two
+  spans (title--blog styling); every other page gets a plain title. The
+  split only takes effect when it actually yields two parts, so an edit to
+  content/blog/_index.md that removes " & " from the title falls back to
+  the plain heading instead of breaking the build (index on a too-short
+  slice would error).
+*/ -}}
+{{- if and .IsSection (eq .Section "blog") -}}
+{{- $titleParts := split .Title " & " -}}
+{{- if eq (len $titleParts) 2 -}}
+<h1 class="title title--blog"><span>{{ index $titleParts 0 }} </span><span>&amp; {{ index $titleParts 1 }}</span></h1>
+{{- else -}}
+<h1 class="title">{{ .Title }}</h1>
+{{- end -}}
+{{- else -}}
+<h1 class="title">{{ .Title }}</h1>
+{{- end -}}

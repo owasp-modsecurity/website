@@ -1,0 +1,27 @@
+{{ define "main" }}
+{{ .Content }}
+
+{{/* The id is the answer's own filename slug, and it is a public URL: Pagefind
+     builds a sub-result per heading that carries an id, so /search/ links straight
+     to /faq/#how-do-i-install-modsecurity. A readable slug is what makes those
+     links legible; .File.UniqueID (the MD5 of .File.Path) would work but would be
+     opaque. Renaming an answer file changes the id either way, so preserve the
+     published anchor when renaming. */}}
+<section class="faq-accordions" data-faq-accordion aria-label="{{ .Title }}">
+    <noscript><style>.faq__content[hidden] { display: block; }</style></noscript>
+    {{ range .Pages.ByWeight }}
+    {{ $id := .File.BaseFileName }}
+    <article class="faq-item">
+        <h2 class="faq__heading" id="{{ $id }}">
+            <button class="faq__trigger" id="{{ $id }}-trigger" type="button" aria-expanded="false" aria-controls="{{ $id }}-panel">
+                <span>{{ .Title }}</span>
+                <span class="faq__icon" aria-hidden="true"></span>
+            </button>
+        </h2>
+        <div class="faq__content" id="{{ $id }}-panel" role="region" aria-labelledby="{{ $id }}-trigger" hidden>
+            {{ .Content }}
+        </div>
+    </article>
+    {{ end }}
+</section>
+{{ end }}

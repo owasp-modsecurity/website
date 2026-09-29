@@ -1,34 +1,60 @@
 {
   "name": "modsecurity-website",
   "version": "1.0.0",
-  "description": "",
-  "main": "none.js",
-  "scripts": {
-    "build": "hugo --theme=dot-org-hugo-theme --configDir=config --gc --minify --cleanDestinationDir",
-    "start": "hugo serve --logLevel info --configDir=config --buildDrafts --buildFuture --ignoreCache --disableFastRender --gc  --printI18nWarnings --printMemoryUsage --printPathWarnings --printUnusedTemplates --templateMetrics --templateMetricsHints",
-    "dev": "npm run dev:start",
-    "dev:start": "hugo serve --logLevel info --configDir=config --themesDir=../.. --buildDrafts --buildFuture --ignoreCache --disableFastRender --gc  --printI18nWarnings --printMemoryUsage --printPathWarnings --printUnusedTemplates --templateMetrics --templateMetricsHints",
-    "dev:start:with-pagefind": "hugo --baseURL=/ --themesDir=../.. --theme=dot-org-hugo-theme && npm_config_yes=true npx pagefind --site 'public' --output-subdir '../static/pagefind' && npm run dev:start",
-    "dev:build": "hugo --themesDir=../.. --theme=dot-org-hugo-theme"
-  },
+  "private": true,
+  "description": "The website for the OWASP ModSecurity Project.",
+  "license": "Apache-2.0",
+  "keywords": [
+    "modsecurity",
+    "owasp",
+    "waf",
+    "hugo",
+    "website"
+  ],
+  "author": "OWASP ModSecurity Project",
   "repository": {
     "type": "git",
     "url": "https://github.com/owasp-modsecurity/website/"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/owasp-modsecurity/website/issues"
   },
   "homepage": "https://github.com/owasp-modsecurity/website/#readme",
+  "scripts": {
+    "build": "hugo --gc --minify --cleanDestinationDir && ./node_modules/.bin/pagefind --site public",
+    "lint": "standard",
+    "lint:fix": "standard --fix",
+    "typecheck": "tsc -p jsconfig.json",
+    "start": "hugo serve --logLevel info --configDir=config --buildDrafts --buildFuture --ignoreCache --disableFastRender --gc  --printI18nWarnings --printMemoryUsage --printPathWarnings --printUnusedTemplates --templateMetrics --templateMetricsHints",
+    "preview": "hugo --gc --minify --cleanDestinationDir --environment preview && ./node_modules/.bin/pagefind --site public && python3 -m http.server 1414 --directory public",
+    "start:with-search": "hugo --baseURL=/ && ./node_modules/.bin/pagefind --site 'public' --output-subdir '../static/pagefind' && npm run start"
+  },
   "dependencies": {
     "autoprefixer": "^10.4.23",
-    "hugo-extended": "^0.152.2",
+    "hugo-extended": "^0.164.0",
     "postcss": ">=8.5.6",
     "postcss-cli": "^11.0.1"
   },
   "devDependencies": {
-    "prettier": "^3.7.4"
+    "pagefind": "1.5.2",
+    "standard": "^17.1.2",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "adm-zip": "^0.6.1"
+  },
+  "standard": {
+    "env": [
+      "browser"
+    ],
+    "ignore": [
+      "themes/",
+      "public/",
+      "resources/",
+      "static/"
+    ],
+    "globals": [
+      "PagefindUI"
+    ]
   }
 }

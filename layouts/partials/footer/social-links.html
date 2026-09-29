@@ -1,5 +1,5 @@
-{{ $siteTitle := .Site.Title }}
-{{ $socialLinks := .Site.Params.social_links }}
+{{ $siteTitle := site.Title }}
+{{ $socialLinks := site.Params.social_links }}
 {{ with $socialLinks }}
     {{ $validLinks := slice }}
     {{ range $key, $value := . }}
@@ -12,8 +12,12 @@
     <ul class="social-links">
         {{ range $validLinks }}
         <li>
-            <a href="{{ .value }}" title="{{ i18n "social_link_title" (dict "SiteTitle" $siteTitle "Network" (humanize .key)) | default (printf "%s on %s" $siteTitle (humanize .key)) }}">
-                <img loading="lazy" width="31" height="31" src="{{ printf "img/social-icons/%s.svg" .key | relURL }}" alt="{{ (humanize .key) }} Icon">
+            {{ $network := humanize .key }}
+            {{ $i18nKey := printf "social%s" (title .key) }}
+            {{ with i18n $i18nKey }}{{ $network = . }}{{ end }}
+            {{ $socialLabel := i18n "footerSocialLink" (dict "Network" $network) | default (printf "%s Project on %s" $siteTitle $network) }}
+            <a href="{{ .value }}" aria-label="{{ $socialLabel }}" title="{{ $socialLabel }}">
+                <img loading="lazy" width="31" height="31" src="{{ printf "img/social-icons/%s.svg" .key | relURL }}" alt="" aria-hidden="true">
             </a>
         </li>
         {{ end }}

@@ -1,0 +1,21 @@
+@use "variables" as *;
+
+// The user-agent stylesheet gives <hr> `border: 1px inset`, i.e. a border on all
+// four edges. The theme's _horizontal-rule.scss (and this project's .page-content
+// override) only ever set `border-top`, so without this the UA's bottom edge
+// paints a second 1px line and its left and right edges show as a dark tick at
+// each end of the rule.
+//
+// This file only removes what the UA added. It deliberately sets no colour and no
+// opacity, so the theme's `color`/`opacity` and the per-context overrides keep
+// deciding how the line looks.
+//
+// A separate partial rather than an edit to the vendored theme, and rather than
+// shadowing themes/…/_horizontal-rule.scss: shadowing would silently swallow
+// any future upstream change to that file, while layering keeps the theme's
+// rule in the cascade and states our correction on top of it.
+hr {
+  height: 0;
+  border-style: solid none none;
+  border-width: 1px 0 0;
+}

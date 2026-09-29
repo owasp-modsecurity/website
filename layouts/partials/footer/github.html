@@ -1,11 +1,11 @@
-{{ with .Site.Params.github }}
+{{ with site.Params.github }}
 {{ if and .repo_url .show_edit_link }}
 {{ with $.File }}
 {{ $pageRelPath := replace .Path "\\" "/" }}
-{{ $editURL := printf "%s/content/%s" $.Site.Params.github.repo_url $pageRelPath }}
+{{ $editURL := printf "%s/content/%s" site.Params.github.repo_url $pageRelPath }}
 
 <a target="_blank" rel="noopener noreferrer" href="{{ $editURL }}" class="nowrap">
-    {{ $.Site.Params.github_edit | default "Edit this page on GitHub" }}
+    {{ site.Params.github_edit | default "Edit this page on GitHub" }}
 </a>
 
 {{ end }}

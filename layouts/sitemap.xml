@@ -1,0 +1,25 @@
+{{- /*
+  Project override of Hugo's internal sitemap template.
+
+  Reason it exists: a page that declares `noindex` must not also be advertised in
+  the sitemap. Shipping both is a contradictory signal — Google Search Console
+  reports it as "Submitted URL marked 'noindex'", and this site has fifteen noindex
+  pages (every FAQ answer, /privacy-policy/ and /search/).
+
+  Enforcing it in the template rather than per page means `noindex: true` in front
+  matter is enough on its own; nobody has to remember to add `sitemap: disable: true`
+  beside it.
+*/ -}}
+{{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{{- range .Pages }}
+  {{- if not .Params.noindex }}
+  <url>
+    <loc>{{ .Permalink }}</loc>
+    {{- if not .Lastmod.IsZero }}
+    <lastmod>{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" | safeHTML }}</lastmod>
+    {{- end }}
+  </url>
+  {{- end }}
+{{- end }}
+</urlset>

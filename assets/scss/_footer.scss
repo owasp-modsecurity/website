@@ -1,22 +1,41 @@
+@use "variables" as *;
+@use "global";
+
 .footer {
-    // Space from content.
-    margin-top: 70px;
-    padding-top: 60px;
-    padding-bottom: 60px;
-    background-color: var(--crs-blue);
+    margin-top: 72px;
+    padding-top: 44px;
+    padding-bottom: 28px;
+    background-color: var(--primary-700);
     color: var(--footer-link-color);
     @media (min-width: $min-desktop) {
-        margin-top: 100px;
-    }
-    @media (min-width: $min-desktop) {
-        padding-top: 100px;
-        padding-bottom: 100px;
+        margin-top: 84px;
+        padding-top: 56px;
+        padding-bottom: 34px;
     }
 
     a {
         color: var(--footer-link-color);
         &:hover {
-            color: var(--footer-link-color-hover);
+            color: var(--white);
+            text-decoration: underline;
+        }
+        // "You are here" in the footer sitemap. Deliberately quieter than the
+        // header's tab indicator: this list is a directory of every page, so a
+        // loud marker would compete with the links around it. Underline plus
+        // full white is enough to find, and it is the same visual language the
+        // hover state already speaks.
+        &[aria-current="page"] {
+            color: var(--white);
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+        }
+        &:focus-visible {
+            outline: 3px solid var(--white);
+            outline-offset: 4px;
+            background-color: var(--black);
+            color: var(--white);
         }
     }
     // Reset lists.
@@ -26,21 +45,26 @@
     }
 
     &__menu-cta-wrapper {
+        display: grid;
+        gap: 30px;
+        margin-bottom: 36px;
         @media (min-width: $min-desktop) {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 100px;
+            margin-bottom: 48px;
         }
     }
 
     &__menu {
-        display: none;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px 16px;
         @media (min-width: $min-desktop) {
             flex-shrink: 0;
             flex-grow: 1;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(125px, 200px));
-            gap: 15px;
+            gap: 24px;
             a {
                 font-size: 13px;
                 font-weight: 400;
@@ -50,12 +74,13 @@
                 font-size: 15px;
                 font-weight: 800;
                 margin-top: 0;
-                margin-bottom: 20px;
+                margin-bottom: 12px;
             }
         }
     }
 
     &__cta {
+        align-self: start;
         @media (min-width: $min-desktop) {
             flex-grow: 0;
         }
@@ -65,10 +90,10 @@
             @media (min-width: $min-desktop) {
                 width: max-content;
                 margin: 0;
-                margin-left: 20px;
+                margin-left: 40px;
             }
             @media (min-width: $desktop-width) {
-                margin-left: 40px;
+                margin-left: 56px;
             }
         }
     }
@@ -81,14 +106,15 @@
     }
 
     .logo-link {
-        display: none;
-        @media (min-width: $min-desktop) {
-            display: block;
+        display: block;
+
+        .logo {
+            filter: brightness(0) invert(1);
         }
     }
 
     .social-links {
-        margin-top: 20px;
+        margin-top: 8px;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -110,6 +136,11 @@
     }
 
     .copyright {
+        // No border-top here: <hr class="footer-hr"> already draws the separator a
+        // few rows above, and the two together read as two parallel lines about
+        // 55px apart.
+        margin-top: 26px;
+        padding-top: 20px;
         font-size: 11px;
         line-height: 150%;
         letter-spacing: 0.2px;
@@ -125,11 +156,9 @@
         &__accessibility-git-wrapper {
             @media (max-width: $mobile-max) {
                 margin-top: 20px;
-                a {
-                    & + a {
-                        border-left: 1px solid white;
-                        padding-left: 10px;
-                    }
+                a + a {
+                    border-left: 1px solid white;
+                    padding-left: 10px;
                 }
                 a:first-of-type {
                     margin-right: 10px;
@@ -145,6 +174,20 @@
         }
         p {
             margin: 0;
+        }
+    }
+
+    &__legal {
+        @extend .ul-reset;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 14px;
+        margin: 12px 0 0;
+        padding-inline-start: 0;
+
+        a {
+            font-weight: 800;
+            text-decoration: none;
         }
     }
 }

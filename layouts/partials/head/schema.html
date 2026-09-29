@@ -1,0 +1,37 @@
+{{- $ctx := partial "head/seo-context.html" . -}}
+{{- $seo := $ctx.seo -}}
+{{- $title := $ctx.title -}}
+{{- $description := $ctx.description -}}
+{{- $pageType := .Params.schema_type | default "WebPage" -}}
+{{- $url := .Permalink -}}
+{{- $rootURL := site.Home.Permalink -}}
+{{- $image := $seo.organization_logo | absURL -}}
+{{- $questions := slice -}}
+{{- if and .IsSection (eq .Section "faq") -}}
+  {{- range .RegularPages -}}
+    {{- $answer := .Summary | plainify -}}
+    {{- if $answer }}{{ $questions = $questions | append (dict "@type" "Question" "name" .Title "acceptedAnswer" (dict "@type" "Answer" "text" $answer)) }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- $pageNode := dict "@type" $pageType "@id" (printf "%s#webpage" $url) "url" $url "name" $title "description" $description "isPartOf" (dict "@id" (printf "%s#website" $rootURL)) "inLanguage" .Language.Lang -}}
+{{- if gt (len $questions) 0 }}{{ $pageNode = merge $pageNode (dict "mainEntity" $questions) }}{{ end -}}
+{{- $graph := slice
+  (dict "@type" "WebSite" "@id" (printf "%s#website" $rootURL) "url" $rootURL "name" $seo.site_name "inLanguage" .Language.Lang)
+  (dict "@type" "Organization" "@id" (printf "%s#organization" $rootURL) "name" $seo.site_name "url" $rootURL "logo" $image)
+  $pageNode
+-}}
+{{- if and .IsPage (eq .Section "blog") -}}
+  {{- $authorName := "ModSecurity" -}}
+  {{- /* `index` with a nil key is a hard template error in Hugo, not a nil
+         result, so a post published without `author:` would fail the build. */ -}}
+  {{- with .Params.author -}}
+    {{- with index hugo.Data.authors . -}}{{ $authorName = .name | default $authorName }}{{ end -}}
+  {{- end -}}
+  {{- $published := cond .PublishDate.IsZero .Date .PublishDate -}}
+  {{- $article := dict "@type" "BlogPosting" "@id" (printf "%s#article" $url) "url" $url "headline" $title "description" $description "mainEntityOfPage" (dict "@id" (printf "%s#webpage" $url)) "publisher" (dict "@id" (printf "%s#organization" $rootURL)) "author" (dict "@type" "Person" "name" $authorName) "inLanguage" .Language.Lang -}}
+  {{- if not $published.IsZero }}{{ $article = merge $article (dict "datePublished" ($published.Format "2006-01-02T15:04:05Z07:00")) }}{{ end -}}
+  {{- if not .Lastmod.IsZero }}{{ $article = merge $article (dict "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")) }}{{ end -}}
+  {{- $graph = $graph | append $article -}}
+{{- end -}}
+{{- $schema := dict "@context" "https://schema.org" "@graph" $graph -}}
+<script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>

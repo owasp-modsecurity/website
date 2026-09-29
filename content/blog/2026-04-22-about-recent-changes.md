@@ -10,9 +10,9 @@ We would like to share our take on [CVE-2026-30923](https://nvd.nist.gov/vuln/de
 
 Two new CVE's were released recently and several other security issues were fixed. In this blog post we will explain the mechanics and impact of these issues.
 
-### CVEs
+## CVEs
 
-#### CVE-2026-30923
+### CVE-2026-30923
 
 The first reported vulnerability (CVE-2026-30923) was a stack buffer overflow (write via signed integer underflow in loop bound) in the transformation `t:hexDecode` (in libmodsecurity3 only). The original reporter was [@EsadCetiner](https://github.com/EsadCetiner), but later another security team (from [Cert.pl](https://cert.pl/en/) with leader [@fumfel](https://github.com/fumfel)) also reported this issue.
 
@@ -37,7 +37,7 @@ curl "localhost/?test=a"
 
 The security advisory for the vulnerability is available on [GitHub](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-qrjc-3jpc-3h2g).
 
-#### CVE-2026-42268
+### CVE-2026-42268
 
 The second reported vulnerability was an unsigned integer underflow in the `@verifySSN`, `@verifyCPF` and `@verifySVNR` operators (in libmodsecurity3 only). As with the first vulnerability, the segmentation fault caused by the underflow could be abused by an attacker to disrupt the service (DoS).
 
@@ -55,23 +55,23 @@ curl "localhost/path?x="
 
 The security advisory is available on [GitHub](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-vwr3-7x7g-7p9w).
 
-#### Important Notes
+### Important Notes
 
 - You are not affected if you use mod_security2. The vulnerabilities only affect libmodsecurity3.
 - You are not affected by either vulnerability if you don't use any of the affected transformations (`t:hexDecode`) or operators (`@verifySSN`, `@verifyCPF`, `@verifySVNR`).
 - You are not affected by either vulnerability if you use [CRS](https://coreruleset.org) rules exclusively in your setup, as CRS **does not use** any of the affected transformations or operators, neither in the 3.3.9 release nor the 4.x release line.
 
-#### Further Attribution
+### Further Attribution
 
 Both vulnerabilities were reported (with suggested solutions) a few days after the original reports by Dag Haavi Finstad from [varnish-software.com](https://varnish-software.com) - also a big thanks to him.
 
-### Other fixed issues
+## Other fixed issues
 
 The [Cert.pl](https://cert.pl/en/) team discovered more issues, but we did not consider it necessary to assign CVEs in these cases, as they are generally not exploitable. The team provided fix proposals in all cases, which we very much appreciate.
 
 Note that all of these issues could not be set up remotely, unless specific configuration issues existed, or the code was compiled with `ASAN` flags.
 
-#### Heap Buffer Overflow in Libinjection
+### Heap Buffer Overflow in Libinjection
 
 An issue was found in libinjection (not in libmodsecurity3). libinjection is a third-party library used by ModSecurity.
 
@@ -80,31 +80,31 @@ The discovered issue could be exploited only if the user built the code with `AS
 As of this writing, the libinjection project also fixed this issue and released the new version (libinjection4), so we updated the submodule in the library (thanks [@Easton97-Jens](https://github.com/Easton97-Jens/)).\
 We also updated the libinjection code in mod_security2 (added as a submodule too).
 
-#### Undefined Behavior in `msc_tree.h`
+### Undefined Behavior in `msc_tree.h`
 
 An issue was found in a macro which was used in `msc_tree.h`. ModSecurity would crash with a segmentation fault if a rule used the operator `@ipMatch` with an argument containing a null (`\0`) byte.
 
 The affected macro is used also in `mod_security2` so we fixed this issue there too.
 
-#### Null Pointer Dereference and Unhandled Exception in Config Parser
+### Null Pointer Dereference and Unhandled Exception in Config Parser
 
 An issue was discovered in libmodsecurity3's config parser. ModSecurity could crash in some cases if a config directive used tabs instead of spaces.
 
-A second issue in the config parser could cause an unhandled exception to be thrown in several different cases (e.g., unknow token).
+A second issue in the config parser could cause an unhandled exception to be thrown in several different cases (e.g., unknown token).
 
-#### Heap Buffer Overflow (write) in ACMP (Aho-Corasick) Pattern Matching (`@pm`)
+### Heap Buffer Overflow (write) in ACMP (Aho-Corasick) Pattern Matching (`@pm`)
 
 An issue was discovered in  the `@pm` operator's behavior. If the pattern list contained a null (`\0`) byte a segmentation fault could be triggered.
 
 The same issue existed in mod_security2 and has been fixed there as well.
 
-#### Heap Buffer Overflow (read) in Multipart Body Processor
+### Heap Buffer Overflow (read) in Multipart Body Processor
 
 An issue was discovered in the multipart body processor. The issue could be exploited only if the code was built with the `-fsanitize=address` flag.
 
 
-### Conclusion
+## Conclusion
 
-We are greatful to all the reporters for their help in addressing these issues in ModSecurity.
+We are grateful to all the reporters for their help in addressing these issues in ModSecurity.
 
 To be safe from attacks caused by any of the discussed issues, you should upgrade your WAF to version 3.0.15 or 2.9.13.

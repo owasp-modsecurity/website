@@ -1,0 +1,15 @@
+# Cards shown in the "Getting Started" section of the homepage
+# (layouts/index.html). "url: release" is a sentinel meaning "use
+# site.Params.modsecurity.release_url_prefix" instead of a literal URL.
+- title_key: sectionTitle1
+  text_key: sectionText1
+  button_key: sectionButton1
+  url: release
+- title_key: sectionTitle2
+  text_key: sectionText2
+  button_key: sectionButton2
+  url: "https://github.com/owasp-modsecurity/ModSecurity/wiki"
+- title_key: sectionTitle3
+  text_key: sectionText3
+  button_key: sectionButton3
+  url: "https://owasp.slack.com/archives/CBKGH8A5P"

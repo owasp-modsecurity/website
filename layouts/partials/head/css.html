@@ -1,12 +1,19 @@
 {{- $source := "scss/styles.scss" }}
 {{- $target := "css/styles.css" }}
-{{- $fontsPath := printf "%sfonts" .Site.BaseURL }}
+{{- /* Single source for the font directory. relURL keeps it origin-relative,
+       so it survives a sub-path deployment as well as the site root. */ -}}
+{{- $fontsPath := "fonts" | relURL }}
 {{ $vars := merge site.Params.style (dict "fonts-path" $fontsPath) }}
 {{ $options := (dict "targetPath" $target "vars" $vars "transpiler" "dartsass") }}
-{{ if eq hugo.Environment "production" }}
-    {{ $options = merge $options (dict "outputStyle" "compressed" "enableSourceMap" false) }}
-{{ else }}
+{{- /* Source maps and readable output are for the live-reloading server, which is
+       what hugo.IsServer identifies — the same test head/csp.html uses. Keyed on the
+       environment NAME instead, every environment but "production" would ship
+       uncompressed CSS, including the `preview` environment that exists precisely to
+       reproduce what deploys. */ -}}
+{{ if hugo.IsServer }}
     {{ $options = merge $options (dict "outputStyle" "nested" "enableSourceMap" true) }}
+{{ else }}
+    {{ $options = merge $options (dict "outputStyle" "compressed" "enableSourceMap" false) }}
 {{ end }}
 {{ $style := resources.Get $source | resources.ExecuteAsTemplate "scss/template.scss" . | css.Sass $options | css.PostCSS (dict "config" "postcss.config.js") | resources.Fingerprint "sha512" }}
 <link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}" media="all">

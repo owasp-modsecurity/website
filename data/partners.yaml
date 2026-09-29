@@ -1,0 +1,56 @@
+- name: Arsys
+  file: images/partners/arsys.svg
+- name: Atomicorp
+  file: images/partners/atomicorp.png
+- name: Bluehost
+  file: images/partners/bluehost.svg
+- name: Cloudflare
+  file: images/partners/cloudflare.svg
+- name: CloudLinux
+  file: images/partners/cloudlinux.svg
+- name: cPanel
+  file: images/partners/cpanel.svg
+- name: Deciso
+  file: images/partners/deciso.svg
+- name: DreamHost
+  file: images/partners/dreamhost.svg
+- name: FastComet
+  file: images/partners/fastcomet.svg
+- name: GoDaddy
+  file: images/partners/godaddy.svg
+- name: Google
+  file: images/partners/google.svg
+- name: HAProxy
+  file: images/partners/haproxy.svg
+- name: HostGator
+  file: images/partners/hostgator.svg
+- name: Hostinger
+  file: images/partners/hostinger.svg
+- name: IBM
+  file: images/partners/ibm.svg
+- name: Imunify
+  file: images/partners/imunify360.svg
+- name: InMotion Hosting
+  file: images/partners/inmotion-hosting.svg
+- name: IONOS
+  file: images/partners/ionos.svg
+- name: Progress Kemp LoadMaster
+  file: images/partners/kemp-technologies.svg
+- name: Liquid Web
+  file: images/partners/liquid-web.svg
+- name: LiteSpeed Technologies
+  file: images/partners/litespeed.svg
+- name: Microsoft
+  file: images/partners/microsoft.svg
+- name: Namecheap
+  file: images/partners/namecheap.svg
+- name: Nexcess
+  file: images/partners/nexcess.svg
+- name: Oracle
+  file: images/partners/oracle.svg
+- name: OVHcloud
+  file: images/partners/ovhcloud.png
+- name: Plesk
+  file: images/partners/plesk.svg
+- name: SiteGround
+  file: images/partners/siteground.svg

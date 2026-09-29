@@ -1,0 +1,120 @@
+@use "variables" as *;
+
+.faq-accordions {
+  display: flex;
+  flex-direction: column;
+  // max-width and border-top are owned by the section-page layout scope in
+  // _pages.scss (`body.page-section`), which is the only place
+  // this markup is ever rendered.
+
+  .faq-item {
+    width: 100%;
+    border-bottom: 1px solid var(--gray-600);
+  }
+
+  .faq__heading {
+    margin: 0;
+  }
+
+  .faq__trigger {
+    align-items: center;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    font-family: var(--rounded-font-family);
+    // 30px is a desktop value: on a phone it wraps most of the twelve questions
+    // over three lines, and the list reads as a wall of headings with the
+    // answers' 16px copy lost between them.
+    //
+    // 30px is also the theme's h3 desktop size, so the trigger sits on that step
+    // of the scale, and below the desktop breakpoint it follows the same step
+    // down that h3 takes (_typography.scss) rather than a size invented here.
+    font-size: 1.25rem;
+    font-weight: 700;
+    gap: 2rem;
+    justify-content: space-between;
+    line-height: 1.3;
+    padding: 2.125rem 0;
+    text-align: left;
+    width: 100%;
+
+    &:focus-visible {
+      outline: 3px solid var(--primary-700);
+      outline-offset: -3px;
+    }
+
+    &:hover {
+      color: var(--primary-700);
+    }
+
+    @media (min-width: $min-desktop) {
+      font-size: 1.875rem;
+      line-height: 1.2;
+      padding: 2.5rem 0;
+    }
+  }
+
+  .faq__icon {
+    color: var(--gray-700);
+    flex: 0 0 1.5rem;
+    height: 1.5rem;
+    position: relative;
+
+    &::before,
+    &::after {
+      background: currentcolor;
+      content: "";
+      left: 0;
+      position: absolute;
+      // Half the 4px stroke, so the bars stay centred in the 1.5rem box.
+      top: calc(50% - 2px);
+      transition: transform 0.2s ease;
+      width: 100%;
+    }
+
+    // 4px strokes: 2px reads as a thin hairline next to the 30px question text.
+    &::before {
+      height: 4px;
+    }
+
+    &::after {
+      height: 4px;
+      transform: rotate(90deg);
+    }
+  }
+
+  .faq__trigger[aria-expanded="true"] .faq__icon::after {
+    transform: rotate(0);
+  }
+
+  .faq__content {
+    margin: 0;
+
+    > * {
+      max-width: var(--content-width);
+    }
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 2rem;
+
+      @media (min-width: $min-desktop) {
+        margin-bottom: 2.5rem;
+      }
+    }
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-accordions .faq__icon::before,
+  .faq-accordions .faq__icon::after {
+    transition: none;
+  }
+}

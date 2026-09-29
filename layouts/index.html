@@ -1,71 +1,117 @@
 {{ define "main" }}
-  {{- $modsecurity := $.Site.Params.modsecurity -}}
-  <div class="columns hero-grid">
+  {{- $modsecurity := .Site.Params.modsecurity -}}
+  {{- $articles := partial "editorial/pages.html" (dict "context" . "mode" "articles") -}}
+  <section class="columns hero-grid home-hero" aria-labelledby="home-hero-title">
     <div class="hero-grid__col1">
-      <h1 class="title">
-        {{ i18n "hero1" }}<br /><span class="darker">{{ i18n "hero2" }}</span> {{ i18n "hero3" }}
+      <h1 id="home-hero-title" class="hero-title">
+        <span class="hero-title__owasp">{{ i18n "hero1" }}</span><br><span class="hero-title__modsecurity">{{ i18n "hero2" }}</span><br><span class="hero-title__project">{{ i18n "hero3" }}</span>
       </h1>
+      <p class="hero-lead"><span>{{ i18n "homeHeroLeadIntro" }}</span> <strong>{{ i18n "homeHeroLeadEmphasis" }}</strong></p>
+
+      {{ with $modsecurity }}
+        <p class="release-status">
+          <span class="release-status__dot" aria-hidden="true"></span>
+          <span class="release-status__label">{{ i18n "homeLatestRelease" }}</span>
+          {{/* The param is an ISO string and the design shows "19 Nov 2025": keep the
+               machine-readable value in datetime and format the visible one. */}}
+          {{ with .latest_publication_date }}<time datetime="{{ . }}">{{ (time .).Format "2 Jan 2006" }}</time>{{ else }}<span>{{ i18n "homeLatestReleaseFallback" }}</span>{{ end }}
+        </p>
+      {{ end }}
     </div>
     <div class="hero-grid__col2">
-      <img
-        width="585"
-        height="530"
-        src="{{ "images/plugged.png" | relURL }}"
-        alt="Rules protecting a safe"
-        loading="eager"
-        decoding="async"
-      />
+      <img class="hero-waf" width="582" height="394" src="{{ "images/modsecurity-shield-illustration.svg" | relURL }}?v=shield-client-dadc46205411" alt="{{ i18n "homeHeroImageAlt" }}" loading="eager" decoding="async">
     </div>
-  </div>
+  </section>
 
-  <div class="columns hero-grid">
-    <div class="hero-grid__col1">
-      <h2 class="subhero">{{ i18n "subhero" }}</h2>
-
-      <p class="shortened-width">{{ i18n "explainerText" | markdownify }}</p>
-
+  <section class="columns hero-grid home-overview" aria-label="{{ i18n "homeOverview" }}">
+    <div class="hero-grid__col1 home-overview__primary">
+      <h2>{{ i18n "subhero" }}</h2>
+      <p>{{ i18n "explainerText" | markdownify }}</p>
       {{ with $modsecurity }}
-      <a href="{{ printf "%s/v%s" .release_tag_url_prefix .latest_v2_major_version }}" class="button">Get latest v2: {{ .latest_v2_major_version }}</a>
-      <a href="{{ printf "%s/v%s" .release_tag_url_prefix .latest_v3_major_version }}" class="button">Get latest v3: {{ .latest_v3_major_version }}</a>
+        <div class="release-actions" aria-label="{{ i18n "homeDownloadLabel" }}">
+          {{/* The shipped version belongs in the label — "GET LATEST V2: 2.9.12" —
+               and no button in this band carries an arrow. The version already
+               drives the URL, so it comes from the same param. */}}
+          <a href="{{ printf "%s/v%s" .release_tag_url_prefix .latest_v2_major_version }}" class="button">{{ i18n "homeGetLatestV2" }}: {{ .latest_v2_major_version }}</a>
+          <a href="{{ printf "%s/v%s" .release_tag_url_prefix .latest_v3_major_version }}" class="button">{{ i18n "homeGetLatestV3" }}: {{ .latest_v3_major_version }}</a>
+        </div>
       {{ end }}
     </div>
-    <div class="hero-grid__col1">
-      <h2 class="subhero">{{ i18n "promotionHero" }}</h2>
+    <div class="hero-grid__col2 home-overview__secondary">
+      <h2>{{ i18n "promotionHero" }}</h2>
+      <p>{{ i18n "promotionText" | markdownify }}</p>
+      <div class="join-team-action">
+        <a href="{{ "/join/" | relURL }}" class="button">{{ i18n "homeJoinTeam" }}</a>
+      </div>
+    </div>
+  </section>
 
-      <p class="shortened-width">{{ i18n "promotionText" | markdownify }}</p>
+  {{/* A centred card, not the two-column band the other sections use: 1193x360,
+       radius 12, white, with the logo, heading and copy all centred. */}}
+  <section class="home-custodianship" aria-labelledby="home-custodianship-title">
+    <div class="home-custodianship__card">
+      <img width="179" height="62" src="{{ "images/owasp/logo.png" | relURL }}" alt="{{ i18n "homeCustodianshipImageAlt" }}" loading="lazy" decoding="async">
+      <h2 id="home-custodianship-title">{{ i18n "homeCustodianshipTitle" }}</h2>
+      <p>{{ i18n "homeCustodianshipText" }}</p>
+    </div>
+  </section>
 
-      {{ with $modsecurity }}
-      <a href="/developers/" class="button">Become a part of it!</a>
+  <section class="home-getting-started" aria-labelledby="getting-started">
+    <div class="section-heading">
+      <h2 id="getting-started">{{ i18n "sectionTitle" | markdownify }}</h2>
+    </div>
+    <div class="cards columns-3 box-grid">
+      {{- range hugo.Data.getting_started }}
+      {{- $url := .url }}
+      {{- if eq $url "release" }}{{ with $modsecurity }}{{ $url = .release_url_prefix }}{{ end }}{{ end }}
+      {{/* These cards carry an orange uppercase text link ending in a chevron
+           (DOWNLOAD »), not a filled button. */}}
+      <article class="card"><div class="card-content"><h3>{{ i18n .title_key }}</h3>{{ i18n .text_key | markdownify }}</div><p><a href="{{ $url }}" class="card__cta">{{ i18n .button_key }} <span aria-hidden="true">»</span></a></p></article>
+      {{- end }}
+    </div>
+  </section>
+
+  <section class="home-latest-blog" aria-labelledby="latest-blog-posts">
+    <div class="section-heading section-heading--split">
+      {{/* The h2 is a direct flex item, deliberately unwrapped: a block-level
+           wrapper fills the whole 1200px line and pushes "View all updates" onto a
+           second row, even though .section-heading--split asks for space-between. */}}
+      <h2 id="latest-blog-posts">{{ i18n "latestBlogPosts" }}</h2>
+      <a href="{{ "/blog/" | relURL }}">{{ i18n "homeViewAllUpdates" }} <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="latest-posts">
+      {{ range first 3 $articles }}
+        <article class="latest-post">
+          <p class="latest-post__date"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time></p>
+          <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+          <p>{{ .Summary | plainify | truncate 150 }}</p>
+          <a class="latest-post__link" href="{{ .RelPermalink }}">{{ i18n "homeReadArticle" }} <span aria-hidden="true">→</span></a>
+        </article>
       {{ end }}
     </div>
-  </div>
+  </section>
 
-  {{ partial "owasp.html" . }}
-
-  <h3 class="h4">{{ i18n "sectionTitle" | markdownify }}</h3>
-
-  <div class="cards columns-3 box-grid">
-    <div class="card">
-      <h2>{{ i18n "sectionTitle1" }}</h2>
-      <p>{{ i18n "sectionText1" | markdownify }}</p>
-      <p><a href="{{ printf "%s" $modsecurity.release_url_prefix }}" class="button">{{ i18n "sectionButton1" }}</a></p>
-    </div>
-
-    <div class="card">
-      <h2>{{ i18n "sectionTitle2" }}</h2>
-      <p>{{ i18n "sectionText2" | markdownify }}</p>
-      <a href="https://github.com/owasp-modsecurity/ModSecurity/wiki" class="button"
-        >{{ i18n "sectionButton2" }}</a
-      >
-    </div>
-
-    <div class="card">
-      <h2>{{ i18n "sectionTitle3" }}</h2>
-      <p>{{ i18n "sectionText3" | markdownify }}</p>
-      <a href="https://owasp.slack.com/archives/C069PCXSW12" class="button">{{ i18n "sectionButton3" }}</a>
-    </div>
-  </div>
-
-  {{ partial "latest-news.html" . }}
+  {{- $sprite := partial "partners-sprite.html" . -}}
+  <section class="home-partners" aria-labelledby="trusted-by-title" data-partner-rotator>
+    <h2 id="trusted-by-title">{{ i18n "homeTrustedBy" }}</h2>
+    <p class="home-partners__note">{{ i18n "homeTrustedByNote" }}</p>
+    {{/* One sprite URL for every logo: a single fingerprinted, immutably cached
+         request instead of inlining every logo into this page. The cell count and
+         each cell's offset are derived from data/partners.yaml here — the same
+         source partners-sprite.html builds from — so assets/scss/home.scss never
+         restates how many partners there are. */}}
+    {{- $count := len hugo.Data.partners -}}
+    <ul class="home-partners__list" id="trusted-by-list" style="--partner-sprite: url('{{ $sprite.RelPermalink }}'); --partner-count: {{ $count }}">
+      {{ range $index, $partner := hugo.Data.partners }}
+        {{- $pos := 0.0 -}}
+        {{- if gt $count 1 -}}{{- $pos = mul (div (float $index) (float (sub $count 1))) 100.0 -}}{{- end -}}
+        <li class="home-partners__item" data-partner-item>
+          <span class="home-partners__logo" role="img" aria-label="{{ $partner.name }}" style="--partner-pos: {{ printf "%.4f" $pos }}%"></span>
+        </li>
+      {{ end }}
+    </ul>
+    <div class="home-partners__rule"></div>
+    <p class="home-partners__sponsor">{{ i18n "homeSponsorNote" | markdownify }}</p>
+  </section>
 
 {{ end }}

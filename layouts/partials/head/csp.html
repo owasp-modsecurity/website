@@ -1,0 +1,73 @@
+{{- /*
+  Project override of the theme's csp.html, which emitted only
+  `upgrade-insecure-requests` — a directive that rewrites http: subresources to
+  https: and blocks nothing at all.
+
+  Every source below was measured against the built site, not guessed:
+
+    'self'                        CSS, JS, fonts, images, the pagefind index
+    piwik.netnea.com              matomo.js, injected by assets/js/matomo.js,
+                                  and the tracker's own requests. It stays in
+                                  img-src even though the HTML <img> beacon is
+                                  gone: Matomo's JS tracker sends its hit as an
+                                  image GET by default. Do not tighten that
+                                  without checking on a browser that is NOT
+                                  sending Do Not Track — on one that is, the
+                                  tracker sends nothing at all and the check
+                                  proves nothing.
+    www.youtube-nocookie.com      the video iframe. Deliberately the ONLY frame
+                                  source allowed: an embed that regressed to
+                                  cookie-setting youtube.com would fail visibly
+                                  instead of silently tracking viewers
+    data:                         the inline chevron in the compiled CSS
+    'wasm-unsafe-eval'            pagefind compiles its index with WebAssembly;
+                                  without this /search/ returns no results
+
+  script-src carries NO 'unsafe-inline', and must not acquire one. Every script on
+  the site is a compiled asset — including the Matomo bootstrap
+  (assets/js/matomo.js) and the Pagefind UI setup on /search/ (assets/js/search.js),
+  which would otherwise be inline — fingerprinted and SRI-guarded. A 'sha256-…'
+  source is not an alternative here: Hugo minifies the rendered page after the
+  template runs, so the bytes a template can hash are not the bytes the browser
+  receives, and the hash never matches.
+
+  The JSON-LD blocks are type="application/ld+json" — data, not executable — and
+  need no source of their own.
+
+  style-src needs 'unsafe-inline' for two reasons, so removing either one alone
+  changes nothing: lite-youtube sets element styles when it builds the player, and
+  layouts/index.html sets the partner sprite's offsets as style attributes. Moving
+  those offsets into a generated stylesheet is the prerequisite for tightening this.
+
+  frame-ancestors is deliberately absent: browsers ignore it when CSP arrives in
+  a <meta> tag, and GitHub Pages cannot send response headers. Clickjacking
+  protection is therefore not available on this host at all.
+
+  Not emitted under `hugo server`, whose live-reload websocket connect-src would
+  need widening; every other build, CI included, carries it.
+*/ -}}
+{{- if not hugo.IsServer -}}
+{{- $matomo := "" -}}
+{{- with site.Params.Services.MatomoAnalytics -}}
+  {{- /* .URL carries host AND path ("piwik.netnea.com/matomo"). A CSP source
+         whose path does not end in "/" matches that exact path only, so
+         ".../matomo" would not allow ".../matomo/matomo.js". Take the host. */ -}}
+  {{- if hugo.IsProduction -}}
+    {{- $matomo = printf " https://%s" (index (split .URL "/") 0) -}}
+  {{- end -}}
+{{- end -}}
+{{- $csp := slice
+  (printf "default-src 'self'")
+  (printf "script-src 'self' 'wasm-unsafe-eval'%s" $matomo)
+  (printf "style-src 'self' 'unsafe-inline'")
+  (printf "img-src 'self' data:%s" $matomo)
+  (printf "font-src 'self'")
+  (printf "connect-src 'self'%s" $matomo)
+  (printf "frame-src https://www.youtube-nocookie.com")
+  (printf "object-src 'none'")
+  (printf "base-uri 'self'")
+  (printf "form-action 'self'")
+  (printf "upgrade-insecure-requests")
+-}}
+<meta http-equiv="Content-Security-Policy" content="{{ delimit $csp "; " }}" />
+{{- end -}}

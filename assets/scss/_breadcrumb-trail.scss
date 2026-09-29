@@ -1,0 +1,24 @@
+@use "variables" as *;
+
+// Layered over the theme's _breadcrumb.scss rather than shadowing it: a file of
+// the same name in this directory would replace the theme's outright, and all
+// that is wanted here is one correction.
+//
+// The theme hangs the separator off the FOLLOWING crumb
+// (`.breadcrumb + .breadcrumb::before`). The list wraps, and on a narrow screen
+// it does: "Home » Articles, Guides & Updates" measures about 342px against the
+// 343px a 390px phone leaves, so any ancestor title at all pushes it over. When
+// it wraps, the separator travels with the crumb below it and the second line
+// opens with a "»" hanging in front of nothing.
+//
+// Moving it to the preceding crumb keeps it where it belongs — the line above
+// ends "Home »" and the next one starts with a word.
+.breadcrumb + .breadcrumb::before {
+    content: none;
+}
+
+.breadcrumb:not(:last-child)::after {
+    content: "»";
+    margin-left: 5px;
+    color: var(--gray-600);
+}

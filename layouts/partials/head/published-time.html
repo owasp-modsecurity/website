@@ -1,0 +1,14 @@
+{{- /*
+  Project override of the theme's head/published-time.html: same output,
+  but guarded so pages with no real date (PublishDate and Date both zero)
+  emit nothing instead of "0001-01-01".
+*/ -}}
+{{- if .IsPage -}}
+{{- $published := cond .PublishDate.IsZero .Date .PublishDate -}}
+{{- if not $published.IsZero -}}
+<meta property="article:published_time" content="{{ $published.Format "2006-01-02" }}" />
+{{- if not .Lastmod.IsZero }}
+<meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02" }}" />
+{{- end -}}
+{{- end -}}
+{{- end -}}

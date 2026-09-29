@@ -1,0 +1,58 @@
+{{- $ctx := partial "head/seo-context.html" . -}}
+{{- $seo := $ctx.seo -}}
+{{- $title := $ctx.title -}}
+{{- $documentTitle := $ctx.documentTitle -}}
+{{- $description := $ctx.description -}}
+{{- $ogTitle := .Params.og_title | default $title -}}
+{{- $ogDescription := .Params.og_description | default $description -}}
+{{- /* Dimensions must describe whichever image is actually emitted. The
+       fallback organization logo is 1616x422, not the 1200x630 of the route
+       social cards; declaring 1200x630 for it makes Facebook and LinkedIn
+       pre-allocate the wrong aspect and crop the card. */ -}}
+{{- $image := $seo.organization_logo | absURL -}}
+{{- $imageWidth := $seo.organization_logo_width -}}
+{{- $imageHeight := $seo.organization_logo_height -}}
+{{- /* The route cards carry their own headline ("Built and maintained by
+       developers like you"), which is not the page title — so the alt cannot be
+       derived from og:title and has to describe the card itself. It lives in the
+       page's front matter beside social_image. */ -}}
+{{- $imageAlt := $seo.organization_logo_alt -}}
+{{- $url := .Permalink -}}
+{{- with .Params.social_image }}
+  {{- $image = . | absURL -}}
+  {{- $imageWidth = $seo.social_image_width -}}
+  {{- $imageHeight = $seo.social_image_height -}}
+  {{- /* Fail the build rather than ship a card described by the fallback
+         logo's alt, which would be wrong on every route that forgot one. */ -}}
+  {{- with $.Params.social_image_alt -}}
+    {{- $imageAlt = . -}}
+  {{- else -}}
+    {{- errorf "%s sets social_image %q but no social_image_alt" $.File.Path . -}}
+  {{- end -}}
+{{- end -}}
+{{- $ogType := "website" -}}
+{{- if and .IsPage (or (eq .Section "blog") (eq .Section "news")) -}}
+  {{- $ogType = "article" -}}
+{{- end -}}
+<title>{{ $documentTitle }}</title>
+<meta name="description" content="{{ $description }}" />
+<link rel="canonical" href="{{ $url }}" />
+<meta property="og:site_name" content="{{ $seo.site_name }}" />
+<meta property="og:type" content="{{ $ogType }}" />
+<meta property="og:url" content="{{ $url }}" />
+<meta property="og:title" content="{{ $ogTitle }}" />
+<meta property="og:description" content="{{ $ogDescription }}" />
+<meta property="og:image" content="{{ $image }}" />
+<meta property="og:image:width" content="{{ $imageWidth }}" />
+<meta property="og:image:height" content="{{ $imageHeight }}" />
+<meta property="og:image:alt" content="{{ $imageAlt }}" />
+<meta property="og:locale" content="{{ $seo.locale }}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="{{ $seo.twitter_site }}" />
+<meta name="twitter:creator" content="{{ $seo.twitter_creator }}" />
+<meta name="twitter:title" content="{{ $ogTitle }}" />
+<meta name="twitter:description" content="{{ $ogDescription }}" />
+<meta name="twitter:image" content="{{ $image }}" />
+<meta name="twitter:image:width" content="{{ $imageWidth }}" />
+<meta name="twitter:image:height" content="{{ $imageHeight }}" />
+<meta name="twitter:image:alt" content="{{ $imageAlt }}" />

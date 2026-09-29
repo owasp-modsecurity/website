@@ -1,0 +1,21 @@
+# Site-wide SEO defaults only.
+#
+# Per-page values (seo_title, description, og_title, og_description,
+# social_image, schema_type) live in each page's own front matter, deliberately not
+# in a map keyed by RelPermalink here: such a map is fragile, because an edit to a
+# page's `url:` silently falls back to these generic values with no error.
+#
+# organization_logo is the fallback social image for a page with no route-specific
+# social_image. Its dimensions are its own, not the 1200x630 of the cards in
+# static/img/og/ — see layouts/partials/head/metadata.html. Replacing it with a real
+# 1200x630 default card would let both pairs of dimensions collapse into one.
+organization_logo: /images/logo/horizontal.png
+organization_logo_width: 1616
+organization_logo_height: 422
+organization_logo_alt: ModSecurity — Open Source Web Application Firewall
+social_image_width: 1200
+social_image_height: 630
+site_name: ModSecurity
+twitter_site: "@ModSecurity"
+twitter_creator: "@ModSecurity"
+locale: en_US

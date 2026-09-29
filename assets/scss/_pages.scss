@@ -1,0 +1,435 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+// Inner-page composition. The theme deliberately limits every direct
+// `.content` child to the reading measure. Keep that for document pages, then
+// explicitly restore the common 1200px shell for repeated, structured content.
+// This mirrors the markup in baseof.html: #content > article.content for pages
+// and #content > .content for section lists.
+body.pages.page-page {
+  #content {
+    > header {
+      max-width: var(--content-width);
+      @include section-header-reset(900px);
+    }
+  }
+
+  .page-content > p,
+  .page-content > ul {
+    @include body-measure;
+  }
+
+  .page-content > p:first-child {
+    margin-top: 0;
+  }
+
+  .page-content {
+    h2 {
+      margin-top: 58px;
+      margin-bottom: 24px;
+    }
+
+    // Same measure as every other body block, so a paragraph does not change width
+    // depending on whether a heading precedes it. Not --content-width (895px),
+    // which is close enough to look deliberate without being the measure.
+    h2 + p,
+    h2 + ul {
+      max-width: var(--measure);
+    }
+
+    // The approved design sets its bullets flush with the text column. Real list
+    // markup is better than the literal characters it uses to get there, but the
+    // indent that markup brings with it is not in the design.
+    ul {
+      padding-inline-start: 0;
+      list-style-position: inside;
+    }
+
+    a:focus-visible {
+      outline: 3px solid var(--primary-400);
+      outline-offset: 3px;
+    }
+  }
+
+  #content > article.content > .page-content--structured {
+    width: 100%;
+    min-width: 0;
+    max-width: var(--container-width);
+  }
+
+  // One selector for every divider on these pages, deliberately not keyed to the
+  // markup shape around it (`p:first-child + hr`, `--history > p + ul + hr`): a
+  // shape-specific selector only matches the pages that happen to have that shape
+  // today, and a divider added to another page renders unstyled.
+  //
+  // `opacity` overrides the theme's _horizontal-rule.scss, which sets .25 and
+  // takes #e5e5e5 down to roughly #f8f8f8 — a quarter of the strength the design
+  // draws the same line at.
+  .page-content hr {
+    border-top: 1px solid var(--gray-300);
+    opacity: 1;
+  }
+
+  @media (max-width: $mobile-max) {
+    #content > header .title {
+      @include narrow-header-title-reset;
+    }
+
+    .page-content h2 {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  // Contact, Join and Project Update are reading pages, so their repeated document
+  // sections share a calmer heading-to-copy rhythm without changing structured pages.
+  .page-content--reading h2 {
+    @media (min-width: $min-desktop) {
+      margin-top: 72px;
+      margin-bottom: 30px;
+    }
+  }
+
+  .page-content__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      @include cta-pill;
+      background: var(--accent-orange);
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 22px;
+      text-decoration: none;
+      text-transform: uppercase;
+
+      &:hover,
+      &:active {
+        background: var(--primary-700);
+        color: var(--white);
+      }
+
+      &:focus-visible {
+        outline: 3px solid var(--black);
+        outline-offset: 3px;
+      }
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .page-content--contact {
+    > ul {
+      // No padding-left: the shared `.page-content ul` rule puts the markers flush
+      // with the text column, as the design does, and this selector is more
+      // specific — a padding here re-introduces a 1.2rem indent.
+      margin: 20px 0 36px;
+
+      a {
+        color: var(--accent-orange);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+      }
+    }
+
+    hr {
+      margin: 0;
+      border-color: var(--gray-300);
+    }
+  }
+
+  .page-content--team {
+    > h2 { margin-top: 58px; }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 44px 28px;
+      margin-top: 20px;
+    }
+
+    .team-member {
+      min-width: 0;
+
+      // 4:5 portrait, not landscape. The members' photos are phone portraits: at the
+      // original 1.58:1 a full-width crop gave 956px of height for a 1070px head, so
+      // every crop cut either the top of the head or the chin. Measured, not guessed.
+      > p:first-child {
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        margin: 0 0 18px;
+        overflow: hidden;
+        border-radius: 8px;
+        background: var(--gray-300);
+        box-shadow: 0 4px 16px rgb(0 0 0 / .18);
+
+        img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+        }
+      }
+
+      h3 {
+        margin: 0 0 4px;
+        font-size: 1.5rem;
+        line-height: 1.2;
+      }
+
+      p { margin: 0; }
+
+      // These links carry a » chevron rather than a bullet, flush with the card's
+      // left edge.
+      ul {
+        margin: 14px 0 0;
+        padding-inline-start: 0;
+        list-style: none;
+      }
+
+      li::before {
+        content: "\00bb\00a0";
+        color: var(--accent-orange);
+        font-weight: 700;
+      }
+
+      a { color: var(--accent-orange); }
+    }
+
+    .page-content__section {
+      margin-top: 54px;
+      padding-top: 42px;
+      border-top: 1px solid var(--gray-300);
+    }
+
+    @media (max-width: $mobile-max) { .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: $max-599) { .team-grid { grid-template-columns: 1fr; gap: 36px; } }
+  }
+
+  .page-content--history {
+    // The closing block is centred on this page only: Project Update puts the same
+    // MEET THE TEAM pill at the container's left edge. Hence the scope to History
+    // rather than to .page-content__actions everywhere. 684px is the paragraph's
+    // own width in the design.
+    > p:has(+ .page-content__actions) {
+      max-width: 684px;
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    > .page-content__actions { justify-content: center; }
+
+    // The eras alternate either side of a centre spine, so the years read as one
+    // continuous line down the page. The layout carries the page on copy alone and
+    // needs no imagery.
+    .history-timeline {
+      position: relative;
+
+      // The spine, inset so it starts at the first marker and stops at the last
+      // rather than running past both.
+      &::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: $history-marker-top;
+        bottom: $history-marker-top;
+        width: $history-spine;
+        margin-left: -($history-spine * .5);
+        background: var(--gray-300);
+      }
+    }
+
+    .history-row {
+      position: relative;
+      width: calc(50% - #{$history-gap});
+      padding: 12px 0 34px;
+
+      // The marker. The white ring punches a gap in the spine, so the dot reads
+      // as sitting on the line instead of behind it.
+      &::after {
+        content: "";
+        position: absolute;
+        top: $history-marker-top;
+        width: $history-dot;
+        height: $history-dot;
+        border-radius: 50%;
+        background: var(--blue);
+        box-shadow: 0 0 0 4px var(--white), 0 0 0 6px var(--gray-300);
+      }
+
+      // Last era is the current one — "the story is still being written". Taken
+      // from position rather than a flag in the content, so adding an era moves
+      // the marker on its own.
+      &:last-of-type::after { background: var(--accent-orange); }
+
+      &:nth-of-type(odd) {
+        text-align: right;
+        &::after { right: -($history-gap + $history-dot * .5); }
+      }
+
+      &:nth-of-type(even) {
+        margin-left: calc(50% + #{$history-gap});
+        &::after { left: -($history-gap + $history-dot * .5); }
+      }
+
+      p:first-of-type { margin-top: 0; }
+      p:last-child { margin-bottom: 0; }
+    }
+
+    .history-row__title {
+      margin: 0 0 14px;
+      // An era title is a rung below a page section heading: it labels one node on
+      // a line of five, not a new part of the document. Hence the theme's h3 step
+      // (20px/30px) and not the h2's 34px/40px, which at half the container width
+      // wraps every longer era over two lines.
+      font-size: 20px;
+      line-height: 1.15;
+
+      @media (min-width: $min-desktop) { font-size: 30px; }
+    }
+
+    .history-row__year {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--primary-700);
+      font-size: 16px;
+      letter-spacing: .06em;
+    }
+
+    .history-row__name { display: block; }
+
+    .page-content__section { text-align: center; }
+
+    // Below the two-column threshold the spine moves to a left rail and every
+    // era reads in one column. Nothing collapses or hides: all five stay open.
+    //
+    // The threshold is 900px because each half is (viewport - gutters - 68) / 2:
+    // at 700px that leaves a paragraph a 284px column, about forty characters, and
+    // the page comes out taller in two columns than in one. At 900px each half is
+    // around 390px, which is a readable measure.
+    @media (max-width: $max-899) {
+      .history-timeline::before {
+        left: $history-rail;
+        margin-left: -($history-spine * .5);
+      }
+
+      .history-row {
+        width: auto;
+        padding-left: $history-gap;
+
+        &:nth-of-type(odd),
+        &:nth-of-type(even) {
+          margin-left: 0;
+          text-align: left;
+
+          &::after {
+            left: $history-rail - $history-dot * .5;
+            right: auto;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Structured page templates share the full container for title and composition,
+// while their individual copy elements retain their own readable measures.
+body.pages.page-page #content:has(> article.content > .page-content--structured) {
+  > header {
+    max-width: var(--container-width);
+
+    .title {
+      max-width: none;
+    }
+  }
+}
+
+// Section pages are emitted as #content > .content, not body > .content.
+// Their lead stays readable, while lists and accordions use the shared grid axis.
+// Every section page, which is exactly Blog, News and FAQ: no other kind renders
+// as `page-section` — taxonomies are `page-taxonomy` and `page-term`.
+body.page-section {
+  #content {
+    > header {
+      max-width: var(--container-width);
+      @include section-header-reset(none);
+    }
+
+    > .content > p {
+      @include body-measure;
+    }
+
+    > .content > p:first-child {
+      margin-top: 0;
+    }
+
+    > .content > .editorial-list,
+    > .content > .faq-accordions,
+    > .content > nav.pagination {
+      max-width: var(--container-width);
+    }
+  }
+
+  .editorial-list,
+  .faq-accordions {
+    border-top: 1px solid var(--gray-300);
+  }
+
+  @media (max-width: $mobile-max) {
+    #content > header .title {
+      @include narrow-header-title-reset;
+    }
+  }
+}
+
+// News and blog set their running text at 18px; see the note in _blog.scss. The
+// lead paragraph has to be named here rather than there, because the rule above
+// reaches it through `#content` and an id outranks anything a later file can say
+// about a class. FAQ keeps 16px: its lead introduces a list of questions to scan,
+// not an article to read.
+body.is-editorial {
+  #content > .content > p {
+    font-size: 18px;
+    line-height: 1.6;
+  }
+}
+
+// The Blog's exact two-line title is semantic markup, not a width side effect.
+// Its list below still occupies the shared full container.
+body.blog.page-section #content > header .title--blog {
+  max-width: none;
+
+  span {
+    display: block;
+  }
+
+  @media (max-width: $mobile-max) {
+    span {
+      display: inline;
+    }
+  }
+}
+
+body.faq.page-section #content > header {
+  max-width: var(--content-width);
+
+  .title {
+    max-width: 900px;
+
+    @media (max-width: $mobile-max) {
+      max-width: 100%;
+    }
+  }
+}

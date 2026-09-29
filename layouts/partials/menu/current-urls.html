@@ -1,0 +1,26 @@
+{{- /* The set of URLs that count as "you are here" for the page passed in.
+
+       Two entries, because a menu points at landing pages while the visitor is
+       often standing on a child of one:
+
+       1. .RelPermalink        — the page itself (/faq/, /team/, /installation/).
+       2. .CurrentSection      — the section it lives in, so a blog post lights
+                                 up "Articles, Guides & Updates". Blog posts are
+                                 published at /<yyyymmdd>/<slug>/, nowhere near
+                                 /blog/, so prefix matching on the URL would
+                                 never catch them; the section is the only
+                                 reliable link back to the menu entry.
+
+       "/" is excluded from the section entry: every page's section chain ends
+       at the home page, and a menu item whose URL resolved to "/" would then be
+       current everywhere. No menu item points at "/" today, but the guard costs
+       nothing and the failure mode would be silent.
+
+       Returns a slice of strings; callers test with `in`. */ -}}
+{{- $urls := slice .RelPermalink -}}
+{{- with .CurrentSection -}}
+  {{- if ne .RelPermalink "/" -}}
+    {{- $urls = $urls | append .RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- return $urls -}}

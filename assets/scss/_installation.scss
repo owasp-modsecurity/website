@@ -1,0 +1,77 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+.installation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 52px;
+  width: 100%;
+  min-width: 0;
+  max-width: var(--container-width);
+  // The preceding thematic rule already supplies the vertical separation.
+  margin-top: 0;
+
+  body.pages.page-page .page-content--installation & h2 {
+    margin-top: 0;
+  }
+
+  // The theme's `.columns-2 > *` span rule would otherwise force both
+  // children onto a 12-column track at narrow widths.
+  > .column {
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+    grid-column: auto;
+  }
+
+  @media (max-width: $mobile-max) {
+    grid-template-columns: 1fr;
+    gap: 42px;
+  }
+
+  lite-youtube {
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+
+  lite-youtube:defined > .lite-youtube-fallback {
+    display: none;
+  }
+}
+
+.installation-grid + hr {
+  margin: 32px 0 0;
+
+  + h2 {
+    margin-top: 24px;
+  }
+}
+
+// The same pill as the homepage CTAs: 222x37, radius 40. The min-width and the
+// centring are both load-bearing — without them the label sits off-centre and the
+// pill collapses to the width of its text.
+.installation-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 222px;
+  @include cta-pill;
+  margin-top: 30px;
+  margin-bottom: 0;
+  background-color: var(--accent-orange);
+  color: var(--white);
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+
+  &:hover,
+  &:active {
+    background-color: var(--primary-700);
+    color: var(--white);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--black);
+    outline-offset: 3px;
+  }
+}

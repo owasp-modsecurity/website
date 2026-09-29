@@ -19,50 +19,156 @@ jobs:
   syntax-check:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.152.2
+      HUGO_VERSION: 0.164.0
     steps:
       - name: Install Hugo CLI
         run: |
           wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
           && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
       - name: Install Dart Sass
-        run: sudo snap install dart-sass
+        env:
+          DART_SASS_VERSION: 1.103.1
+        run: |
+          # A pinned release, not `snap install dart-sass`: snap's stable channel
+          # ships whatever is current that day, so the compiler could change
+          # under an unchanged repository. Same pattern as the Hugo install
+          # above, so both compilers are versioned here. Bump deliberately.
+          #
+          # Deliberately not the npm route either. `sass-embedded` pulls in the
+          # pure-JS `sass` package through its platform fallbacks; that package
+          # claims node_modules/.bin/sass, cannot speak the embedded protocol
+          # Hugo uses, and shadows the working binary for every `npm run`
+          # script. The collision is npm's rather than the package's, so there
+          # is nothing to fix upstream, and Hugo cannot be pointed past it:
+          # PATH lookup is the only channel it has for finding Dart Sass.
+          wget -O "${{ runner.temp }}/dart-sass.tar.gz" \
+            "https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
+          tar -xf "${{ runner.temp }}/dart-sass.tar.gz" -C "${{ runner.temp }}"
+          echo "${{ runner.temp }}/dart-sass" >> "$GITHUB_PATH"
 
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          submodules: recursive
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
 
       - name: Install Node.js dependencies
-        run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
+        # Must not be made conditional: package-lock.json is load-bearing, being
+        # what pins pagefind. If `npm ci` fails the build has to fail here, not a
+        # few lines later with a confusing "no such file" from the pagefind step.
+        run: npm ci
+
+      - name: Lint the site's JavaScript
+        # standard, configured in package.json. The vendored theme is excluded
+        # there: it is upstream's code and is not ours to restyle.
+        run: npm run lint
+
+      - name: Type-check the site's JavaScript
+        # JSDoc types checked by the TypeScript compiler with --noEmit. Nothing is
+        # compiled and nothing is emitted; this only reads the annotations in
+        # assets/js/ and the declarations in types/. Both steps run before the
+        # Hugo build because they take seconds and the build takes minutes.
+        run: npm run typecheck
 
       - name: Build with Hugo
         env:
-          # For maximum backward compatibility with Hugo modules
-          HUGO_ENVIRONMENT: testing
-          HUGO_ENV: testing
+          # Production, not "testing": there is no config/testing/ directory, so
+          # that environment falls back to the defaults and the check would build
+          # a materially different site from the one that deploys — no robots.txt,
+          # no analytics, no CSP, uncompressed CSS. The check is only worth running
+          # against what actually ships.
+          HUGO_ENVIRONMENT: production
+          HUGO_ENV: production
         run: |
-          hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
-          npx -y pagefind --site public
+          # No --baseURL here: config/production/hugo.yaml owns the origin.
+          # Taking it from actions/configure-pages made every shipped URL depend on
+          # a repository setting instead — with "Enforce HTTPS" off, Pages reports
+          # http://modsecurity.org, and canonical, og:url and every sitemap entry
+          # went out as http, each one then 301ing to https.
+          hugo --gc --minify
+          # The pinned devDependency, never `npx -y pagefind`: that fetches
+          # whatever the registry calls latest at deploy time, with no lockfile
+          # entry and no integrity hash, so the search index format can change
+          # between two deploys of an unchanged repository.
+          ./node_modules/.bin/pagefind --site public
+
+      - name: Verify the production base URL
+        run: |
+          # The build takes its origin from config/production/hugo.yaml, so this
+          # checks what actually shipped against that file, and separately that the
+          # repository's Pages settings still serve the same host.
+          expected=$(sed -nE 's|^baseURL:[[:space:]]*"?([^"]*[^"/])/?"?[[:space:]]*$|\1|p' config/production/hugo.yaml)
+          if [ -z "$expected" ]; then
+            echo "::error::Could not read baseURL from config/production/hugo.yaml"
+            exit 1
+          fi
+          case "$expected" in
+            https://*) ;;
+            *) echo "::error::config/production/hugo.yaml must use https, but says '$expected'."; exit 1 ;;
+          esac
+
+          # The built files are what ships, so they are what gets checked.
+          if ! grep -q "canonical href=$expected/" public/index.html; then
+            echo "::error::The built home page canonical does not point at $expected/"
+            exit 1
+          fi
+          if ! grep -q "<loc>$expected/" public/sitemap.xml; then
+            echo "::error::The sitemap does not use $expected/"
+            exit 1
+          fi
+
+          # Pages no longer decides the origin, but it still serves the site. A
+          # different HOST means the site is published somewhere its own URLs do not
+          # name, which is a real break. A different SCHEME only means Enforce HTTPS
+          # is off: visitors get redirected, nothing ships wrong, so it is said out
+          # loud rather than failing the build.
+          pages="${{ steps.pages.outputs.base_url }}"
+          pages="${pages%/}"
+          if [ -n "$pages" ] && [ "${pages#*://}" != "${expected#*://}" ]; then
+            echo "::error::GitHub Pages serves '$pages' but the site is built for '$expected'."
+            exit 1
+          fi
+          if [ -n "$pages" ] && [ "${pages%%:*}" != "https" ]; then
+            echo "::warning::GitHub Pages reports '$pages'. Turn on Enforce HTTPS in the repository Pages settings so visitors are not redirected."
+          fi
+          echo "Base URL verified: $expected"
+      - name: Check the partner logos for active content
+        run: |
+          # layouts/partials/partners-sprite.html splices these logos into one
+          # sprite, rewriting each file's root <svg> tag and copying the rest of the
+          # vendor's markup verbatim. The sprite is only ever consumed as a CSS
+          # background, where script does not execute — but that safety rests on the
+          # assets, not on the code, so the assets are what gets checked. A logo
+          # arriving with a script, an event handler or an external reference must be
+          # inspected and cleaned before it is committed.
+          if grep -rlniE '<script|<foreignobject|<iframe|[^a-z-]on[a-z]+[[:space:]]*=|xlink:href[[:space:]]*=[[:space:]]*"[^#]' assets/images/partners/; then
+            echo "::error::The partner logo listed above carries active or external content."
+            exit 1
+          fi
+          echo "Partner logos carry no active or external content."
 
       - name: Link Checker
         id: lychee
         uses: lycheeverse/lychee-action@a8c4c7cb88f0c7386610c35eb25108e448569cb0 # for v2.7.0
+        env:
+          # Lets lychee check github.com links at the authenticated rate limit
+          # instead of the anonymous one, which is what made a blanket
+          # github.com exclusion look necessary. Read automatically.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: --no-progress -u "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0" -E './content/**/*.md'
+          # Long form on purpose: `-E` reads like an input selector but is
+          # --exclude-all-private, and it is load-bearing — a blog post documents
+          # request-body limits with example `http://localhost` curl commands,
+          # which lychee would otherwise try to reach and fail on.
+          #
+          # The user agent is a browser string because several documentation
+          # hosts refuse lychee's default one.
+          args: >-
+            --no-progress
+            --exclude-all-private
+            --user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0"
+            './content/**/*.md'
           jobSummary: true
-
-              #      - name: Create Issue From File
-              #if: env.lychee_exit_code != 0
-              #uses: peter-evans/create-issue-from-file@v5
-              #permissions:
-              #issues: write
-              #with:
-              #title: Link Checker Report
-              #content-filepath: ./lychee/out.md
-              #labels: report, automated issue
 

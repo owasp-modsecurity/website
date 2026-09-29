@@ -1,0 +1,14 @@
+{{- /*
+  Project override of the theme's youtube_enhanced shortcode. It renders the
+  project's own click-to-load facade instead of the theme's lite-youtube element,
+  which contacts Google before the visitor asks for the video — see
+  partials/video-facade.html and assets/js/video-facade.js.
+
+  Requires a `poster` under assets/; the partial fails the build without one. The
+  site's CSP allows frames only from www.youtube-nocookie.com, so a regression in
+  the embed URL fails visibly rather than silently tracking viewers.
+*/ -}}
+{{ $id := .Get "id" | default (.Get 0) }}
+{{ $title := .Get "title" | default "Video" }}
+
+{{- partial "video-facade.html" (dict "id" $id "title" $title "poster" (.Get "poster")) -}}
