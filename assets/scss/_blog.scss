@@ -1,27 +1,67 @@
+@use "variables" as *;
+
 .blog-item {
-    margin-bottom: 50px;
-    &:first-of-type {
-        margin-top: 50px;
-    }
+    margin: 0;
+    padding: 44px 0 50px;
+    border-top: 1px solid var(--gray-300);
 
     @media (min-width: $min-desktop) {
-        margin-bottom: 80px;
+        padding-top: 50px;
+        padding-bottom: 52px;
     }
+
+    // Smaller than a plain h2. These are entries in a list, not section headings:
+    // at the theme's 40px they sat one step below the 80px page title and drowned
+    // the summary under each of them.
     &__title {
         margin-block-start: 0;
         margin-block-end: 0;
+        max-width: var(--measure);
+        font-size: 26px;
+        line-height: 1.15;
+
+        @media (min-width: $min-desktop) {
+            font-size: 30px;
+        }
+
         a {
+            // The brand blue, the same one every other heading on the site takes,
+            // rather than the darker blue body links carry. These are headings that
+            // happen to be links, and they read as part of the page's heading
+            // system.
+            //
+            // What made this a decision rather than a default: the previous
+            // --accent-orange measures 2.35:1 on white and failed even the 3:1 that
+            // WCAG 2.1 SC 1.4.3 allows large text. --primary-400 is 3.23:1, which
+            // clears it — and these qualify as large text with room to spare, being
+            // Oswald 700 at 30px, or 26px below the desktop breakpoint, against a
+            // threshold of 18.66px for bold. Body links cannot take this colour:
+            // at normal size they need 4.5:1, which is why they are --primary-700.
+            color: var(--primary-400);
             text-decoration: none;
+
+            &:hover {
+                // Darkens to the link blue, which is also 4.85:1.
+                color: var(--primary-700);
+                text-decoration: underline;
+            }
+
+            &:focus-visible {
+                outline: 3px solid var(--primary-700);
+                outline-offset: 4px;
+            }
         }
     }
+
     &__byline {
         margin-block-start: 15px;
-        margin-block-end: 12px;
+        margin-block-end: 14px;
+
         p {
             margin-block-start: 0;
             margin-block-end: 0;
-            color: #000;
-            font-family: Nunito;
+            color: var(--text-color);
+            font-family: var(--rounded-font-family);
             font-size: 14px;
             font-style: normal;
             font-weight: 700;
@@ -29,7 +69,7 @@
             letter-spacing: 2.1px;
             text-transform: uppercase;
             margin-right: 5px;
-            @media (min-width: 600px) {
+            @media (min-width: $min-600) {
                 font-size: 16px;
             }
         }
@@ -46,21 +86,134 @@
     &__summary {
         margin-block-start: 0;
         margin-block-end: 0;
+
+        p {
+            margin-block: 0;
+        }
     }
+    // A link, not a button: it continues the summary above it rather than being a
+    // separate action, so it takes the body link colour and underline every other
+    // link in running text has. The chevron is the same one the team cards and the
+    // breadcrumbs use, and it lives in CSS so it stays out of the link's name.
+    &__more {
+        margin-block-start: 12px;
+        margin-block-end: 0;
+        // The summary's size, not the site's 16px. This continues the paragraph
+        // above it rather than labelling it, and the byline is the only thing in
+        // this block that is a label.
+        font-size: 18px;
+
+        a::after {
+            content: "\00a0\00bb";
+        }
+    }
+
+    // The author signing off, which had no styling of its own and so arrived as a
+    // stray sentence in the body face — the same family and colour as the
+    // paragraph above it, only smaller, which reads as an orphan rather than a
+    // signature.
+    //
+    // A rule separates it from the article, and it is set muted and italic so it
+    // is plainly a different kind of text. It stays at 16px against the body's
+    // 18px: a sign-off is secondary, and now that the rule and the colour say so,
+    // the smaller size reads as intent rather than accident.
     &__signature {
         margin-top: 50px;
+        padding-top: 22px;
+        border-top: 1px solid var(--gray-300);
         display: flex;
         align-items: center;
+        gap: 14px;
+        // 6.06:1 on white, so the muting stays well clear of the 4.5:1 the
+        // criterion asks of text this size.
+        color: var(--gray-800);
+        font-style: italic;
+
         img {
             width: 100px;
-            margin-right: 10px;
-        };
+            border-radius: 4px;
+        }
     }
 }
 
-// Singular blog page.
+// Running text on the news and blog pages is 18px, not the site's 16px. These are
+// the two places on the site meant to be read straight through rather than
+// scanned, and the size follows that. It also tightens the line: at the 888px
+// measure, 16px runs about 110 characters and 18px about 98.
+//
+// Deliberately not everything inside .content. Code keeps its own size, because a
+// listing is read by structure rather than by line; the byline keeps its 16px
+// uppercase tracking, which is a label rather than prose; and headings have their
+// own scale.
+.is-editorial {
+    .content > p,
+    .content > ul li,
+    .content > ol li,
+    .content > blockquote,
+    .blog-item__summary p {
+        font-size: 18px;
+        line-height: 1.6;
+    }
+}
+
+.editorial-list {
+    margin-top: 38px;
+}
+
+// The list's text carries the page measure, like every other single-column block
+// on the site. It has to be said at this specificity: the theme's _content.scss
+// relaxes `.content div` to `width: 100%; max-width: 100%`, and both the byline
+// and the summary are divs inside .content, so a plain class selector loses. Left
+// alone they ran the full 1200px container — about 148 characters a line, while
+// the intro paragraph directly above them wrapped at 888.
+.content {
+    .blog-item__byline,
+    .blog-item__summary {
+        max-width: var(--measure);
+    }
+
+    // Same reason, different width. The signature closes the article, so its rule
+    // takes the column the body text sits in rather than the body's own measure —
+    // 895px against 888px, which is nothing to look at but is the edge the
+    // paragraphs above it end on.
+    .blog-item__signature {
+        max-width: var(--content-width);
+    }
+}
+
+// Singular blog page. Both the articles under /blog/ and the posts listed on
+// /news/ render with this body class, so one rule covers both.
 .blog.page-page {
     .blog-item__byline {
         margin-block-end: 50px;
+    }
+
+    // Smaller than the 80px every other page title takes, because these titles are
+    // not like the others. "News" and "Our Team" are two words; an article is
+    // called "HTML Entity Decoding Regression: CVE-2025-27110 - 2025 February",
+    // which at 80px uppercase condensed filled three lines and 276px of height
+    // before the reader reached a word of the article. Measured across the
+    // published titles, the longest of them — 74 characters — fits two lines at
+    // 44px and one at 36px; 44px is the size taken because it is already the h1's
+    // own mobile value, so no new step enters the type scale, and because 36px
+    // would sit too close to the 30px of a list item to still read as the page
+    // title.
+    // Held to the article's own column. The header sits outside .content, so
+    // nothing had been constraining the title and it ran the full 1200px
+    // container — 305px past the right edge of the text underneath it, which on
+    // a long title reads as the heading hanging off the side of the article.
+    // Measured: at 44px the longest published titles already take two lines
+    // either way, so the alignment costs them nothing; a title around 55
+    // characters goes from one line to two, which is the price of every article
+    // heading sharing one right edge with its text.
+    .title {
+        max-width: var(--content-width);
+        font-size: 32px;
+        line-height: 1.1;
+
+        @media (min-width: $min-desktop) {
+            font-size: 44px;
+            line-height: 1.15;
+        }
     }
 }

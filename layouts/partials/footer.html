@@ -3,19 +3,17 @@
 
         <div class="footer__menu-cta-wrapper">
 
-            <div class="footer__menu">
-                {{/* Store menu items without children in a Scratch */}}
-                {{ $.Scratch.Set "noChildrenItems" slice }}
+            <nav class="footer__menu" aria-label="{{ i18n "footerNavigation" }}">
+                {{- $currentURLs := partial "menu/current-urls.html" $ -}}
+                {{- $noChildrenItems := slice -}}
 
-                {{ with .Site.Menus.main }}
+                {{ with site.Menus.main }}
 
-                {{/* First, loop through to filter out items with no children and store them */}}
-                {{ range . }}
-                {{ if not .HasChildren }}
-                {{ $noChildren := $.Scratch.Get "noChildrenItems" }}
-                {{ $.Scratch.Set "noChildrenItems" ($noChildren | append .) }}
-                {{ end }}
-                {{ end }}
+                {{/* The childless entries are gathered first, because they all share one
+                     column below the columns the parent entries get. */}}
+                {{- range . }}
+                {{- if not .HasChildren }}{{ $noChildrenItems = $noChildrenItems | append . }}{{ end }}
+                {{- end }}
 
                 {{/* Render items with children first, each wrapped in its own column */}}
                 {{ range . }}
@@ -24,8 +22,9 @@
                     <p class="top-menu-item">{{ .Name }}</p>
                     <ul>
                         {{ range .Children }}
+                        {{- $isCurrent := partial "menu/is-current.html" (dict "url" .URL "currentURLs" $currentURLs) -}}
                         <li class="menu-item">
-                            <a href="{{ .URL | relLangURL }}" class="menu-link">{{ .Name }}</a>
+                            <a href="{{ .URL | relLangURL }}" class="menu-link"{{ if $isCurrent }} aria-current="page"{{ end }}>{{ .Name }}</a>
                         </li>
                         {{ end }}
                     </ul>
@@ -34,31 +33,32 @@
                 {{ end }}
                 {{/* Render all items without children inside a single column div */}}
                 <div class="column no-children-links">
-                    <p class="top-menu-item">Sections</p>
+                    <p class="top-menu-item">{{ i18n "footerSections" }}</p>
                     <ul>
-                        {{ range $.Scratch.Get "noChildrenItems" }}
+                        {{ range $noChildrenItems }}
+                        {{- $isCurrent := partial "menu/is-current.html" (dict "url" .URL "currentURLs" $currentURLs) -}}
                         <li class="menu-item">
-                            <a href="{{ .URL | relLangURL }}" class="menu-link">{{ .Name }}</a>
+                            <a href="{{ .URL | relLangURL }}" class="menu-link"{{ if $isCurrent }} aria-current="page"{{ end }}>{{ .Name }}</a>
                         </li>
                         {{ end }}
                     </ul>
                 </div>
                 {{ end }}
-            </div>
+            </nav>
 
-            {{ with .Site.Params.footer_cta }}
+            {{ with site.Params.footer_cta }}
             {{ if and .text .link }}
             <div class="footer__cta">
-                <a href="{{ .link | absLangURL }}" class="button tertiary">{{ .text }}</a>
+                <a href="{{ .link | relLangURL }}" class="button tertiary">{{ .text }}</a>
             </div>
             {{ end }}
             {{ end }}
         </div>
 
         <div class="footer__logo-social-wrapper">
-            {{ with .Site.Params.logo_on_black }}
-            <a class="logo-link" href="{{ "/" | absLangURL }}">
-                <img loading="lazy" class="logo" width="150" height="40" src="{{ . | absURL }}" alt="{{ $.Site.Title }}"></a>
+            {{ with site.Params.logo_on_black }}
+            <a class="logo-link" href="{{ "/" | relLangURL }}">
+                <img loading="lazy" class="logo" width="150" height="40" src="{{ . | relURL }}" alt="{{ site.Title }}"></a>
             {{ end }}
 
             {{- partial "footer/social-links.html" . -}}
@@ -67,11 +67,23 @@
         <hr class="footer-hr">
 
         <div class="copyright">
-            <p>{{ .Site.Copyright | default "Copyright &copy; {{< current_year >}} All Rights Reserved. [Dot Org Theme](https://github.com/cncf/dot-org-hugo-theme) for Hugo by [CNCF](https://www.cncf.io)." | markdownify }}</p>
+            <div class="copyright__content">
+                {{/* markdownify runs shortcodes, which is what expands the
+                     current_year shortcode in the configured copyright string. */}}
+                <p>{{ site.Copyright | markdownify }}</p>
+
+                {{ with site.Menus.footer }}
+                <ul class="footer__legal">
+                    {{ range . }}
+                    <li><a href="{{ .URL | relLangURL }}">{{ .Name }}</a></li>
+                    {{ end }}
+                </ul>
+                {{ end }}
+            </div>
 
             <div class="copyright__accessibility-git-wrapper">
-                {{ if .Site.Params.accessibility.help_url }}
-                <a href="{{ .Site.Params.accessibility.help_url }}" class="nowrap">{{ .Site.Params.accessibility.help_text | default
+                {{ if site.Params.accessibility.help_url }}
+                <a href="{{ site.Params.accessibility.help_url }}" class="nowrap">{{ site.Params.accessibility.help_text | default
                     "Accessibility Statement" }}</a>
                 {{ end }}
 
@@ -81,29 +93,59 @@
     </div>
 </footer>
 
-{{/* Theme: Hover Intent */}}
-{{ $js := resources.Get "js/hoverintent.min.js" }}
-<script defer src="{{ $js.Permalink }}"></script>
-
 {{/* Theme: FAQ */}}
 {{ if and (eq .Type "faq") (eq .Kind "section") }}
-{{ $js := resources.Get "js/accordion.js" }}
-<script defer src="{{ $js.Permalink }}"></script>
+{{ $js := resources.Get "js/faq-accordion.js" | resources.Minify | fingerprint }}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 {{ end }}
 
-{{/* Theme: Scripts */}}
-{{ $js := resources.Get "js/scripts.js" }}
-{{ if eq (getenv "HUGO_ENV") "production" }}
-{{ $js = $js | resources.Minify | resources.Fingerprint }}
-<script defer src="{{ $js.Permalink }}" integrity="{{ $js.Data.Integrity }}"></script>
-{{ else }}
-<script defer src="{{ $js.Permalink }}"></script>
+{{/* The theme's js/scripts.js and js/hoverintent.min.js are deliberately NOT
+     loaded on this site. Their only job is the main menu and `.dropdown`, and:
+       - this site renders no `.dropdown` at all;
+       - the theme binds mobile submenus to `.menu-item-has-children > a`, but this
+         header renders a <button class="submenu-toggle"> there, so that binding
+         matches nothing;
+       - everything still live in it (hamburger toggle, hover `is-open`) is done
+         accessibly by js/site-navigation.js, which owns the navigation outright.
+     Do not add them back: two controllers on the same markup fight each other, and
+     site-navigation.js then needs capture-phase event suppression to win. */}}
+
+{{/* Site: Navigation accessibility */}}
+{{/* Minified, content-hashed and SRI-guarded. Without the hash a deploy keeps the
+     same URL, so a CDN or browser can serve a stale site-navigation.js against new
+     header markup — and this file owns is-open, aria-expanded and has-menu-active. */}}
+{{ $js := resources.Get "js/site-navigation.js" | resources.Minify | fingerprint }}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+
+{{/* Home: Trusted by partner rotation */}}
+{{ if .IsHome }}
+{{ $js := resources.Get "js/partner-rotator.js" | resources.Minify | fingerprint }}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 {{ end }}
 
-{{/* Shortcode: YouTube Enhanced */}}
-{{ if .HasShortcode "youtube_enhanced" }}
-{{ $js := resources.Get "js/youtube-lite.js" | resources.Minify }}
-<script type="module" src="{{ $js.Permalink }}"></script>
+{{/* Site: copy button on code blocks.
+
+     Loaded only where the rendered page actually contains a code block, so the
+     overwhelming majority of pages fetch nothing. The marker is the rendered
+     markup itself, not a front matter flag, so a page cannot forget to declare
+     itself.
+
+     `<pre` and not Chroma's `class="highlight"` wrapper: a fenced block with no
+     language never reaches Chroma and arrives as a bare <pre>, so keying on the
+     wrapper skips exactly the blocks that need the most help. */}}
+{{ if strings.Contains .Content "<pre" }}
+{{ $js := resources.Get "js/code-copy.js" | resources.Minify | fingerprint }}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" data-copy-label="{{ i18n "codeCopy" }}" data-copied-label="{{ i18n "codeCopied" }}"></script>
+{{ end }}
+
+{{/* Shortcode: the click-to-load video facade. The theme's js/youtube-lite.js is
+     deliberately NOT loaded: it fetches its poster from i.ytimg.com on page load and
+     preconnects to six Google hosts — googleads.g.doubleclick.net among them — on the
+     first pointerover, before the visitor has chosen to watch anything. Resource hints
+     are not covered by CSP, so the policy cannot stop that. */}}
+{{ if or (.HasShortcode "youtube_enhanced") (.HasShortcode "installation_grid") }}
+{{ $js := resources.Get "js/video-facade.js" | resources.Minify | fingerprint }}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 {{ end }}
 
 {{/* User: Custom JS */}}

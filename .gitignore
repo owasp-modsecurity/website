@@ -1,8 +1,8 @@
 public/
+static/pagefind/
 resources/
 node_modules/
 **/.hugo_build.lock
 .DS_Store
 .netlify
-hugo_stats.json
 

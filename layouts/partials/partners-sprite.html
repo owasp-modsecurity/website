@@ -1,0 +1,64 @@
+{{- /*
+  Builds ONE fingerprinted SVG sprite from data/partners.yaml and returns it as a
+  resource. Every partner logo is delivered in a single, immutably cached
+  request instead of one image each or ~206 KB of uncacheable data: URIs inlined
+  into the homepage.
+
+  Layout: one equal cell per partner, side by side, each $cellW x $cellH user
+  units. That cell ratio is the same as the rendered logo box, so CSS can map one
+  cell onto one element without distortion. layouts/index.html emits the cell
+  count and each cell's offset from the same data/partners.yaml, so the count is
+  never restated in CSS.
+  Each logo is a nested <svg> keeping its own viewBox, so `preserveAspectRatio`
+  does the "contain" fit inside its cell exactly as `object-fit: contain` did.
+
+  $gutter is transparent margin inside every cell, and it is load-bearing. The logo
+  box is painted as a background at a scale where the cell boundaries do not land on
+  whole device pixels, so the browser samples a sliver of the NEXT cell along the
+  shared edge — visible on a phone as a coloured vertical bar at the right edge of a
+  logo, in the neighbouring logo's ink. With the artwork inset, that sliver samples
+  transparency instead. Do not remove it to win back the ~6% of logo size it costs.
+
+  Cell size must stay in sync with `.home-partners__logo` in assets/scss/home.scss.
+*/ -}}
+{{- $cellW := 131 -}}
+{{- $cellH := 96 -}}
+{{- $gutter := 4 -}}
+{{- $artW := sub $cellW (mul 2 $gutter) -}}
+{{- $artH := sub $cellH (mul 2 $gutter) -}}
+{{- $partners := hugo.Data.partners -}}
+{{- $cells := slice -}}
+{{- range $index, $partner := $partners -}}
+  {{- $asset := resources.Get $partner.file -}}
+  {{- if not $asset -}}
+    {{- errorf "partners-sprite: missing asset %q referenced by data/partners.yaml" $partner.file -}}
+  {{- end -}}
+  {{- $x := mul $index $cellW -}}
+  {{- if eq $asset.MediaType.SubType "svg" -}}
+    {{- $source := $asset.Content -}}
+    {{- /* The rewrite below consumes anything before the root element, not just
+           byte 0: an SVG exported straight from a design tool starts with
+           `<?xml ...?>`, and anchoring at `^<svg` would match nothing and splice the
+           logo in unpositioned, on top of cell 0, silently. */ -}}
+    {{- $viewBoxes := findRE `viewBox="[^"]*"` $source 1 -}}
+    {{- if not $viewBoxes -}}
+      {{- errorf "partners-sprite: %q has no viewBox, cannot be placed in the sprite" $partner.file -}}
+    {{- end -}}
+    {{- $viewBox := index $viewBoxes 0 -}}
+    {{- /* Replace the root <svg> tag: fix the cell position and force a centred
+           "contain" fit, overriding any preserveAspectRatio the source carried. */ -}}
+    {{- $open := printf `<svg x="%d" y="%d" width="%d" height="%d" %s preserveAspectRatio="xMidYMid meet" overflow="hidden">` (add $x $gutter) $gutter $artW $artH $viewBox -}}
+    {{- $placed := replaceRE `(?s)^.*?<svg[^>]*>` $open $source 1 -}}
+    {{- if eq $placed $source -}}
+      {{- errorf "partners-sprite: could not rewrite the root <svg> tag of %q" $partner.file -}}
+    {{- end -}}
+    {{- $cells = $cells | append $placed -}}
+  {{- else -}}
+    {{- /* Raster logos are embedded once inside the sprite, so they still cost no
+           extra request. */ -}}
+    {{- $data := printf "data:%s;base64,%s" $asset.MediaType.Type ($asset.Content | base64Encode) -}}
+    {{- $cells = $cells | append (printf `<svg x="%d" y="%d" width="%d" height="%d" viewBox="0 0 %d %d" preserveAspectRatio="xMidYMid meet" overflow="hidden"><image width="%d" height="%d" href="%s"/></svg>` (add $x $gutter) $gutter $artW $artH $asset.Width $asset.Height $asset.Width $asset.Height $data) -}}
+  {{- end -}}
+{{- end -}}
+{{- $svg := printf `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 %d %d" role="none">%s</svg>` (mul (len $partners) $cellW) $cellH (delimit $cells "") -}}
+{{- return (resources.FromString "img/partners-sprite.svg" $svg | fingerprint) -}}

@@ -1,0 +1,28 @@
+{{- /*
+  Shared SEO resolution used by both head/metadata.html and head/schema.html.
+  Resolves the per-page front-matter overrides for the current page and
+  returns the effective title/description as a dict:
+    seo           - hugo.Data.seo (site-level defaults only)
+    title         - bare page title (.Params.seo_title -> .Title), for og:title
+                    and schema headline, which must not carry the brand suffix
+    documentTitle - title for <title>, with the brand suffix appended
+    description   - effective page description (chomped)
+*/ -}}
+{{- $seo := hugo.Data.seo -}}
+{{- $title := .Params.seo_title | default .Title -}}
+{{- $description := .Description | default (.Summary | plainify | truncate 160) | default site.Params.description | default "" -}}
+{{- $description = $description | chomp -}}
+{{- /* " | <site title>" is appended to every non-home <title>, with two exemptions
+       and no others:
+         - an explicit seo_title is approved copy and ships verbatim (most already
+           end in "| ModSecurity");
+         - the home page's own title is already descriptive and brand-bearing.
+       Deliberately not keyed on whether the title mentions the product: testing
+       `strings.Contains $title $seo.site_name` exempts "What is ModSecurity?" but
+       not its sibling FAQ answers, so whether a page carries the brand comes down
+       to whether the product name happens to occur in the headline. */ -}}
+{{- $documentTitle := $title -}}
+{{- if and (not .Params.seo_title) (not .IsHome) -}}
+  {{- $documentTitle = printf "%s | %s" $documentTitle $seo.site_name -}}
+{{- end -}}
+{{- return (dict "seo" $seo "title" $title "documentTitle" $documentTitle "description" $description) -}}

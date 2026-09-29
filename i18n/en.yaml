@@ -2,38 +2,69 @@
 hero1:
   other: OWASP
 hero2:
-  other: Modsecurity
+  other: ModSecurity
 hero3:
   other: Project
+
+primaryNavigation:
+  other: Primary navigation
+
+footerNavigation:
+  other: Footer navigation
+
+footerSections:
+  other: Sections
+
+footerSocialLink:
+  other: ModSecurity Project on {{ .Network }}
+
+socialGithub:
+  other: GitHub
+
+socialLinkedin:
+  other: LinkedIn
+
+socialSlack:
+  other: Slack
+
+socialX:
+  other: X
+
+breadcrumb_home:
+  other: Home
+
+searchSite:
+  other: Search site
+
+videoPlay:
+  other: Play
+
+toggleNavigation:
+  other: Toggle navigation
+
+homeOverview:
+  other: About ModSecurity
 
 subhero:
   other: Open Source Web Application Firewall
 
 explainerText:
   other: |
-    [ModSecurity](https://www.modsecurity.org/) is an open source, cross-platform web application firewall (WAF) module. 
-    Known as the "Swiss Army Knife" of WAFs, it enables web application defenders to gain 
-    visibility into HTTP(S) traffic and provides a power rules language and API to implement 
-    advanced protections.
+    **ModSecurity is an open-source, cross-platform web application firewall (WAF) module.** Known as the “Swiss Army Knife” of WAFs, it enables web application defenders to gain visibility into HTTP(S) traffic and provides a power rules language and API to implement advanced protections.
 
 promotionHero:
-  other: The most widespread open source WAF
+  other: The Most Widespread Open-Source WAF
 
 promotionText:
   other: |
-    Used by businesses, government organizations, internet service providers, and commercial WAF vendors alike on 
-    millions of domains all over the world. The engine, coupled with OWASP CRS - the dominant WAF rule set, 
-    undeniably raises the level of protection against HTTP attacks to a higher level.
-
-explainerButton:
-  other: About
+    **Used by businesses, government organizations, internet service providers, and commercial WAF vendors alike on millions of domains all over the world.** The engine, coupled with OWASP CRS - the dominant WAF rule set, undeniably raises the level of protection against HTTP attacks to a higher level.
 
 sectionTitle:
   other: Getting Started
 
 sectionTitle1:
   other: |
-    Usage scenarios
+    Usage Scenarios
 sectionText1:
   other: |
     - Real-time application security monitoring and access control
@@ -53,22 +84,83 @@ sectionText2:
     - Quality over quantity
 
 sectionButton2:
-  other: Getting Started
+  other: Learn more
 
 sectionTitle3:
   other: Community
 sectionText3:
   other: |
-    :wave: Be part of a vibrant and welcoming community.
+    Be part of a vibrant and welcoming community.
 
-    :world_map: Join us on Slack for discussions, see GitHub for our projects, or follow
-    us on Twitter.
+    Join us on [Slack](https://owasp.slack.com/archives/CBKGH8A5P) for discussions, see [GitHub](https://github.com/owasp-modsecurity) for our projects, or follow us on [X (Twitter)](https://x.com/ModSecurity).
 
-    :call_me_hand: We are always looking for new contributors and developers. 
-
+    We are always looking for new contributors and developers.
 
 sectionButton3:
-  other: Community
+  other: Join the community
+
+homeCustodianshipTitle:
+  other: ModSecurity under OWASP’s custodianship
+
+homeCustodianshipText:
+  other: OWASP® Foundation, the leading open community dedicated to application security, is already responsible for the Core Rule Set, the dominant WAF rule set on the market. By joining the ModSecurity WAF to their repertoire, OWASP can now steer ModSecurity’s development with a holistic view, fostering even tighter integration between the core rule set and the underlying framework.
+
+homeCustodianshipImageAlt:
+  other: OWASP logo
+
+latestBlogPosts:
+  other: Latest Blog Posts
+
+homeHeroLeadIntro:
+  other: A trusted, community-driven open-source WAF engine protecting real-world web applications.
+
+homeHeroLeadEmphasis:
+  other: Built for today and actively maintained so you stay safe against emerging cybersecurity threats.
+
+homeLatestRelease:
+  other: "Latest release date:"
+
+homeLatestReleaseFallback:
+  other: Maintained and available now
+
+homeHeroImageAlt:
+  other: ModSecurity inspects traffic in both directions. Valid requests from a browser HTTP client reach protected CMS, REST API, SaaS and database services; unsafe requests and responses containing sensitive data are blocked.
+
+homeDownloadLabel:
+  other: Download ModSecurity
+
+homeGetLatestV2:
+  other: Get latest v2
+
+homeGetLatestV3:
+  other: Get latest v3
+
+homeJoinTeam:
+  other: Join our team
+
+homeViewAllUpdates:
+  other: View all updates
+
+homeReadArticle:
+  other: Read article
+
+homeTrustedBy:
+  other: Trusted by
+
+homeTrustedByNote:
+  other: Logos reflect publicly available information, not endorsements or partnerships. None of these companies fund the project.
+
+homeSponsorNote:
+  other: Interested in backing ModSecurity and becoming an official supporter? [Contact us](mailto:modsecurity@owasp.org) for sponsorship options.
+
+readMore:
+  other: Read more
+
+blogListLabel:
+  other: Articles, guides and updates
+
+newsListLabel:
+  other: Project news
 
 social_link_title:
   other: Follow us on social media
@@ -78,3 +170,9 @@ videoUnsupported:
 
 by:
   other: By
+
+codeCopy:
+  other: Copy
+
+codeCopied:
+  other: Copied

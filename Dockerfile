@@ -2,11 +2,15 @@ FROM mcr.microsoft.com/devcontainers/base:debian AS build
 
 # VARIANT can be either 'hugo' for the standard version or 'hugo_extended' for the extended version.
 ARG VARIANT=hugo_extended
-# VERSION can be either 'latest' or a specific version number
-ARG HUGO_VERSION=latest
-ARG SASS_VERSION=latest
+# Both version arguments are interpolated into a GitHub releases API path below,
+# so they are API references and not bare version numbers: either 'latest', or a
+# 'tags/<tag>' reference. A bare number resolves to no release and fails the build.
+# The defaults match the versions .github/workflows/ pins, so the image builds the
+# site with the compilers it is tested against.
+ARG HUGO_VERSION=tags/v0.164.0
+ARG SASS_VERSION=tags/1.103.1
 
-RUN apt-get install ca-certificates jq
+RUN apt-get update && apt-get install -y ca-certificates jq
 
 RUN URL=$(curl -sS https://api.github.com/repos/gohugoio/hugo/releases/${HUGO_VERSION} | jq -r ".assets[] | select(.name | test(\"^${VARIANT}_[0-9].*Linux-64bit[.]tar[.]gz$\")) | .browser_download_url") && \
     test -n "${URL}" && \

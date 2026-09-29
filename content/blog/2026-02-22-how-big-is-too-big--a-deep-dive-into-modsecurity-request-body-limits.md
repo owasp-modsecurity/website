@@ -19,7 +19,7 @@ We've had a long discussion ([3483](https://github.com/owasp-modsecurity/ModSecu
 
 I think it would be good to know what the community's expectations are for this feature, but first, let me explain how these restrictions work in reality.
 
-#### A really simple example
+## A really simple example
 
 For the following, I've modified the engine a little to demonstrate the behaviour - it always shows the amount by which a limit has been exceeded, and the limit itself.
 
@@ -74,7 +74,7 @@ Now the no-files limitation was exceeded — we set the limit to 110, but the pa
 
 **Conclusion**: The first variable that the engine checks is the `SecRequestBodyLimit`, and the second one is the `SecRequestBodyNoFilesLimit`.
 
-#### What's the difference between the two limits on the request body size?
+## What's the difference between the two limits on the request body size?
 
 The `SecRequestBodyLimit` controls the **entire request body size**, regardless of the request's `Content-Type` or `Transfer-Encoding`.
 
@@ -85,7 +85,7 @@ In other words: anything that is not a file to be uploaded.
 
 Now we can see why the NoFiles limit is lower than the total limit. File uploads are typically much larger than simple form submissions.
 
-#### Understanding the excluded size
+## Understanding the excluded size
 
 Okay, but what does _"excluding the size of any files being transported"_ mean exactly?
 
@@ -176,7 +176,7 @@ With the default settings, ModSecurity allows 12.5MB for `SecRequestBodyLimit` a
 
 **A very important note**: both configuration directives have a hard-coded limit in the v2 engine, which is 1GB (see the documentation above). In v3, there is no hard-coded limit, which is the expected behavior (there are, of course, hard limits with respect to the hardware and memory word size). We will remove this hard-coded limit from v2 soon.
 
-#### The mysterious SecRequestBodyLimitAction directive
+## The mysterious SecRequestBodyLimitAction directive
 
 As I mentioned above, ModSecurity has a directive to handle the case where the size of the request body exceeds one of the configured limits: `SecRequestBodyLimitAction`. The allowed values for the directive are `Reject` (the default) or `ProcessPartial`.
 
@@ -241,13 +241,13 @@ Oops — the rule didn't fire.
 
 This is what the `ProcessPartial` does.
 
-#### Why was this feature added?
+## Why was this feature added?
 
 The [documentation](https://github.com/owasp-modsecurity/ModSecurity/wiki/Reference-Manual-(v2.x)#secrequestbodylimitaction) explains why `ProcessPartial` was added to the engine:
 
 >_By default, ModSecurity will reject a request body that is longer than specified. This is problematic especially when ModSecurity is being run in DetectionOnly mode and the intent is to be totally passive and not take any disruptive actions against the transaction. With the ability to choose what happens once a limit is reached, site administrators can choose to inspect only the first part of the request, the part that can fit into the desired limit, and let the rest through. This is not ideal from a possible evasion issue perspective, however it may be acceptable under certain circumstances._
 
-#### Improved handler behavior
+## Improved handler behavior
 
 Back to PRs. The main concept of the open PRs is to align the "action" directives with the "limit" directives. The proposed new directive is `SecRequestBodyNoFilesLimitAction` and would follow the behavior of `SecRequestBodyLimitAction`, but another option is to extend the existing directive's behavior to handle the case where `SecRequestBodyNoFilesLimit` is exceeded.
 

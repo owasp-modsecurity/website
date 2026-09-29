@@ -9,13 +9,13 @@ custom_css: []
 ######################## custom config ####################
 
 ### default social share image (can also be set per lang) ###
-images: ["/img/social-share.png"]
 
 modsecurity:
   release_tag_url_prefix: "https://github.com/owasp-modsecurity/ModSecurity/releases/tag"
   release_url_prefix: "https://github.com/owasp-modsecurity/ModSecurity/releases"
   latest_v2_major_version: "2.9.14"
   latest_v3_major_version: "3.0.16"
+  latest_publication_date: "2026-07-02"
 
 github:
   repo_url: "https://github.com/owasp-modsecurity/website/blob/main"
@@ -37,10 +37,15 @@ social_links:
   stackoverflow: ""
   threads: ""
   twitter: ""
-  x: ""
+  x: "https://x.com/ModSecurity"
   youtube: ""
 
 # Makes the header sticky on tall screens
 sticky_header: true
 # Enable search in header UI
 show_search: true
+
+# Tag that marks a blog-section post as official News rather than an article.
+# Consumed by layouts/partials/editorial/pages.html, which matches it
+# case-insensitively. The canonical spelling is the one used in front matter.
+news_tag: "Modsecurity-News"

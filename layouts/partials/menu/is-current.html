@@ -1,0 +1,18 @@
+{{- /* Is this menu entry the page the visitor is on?
+
+       Params:
+         url          — a menu entry's .URL. May be empty: parent entries
+                        ("Resources", "About Us") are pure containers and carry
+                        no URL of their own. That case must answer false, not
+                        blow up — and specifically not answer true on the home
+                        page, which is what `"" | relLangURL` → "/" would have
+                        caused. The `with` below is the guard.
+         currentURLs  — the slice from partial "menu/current-urls.html".
+
+       Returns a bool. Called from both header.html and footer.html, so the guard
+       above lives in one place rather than in each of the four call sites. */ -}}
+{{- $isCurrent := false -}}
+{{- with .url -}}
+  {{- $isCurrent = in $.currentURLs (. | relLangURL) -}}
+{{- end -}}
+{{- return $isCurrent -}}

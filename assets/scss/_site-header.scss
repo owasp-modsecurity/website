@@ -1,0 +1,256 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+/* The header is sticky, so any fragment navigation parks its target underneath
+   it: the browser's own jump to #id, an in-page anchor, and scrollIntoView all
+   scroll the element to y=0, where the header already is. Pagefind sub-results
+   made this obvious — a hit on "How do I install ModSecurity?" scrolled the
+   question itself exactly out of sight. scroll-padding on the scroll container
+   reserves the header's height for every such scroll, with no JavaScript and
+   nothing to remember per anchor.
+
+   Keep these in step with the `.header > .container` heights: 60px from the
+   theme, 106px from the desktop override further down this file. */
+html {
+  scroll-padding-top: calc(60px + 1rem);
+
+  @media (min-width: $min-desktop) {
+    scroll-padding-top: calc(106px + 1rem);
+  }
+}
+
+.main-menu {
+  .submenu-toggle {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    // Part of the button reset, and load-bearing. The breakpoint blocks below set
+    // their own padding, but the mobile one sets only top/right/bottom — without
+    // this the browser's own button padding survives on the left, and the dropdown
+    // items sit 6px right of the plain links in the open mobile menu. The desktop
+    // block does not show it, because there the padding is a shorthand.
+    padding: 0;
+    color: var(--menu-link-color);
+    cursor: pointer;
+    display: flex;
+    font-family: var(--rounded-font-family);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    line-height: 1;
+    text-align: left;
+    text-transform: uppercase;
+    transition: color 0.5s ease;
+
+    &:hover {
+      color: var(--menu-link-color-hover);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--primary-700);
+      outline-offset: 3px;
+    }
+
+    &::after {
+      display: inline-block;
+      width: 10px;
+      height: 6px;
+      // 10px is the approved gap between the label and the chevron. A fixed value
+      // and not `auto`: on desktop the toggle is content-sized, so an auto margin
+      // collapses to zero and the chevron touches the label. Mobile pushes the
+      // chevron right through `justify-content: space-between` regardless.
+      margin-left: 10px;
+      background-image: url("data:image/svg+xml,%3Csvg width='9' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.21 1.078l3.395 3 3.395-3' stroke='%23b1b1b1' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: 9px;
+      content: "";
+      transition: transform 0.2s ease-out;
+    }
+  }
+
+  // Flip in place: the origin is the chevron's own centre, so it turns over
+  // rather than swinging through an arc.
+  .menu-item-has-children.is-open > .submenu-toggle::after {
+    transform: rotate(180deg);
+  }
+
+  @media (max-width: $mobile-max) {
+    .top-menu-item > .submenu-toggle {
+      width: 100%;
+      padding-top: 25px;
+      padding-right: 5px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid var(--gray-300);
+      align-items: center;
+      justify-content: space-between;
+    }
+    .menu-item-has-children > .sub-menu {
+      padding-left: 10px;
+    }
+    .menu-item-has-children.is-open > .sub-menu {
+      display: block;
+    }
+  }
+
+  @media (min-width: $min-desktop) {
+    .top-menu-item > .submenu-toggle {
+      padding: 25px 5px 25px 0;
+      align-items: center;
+    }
+
+    .top-menu-item--menu-button {
+      display: flex;
+      align-items: center;
+    }
+
+    // Theme focus styles predate the button control and can expose a submenu while
+    // aria-expanded is still false. `.is-open` is the single source of truth.
+    &.navigation--enhanced .menu-item-has-children:focus-within > .sub-menu {
+      visibility: hidden;
+      height: 0;
+      overflow: hidden;
+      opacity: 0;
+    }
+
+    &.navigation--enhanced .menu-item-has-children.is-open > .sub-menu {
+      visibility: visible;
+      height: unset;
+      overflow: visible;
+      opacity: 1;
+    }
+     .top-menu-item a.menu-link:focus-visible,
+     .top-menu-item a.menu-link:hover  {
+        text-decoration: underline;
+     }
+    // "You are here" on desktop: the label keeps the row's near-black and a
+    // 2px rule in --blue sits under it. Chosen over a colour shift so the menu
+    // stays typographically even, and over a full-height bar because the rule
+    // has to belong to the text.
+    //
+    // It is drawn on .menu-link__label, not on the control. The control is
+    // 72px tall inside a 106px header and, for the parent entries, a flex
+    // container whose ::after is the chevron — anything drawn on it lands
+    // ~25px below the label and runs under the chevron too. On the label the
+    // rule sits where it should and stops where the text stops.
+    //
+    // box-shadow rather than text-decoration for the same reason a decoration
+    // would propagate into the chevron.
+    .top-menu-item.is-current > .menu-link:not(.menu-button) .menu-link__label,
+    .top-menu-item.has-current > .submenu-toggle .menu-link__label {
+      box-shadow: inset 0 -2px 0 0 rgba($blue, 0.65);
+    }
+  }
+
+  
+  @media (max-width: $mobile-max) {
+    .top-menu-item.is-current > .menu-link,
+    .top-menu-item.has-current > .submenu-toggle {
+      color: var(--primary-700);
+      box-shadow: inset 0 -1px 0 0 var(--blue);
+    }
+  }
+
+  .sub-menu .menu-item.is-current > .menu-link {
+    color: var(--primary-700);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .sub-menu .menu-item > .menu-link:hover {
+    text-decoration: underline;
+  } 
+
+  .main-menu-search {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+
+    &:focus-visible {
+      outline: 3px solid var(--primary-700);
+      outline-offset: 3px;
+    }
+
+    svg {
+      margin: 0;
+    }
+
+    @media (min-width: $min-desktop) {
+      margin-left: 30px;
+    }
+
+    @media (max-width: $mobile-max) {
+      margin-top: 30px;
+    }
+  }
+}
+
+@media (min-width: $min-desktop) {
+  .header {
+    // 8-digit hex: #c4c4c4 at ~16% alpha. Shadow-only value, not a brand
+    // token — left as a literal rather than adding a single-use variable.
+    box-shadow: 0 18px 10px #c4c4c429;
+
+    &::after { display: none; }
+
+    > .container { height: 106px; }
+  }
+
+  .main-menu {
+    // Right-align the menu against the logo, as the approved design has it.
+    //
+    // The theme hangs `margin-left: auto` on .main-menu__cta-language-wrapper
+    // (_header.scss), which pins the item list to the left of the nav and puts
+    // every spare pixel between the last item and the search icon — the opposite
+    // distribution. Letting the list itself take the free space and align its
+    // children to the end reverses it. The theme's auto margin stays in place and
+    // simply has nothing left to absorb, so nothing here has to cancel it.
+    .main-menu__wrapper {
+      flex: 1;
+      justify-content: flex-end;
+    }
+
+    .top-menu-item > .menu-link,
+    .top-menu-item > .submenu-toggle {
+      color: var(--black);
+      font-family: var(--rounded-font-family);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .96px;
+      line-height: 22px;
+    }
+
+    .top-menu-item > .menu-link.menu-button {
+      width: max-content;
+      border: 0;
+      @include cta-pill;
+      background-color: var(--accent-orange);
+      color: var(--white);
+      font-family: var(--rounded-font-family);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 22px;
+
+      &:hover {
+        background-color: var(--primary-700);
+        color: var(--white);
+      }
+
+      &:focus-visible {
+        outline: 3px solid var(--primary-700);
+        outline-offset: 3px;
+      }
+    }
+
+    // The pill CTA already reads as its own object; underlining it would only
+    // muddy the shape. Its current state is the same colour shift as hover.
+    .top-menu-item.is-current > .menu-link.menu-button {
+      background-color: var(--primary-700);
+      box-shadow: none;
+    }
+  }
+}

@@ -10,9 +10,9 @@ We would like to share our take on [CVE-2026-52747](https://nvd.nist.gov/vuln/de
 
 Two new CVE's were released recently. In this blog post we will explain the mechanics and impact of these issues.
 
-### CVEs
+## CVEs
 
-#### CVE-2026-52747
+### CVE-2026-52747
 
 The first reported vulnerability (CVE-2026-52747) is a multipart parser error.
 
@@ -24,9 +24,9 @@ The issue was reported by [@sondt99](https://github.com/sondt99) and [@dungNHVhu
 
 The severity of this vulnerability is high, score is 8.6.
 
-#### CVE-2026-52761
+### CVE-2026-52761
 
-The second reported vulnerability (CVE-2026-52761) was a wrong behavior in `utf8toUnicode` on **i386** architecture. **The issue exists only on this architecture and can't be triggered other architectures.**
+The second reported vulnerability (CVE-2026-52761) was a wrong behavior in `utf8toUnicode` on **i386** architecture. **The issue exists only on this architecture and can't be triggered on other architectures.**
 
 The security advisory is available on [GitHub](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-qjgm-7gp4-f8qq).
 
@@ -34,9 +34,9 @@ The original issue was reported by [Coreruleset](https://github.com/coreruleset)
 
 The severity of this vulnerability is moderate, score is 5.8.
 
-### Conclusion
+## Conclusion
 
-We are greatful to all the reporters for their help in addressing these issues in ModSecurity.
+We are grateful to all the reporters for their help in addressing these issues in ModSecurity.
 
 To be safe from attacks caused by any of the discussed issues, you should upgrade your WAF to version 3.0.16.
 

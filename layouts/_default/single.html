@@ -1,0 +1,14 @@
+{{ define "main" }}
+  {{- /* Both modifiers come from front matter only, with no fallback.
+         Deriving page_id from .File.BaseFileName would make renaming a markdown
+         file rename a CSS hook, and defaulting page_style would put
+         `page-content--reading` on every FAQ answer and on /search/, where the
+         rules for it — all scoped to `body.pages.page-page` in
+         assets/scss/_pages.scss — cannot match. A page without either simply
+         gets no modifier. */ -}}
+  {{- $pageID := .Params.page_id -}}
+  {{- $pageStyle := .Params.page_style -}}
+  <div class="page-content{{ with $pageStyle }} page-content--{{ . }}{{ end }}{{ with $pageID }} page-content--{{ . }}{{ end }}">
+    {{ .Content }}
+  </div>
+{{ end }}

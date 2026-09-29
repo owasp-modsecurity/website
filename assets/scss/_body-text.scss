@@ -1,0 +1,14 @@
+// Mobile body copy size: one base at every width.
+//
+// The theme sizes the document at 0.875em (14px) and only reaches 1em at 500px,
+// which leaves running text on a phone two pixels smaller than the same
+// paragraph gets from a tablet up — and it is the one size a reader cannot
+// enlarge without zooming the whole page. `html` already carries
+// `line-height: 1.5` (_normalize.scss), so the ratio needs no restating here.
+//
+// Layered after "typography" instead of shadowing that partial: the theme file
+// holds the entire heading scale, and a project copy of it would silently drop
+// every future upstream change to it.
+body {
+  font-size: 1rem;
+}

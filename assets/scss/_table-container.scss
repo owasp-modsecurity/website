@@ -1,0 +1,42 @@
+@use "variables" as *;
+
+// Project rules for the wrapper that layouts/_default/_markup/render-table.html
+// puts around every markdown table. The theme's _tables.scss owns the table's
+// own look (grey header row, hairlines, rounded top corners) and is left to it;
+// this file only decides how the wrapper sits on the page.
+//
+// A separate partial rather than shadowing themes/…/_tables.scss, for the same
+// reason as _divider.scss: shadowing would silently swallow a future upstream
+// change to the table styling, while layering states our additions on top of it.
+// `.content div.table-container` and not just `.table-container`: the theme
+// relaxes every `.content div` to `max-width: 100%` (_content.scss), which is
+// more specific than a bare class and beats the measure, leaving the wrapper
+// 1200px wide. The theme solves the identical problem for Chroma by naming the
+// wrapper the same way (`.content div.highlight`), so this follows its own
+// precedent rather than inventing a heavier selector.
+.content div.table-container {
+  // Match the prose. Without this a table fills the 1200px container while the
+  // paragraphs around it sit at 888px — same left edge, 312px further right,
+  // which reads as a broken layout rather than a wide table. A table
+  // that genuinely needs more room can scroll instead, which is what the
+  // theme's `overflow-x: auto` on this element is for.
+  max-width: var(--measure);
+}
+
+.table-container {
+  @media (max-width: $mobile-max) {
+    // The theme's 21px/35px cell padding puts a three-column table well past
+    // 700px, so on a phone every table would start out scrolled. Tighter cells
+    // let the common case fit.
+    td,
+    th {
+      padding: 12px 16px;
+    }
+  }
+}
+
+// The wrapper is focusable (see the render hook), so the focus must be visible.
+.table-container:focus-visible {
+  outline: 3px solid var(--primary-400);
+  outline-offset: 3px;
+}

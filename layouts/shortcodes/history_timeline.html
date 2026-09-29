@@ -1,0 +1,7 @@
+{{- /* Wraps the History rows so the timeline spine has something to run down. The
+       spine is a ::before on this element and not on .page-content--history, which
+       also holds the lead and the closing block and would draw the line past both
+       ends of the timeline. */ -}}
+<div class="history-timeline">
+  {{ .Inner }}
+</div>

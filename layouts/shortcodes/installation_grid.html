@@ -1,0 +1,15 @@
+{{ $ctaText := .Get "cta_text" }}
+{{ $ctaURL := .Get "cta_url" }}
+{{ $videoID := .Get "video_id" }}
+{{ $videoTitle := .Get "video_title" }}
+
+<div class="columns columns-2 installation-grid">
+    <div class="column installation-grid__copy">
+        {{ .Inner | markdownify }}
+        <a class="button installation-cta" href="{{ $ctaURL }}">{{ $ctaText }}</a>
+    </div>
+    <div class="column installation-grid__video">
+        <h2>{{ $videoTitle }}</h2>
+        {{- partial "video-facade.html" (dict "id" $videoID "title" $videoTitle "poster" (.Get "poster")) -}}
+    </div>
+</div>

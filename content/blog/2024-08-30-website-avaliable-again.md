@@ -8,7 +8,7 @@ tags:
     - Modsecurity-News
 ---
 
-After a long period, the [modsecurity.org](https://modsecurity.org) website is available again with renewed content and form.
+After a long period, the [modsecurity.org](/) website is available again with renewed content and form.
 
 <!--more-->
 

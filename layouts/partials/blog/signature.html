@@ -1,12 +1,17 @@
-{{- $allAuthors := .Site.Data.authors }}
+{{- $allAuthors := hugo.Data.authors }}
 {{- $authorKey := .Params.author }}
 {{- $authorData := index $allAuthors $authorKey }}
 
 {{ with $authorData }}
 <div class="blog-item__signature">
     {{ if .img }}
+    {{- /*
+      Decorative: the author's name sits beside it as text, so announcing the
+      image as well would only repeat it. `caption` was not an HTML attribute and
+      left the image with no alt at all.
+    */ -}}
     <img
-        caption="{{ .name }}"
+        alt=""
         loading="lazy"
         src="{{ relURL .img }}"
     />

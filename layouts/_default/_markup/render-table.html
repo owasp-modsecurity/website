@@ -1,0 +1,48 @@
+{{- /* Table render hook.
+
+       The theme ships a `.table-container` rule — `overflow-x: auto` plus a
+       min-width on the first column — but nothing ever emitted that wrapper:
+       Goldmark renders a bare <table>, so a table wider than the text column
+       had no way to scroll and simply overflowed the page. This hook adds the
+       wrapper Goldmark cannot.
+
+       Alignment is written as an inline style because that is what a markdown
+       column alignment marker (`:---`, `---:`) means and there is no class for
+       it; the site's CSP allows inline styles (script is the part that is
+       locked down). It is emitted only when the author actually set one.
+
+       Markdown attributes are deliberately not handled: no content uses them,
+       and passing them through unvalidated is how a stray `style=` or `on*`
+       attribute would reach the page. */ -}}
+{{- /* tabindex="0" because this element scrolls: a scroll container that only
+       a mouse can reach fails WCAG 2.1.1. Chroma marks its own <pre> the same
+       way for the same reason, so code and tables behave alike. The tab stop is
+       added unconditionally — whether a table overflows depends on the viewport
+       and cannot be known at build time — and _table-container.scss gives it a
+       visible focus ring. */ -}}
+<div class="table-container" tabindex="0">
+  <table>
+    {{- with .THead }}
+    <thead>
+      {{- range . }}
+      <tr>
+        {{- range . }}
+        <th{{ with .Alignment }} style="text-align: {{ . }}"{{ end }}>{{ .Text }}</th>
+        {{- end }}
+      </tr>
+      {{- end }}
+    </thead>
+    {{- end }}
+    {{- with .TBody }}
+    <tbody>
+      {{- range . }}
+      <tr>
+        {{- range . }}
+        <td{{ with .Alignment }} style="text-align: {{ . }}"{{ end }}>{{ .Text }}</td>
+        {{- end }}
+      </tr>
+      {{- end }}
+    </tbody>
+    {{- end }}
+  </table>
+</div>

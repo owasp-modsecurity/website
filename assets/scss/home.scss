@@ -1,151 +1,582 @@
-// Define SCSS variables. Copied from theme _variables.scss.
-$desktop-width: calc(1200px + 25px + 25px);
-$min-desktop: 1000px;
-$mobile-max: 999px;
+@use "variables" as *;
+@use "mixins" as *;
+
+.page-home {
+  #content {
+    max-width: none;
+    padding-inline: 0;
+  }
+}
 
 .page-home .content {
-    // Margins are bigger on home.
-    p {
-        margin-block-start: 30px;
-        margin-block-end: 30px;
+  > section {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: 12px;
+
+    @media (min-width: $min-372) {
+      padding-inline: var(--gutter);
     }
 
-    .button {
-        margin-top: 0;
-        margin-bottom: 0;
+    @media (min-width: $desktop-width) {
+      padding-inline: calc((100% - var(--container-width)) / 2);
+    }
+  }
+
+  .button {
+    margin: 0;
+    text-decoration: none;
+  }
+
+
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: clamp(18px, 3vw, 36px);
+    margin-block: 0;
+    row-gap: 38px;
+
+    > * {
+      min-width: 0;
+      grid-column: 1 / -1;
     }
 
-    .darker {
-        color: var(--primary-700);
+    @media (min-width: $min-700) {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
     }
 
-    .subhero {
-        font-family: var(--rounded-font-family);
-        color: var(--text-color);
-        font-size: 20px;
-        max-width: 465px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-        letter-spacing: 0.8px;
-        text-transform: none;
-        border-left: 6px solid var(--primary-400);
-        padding-left: 20px;
-        margin-block-end: 50px;
-        @media (min-width: $min-desktop) {
-            margin-block-end: 60px;
-        }
+    &__col1 {
+      grid-column: 1 / -1;
+      @media (min-width: $min-700) { grid-column: span 8; }
+      @media (min-width: $min-desktop) { grid-column: span 6; }
     }
 
-    .hero-grid {
-        margin-top: 0;
-        margin-bottom: 0;
-        row-gap: 50px;
+    &__col2 {
+      grid-column: 1 / -1;
+      @media (min-width: $min-700) { grid-column: span 8; }
+      @media (min-width: $min-desktop) { grid-column: 7 / -1; }
+    }
+  }
 
-        h1 {
-            @media (min-width: $min-desktop) and (max-width: $desktop-width) {
-                font-size: 75px;
-            }
-            @media (min-width: $min-desktop) {
-                margin-block-end: 120px;
-            }
-        }
-        &__col1 {
-            grid-column: span 12;
-            @media (min-width: 600px) {
-                grid-column: span 9;
-            }
-            @media (min-width: 1000px) {
-                grid-column: span 7;
-            }
-            @media (min-width: $desktop-width) {
-                grid-column: span 6;
-            }
-        }
-        &__col2 {
-            grid-column: span 12;
-            @media (min-width: 600px) {
-                grid-column: span 9;
-            }
-            @media (min-width: 1000px) {
-                align-self: flex-end;
-                grid-column: 8 / -1;
-                padding-bottom: 42px;
-            }
-            @media (min-width: $desktop-width) {
-                grid-column: 7 / -1;
-            }
-        }
+  .home-hero {
+    align-items: center;
+    padding-block: clamp(44px, 4vw, 56px);
 
-        .button {
-            margin-bottom: 50px;
-            @media (min-width: $min-desktop) {
-                margin-bottom: 50px;
-            }
-        }
+    &::after { @include band-rule(clamp(44px, 4vw, 56px)); }
 
-        .shortened-width {
-            @media (min-width: $min-desktop) {
-                max-width: 90%;
-            }
-        }
+    .hero-title {
+      margin: 0 0 24px;
+      font-size: clamp(52px, 7.1vw, 88px);
+      letter-spacing: -.035em;
+      line-height: .92;
+
+      &__owasp { color: var(--hero-blue-owasp); }
+      &__modsecurity { color: var(--blue2); }
+      &__project { color: var(--blue); }
     }
 
-    .box-grid {
-        gap: 30px;
-        margin-top: 30px;
-        margin-bottom: 100px;
+    .hero-lead {
+      max-width: 610px;
+      margin: 0;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+
+      strong { font-weight: 700; }
     }
 
-    .landscape-grid {
-        margin-top: 80px;
-        margin-bottom: 100px;
-        @media (min-width: 600px) {
-            gap: 50px;
-        }
-        &__col1 {
-            grid-column: span 12;
-            @media (min-width: 600px) {
-                grid-column: span 5;
-            }
-            @media (min-width: $desktop-width) {
-                grid-column: span 4;
-                padding-right: 50px;
-            }
-        }
-        &__col2 {
-            grid-column: span 12;
-            @media (min-width: 600px) {
-                grid-column: span 7;
-                align-self: flex-start;
-            }
-            @media (min-width: $desktop-width) {
-                grid-column: 5 / -1;
-            }
-        }
-    }
+    .release-status {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      margin: 28px 0 0;
+      color: var(--text-color);
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
 
-    .floating-effect {
-        box-shadow: none;
+      &__dot {
         position: relative;
-        display: block;
-        padding-bottom: 40px;
-        &:after {
-            content: "";
-            display: block;
-            position: absolute;
-            width: 80%;
-            left: 50%;
-            transform: translateX(-50%);
-            height: 10px;
-            bottom: 60px;
-            background-color: transparent;
-            border-radius: 100px/50px;
-            box-shadow: 0 35px 30px rgba(0, 0, 0, 0.5);
+        width: 10px;
+        height: 10px;
+        flex: 0 0 10px;
+        border-radius: 50%;
+        background: var(--status-green);
+        box-shadow: 0 0 0 4px rgba(74, 168, 50, .14);
+
+        // Radar sweep: one faint ring leaves the dot, widens and fades, then
+        // the cycle rests before the next one. The rest is what makes it read
+        // as slow rather than as a blinking indicator; the ring itself is done
+        // by 2.2s of the 5s cycle.
+        //
+        // The dot is decorative (aria-hidden in layouts/index.html) and the
+        // static ring above carries the "live" reading on its own, so removing
+        // the motion below removes nothing a reader needs.
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          border: 1px solid var(--status-green);
+          // The ring is invisible at rest and the keyframes raise it to 0.5, so
+          // switching the animation off below leaves nothing to hide.
+          opacity: 0;
+          animation: release-status-sweep 5s cubic-bezier(0, 0, .2, 1) infinite;
+
+          @media (prefers-reduced-motion: reduce) {
+            animation: none;
+          }
         }
+      }
+      &__label { font-weight: 400; }
     }
 
-    .rounded-corners {
-        border-radius: 10px;
+    .hero-grid__col2 {
+      @media (min-width: $min-desktop) { align-self: center; }
     }
+
+    .hero-waf {
+      display: block;
+      width: min(100%, 582px);
+      height: auto;
+      margin-inline: auto;
+    }
+
+    @media (min-width: $min-desktop) {
+      padding-block: 18px;
+
+      // The rule's offsets are derived from the section's padding, so it has to
+      // be recomputed wherever that padding changes — otherwise it is pushed
+      // 38px too low, landing on the next section's heading.
+      &::after { @include band-rule(18px); }
+
+      .hero-title { font-size: 80px; line-height: 90px; letter-spacing: 0; margin-bottom: 16px; }
+      .release-status { margin-top: 18px; }
+    }
+  }
+
+  // No rule below this band: the design draws none between the overview and the
+  // custodianship card.
+  .home-overview {
+    gap: clamp(30px, 6vw, 90px);
+    padding-block: clamp(52px, 6vw, 88px);
+
+    &__primary,
+    &__secondary {
+      display: flex;
+      flex-direction: column;
+    }
+    &__secondary .join-team-action,
+    &__primary .release-actions {
+      margin-top: auto;
+    }
+
+    // Only the primary column narrows here; the secondary keeps the shared
+    // .hero-grid__col2 placement (7 / -1) straight from .hero-grid.
+    .hero-grid__col1 {
+      @media (min-width: $min-desktop) { grid-column: span 6; }
+    }
+    h2 {
+      max-width: 510px;
+      margin: 0;
+      color: var(--primary-400);
+      font-family: var(--condensed-font-family);
+      font-size: clamp(31px, 3.1vw, 43px);
+      font-weight: 700;
+      letter-spacing: .01em;
+      line-height: 1.04;
+      text-transform: uppercase;
+    }
+    p {
+      max-width: 560px;
+      margin: 22px 0 30px;
+    }
+    .release-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .button {
+      background: var(--accent-orange);
+      color: var(--white);
+      font-weight: 700;
+
+      &:hover,
+      &:active {
+        background: var(--primary-700);
+        color: var(--white);
+      }
+
+      &:focus-visible {
+        outline: 3px solid var(--black);
+        outline-offset: 3px;
+      }
+    }
+
+    @media (min-width: $min-desktop) {
+      padding-block: 24px;
+
+      h2 { color: var(--blue); font-size: 40px; line-height: 46px; }
+      p { color: var(--black); font-family: Nunito, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; margin-block: 12px 16px; }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 222px;
+        @include cta-pill;
+        font-family: var(--rounded-font-family);
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0;
+        line-height: 22px;
+        text-transform: uppercase;
+      }
+    }
+
+    @media (min-width: $desktop-width) {
+      grid-template-columns: repeat(2, minmax(0, 582px));
+      column-gap: 30px;
+
+      .hero-grid__col1,
+      .home-overview__secondary { grid-column: auto; }
+    }
+  }
+
+  // Centred card: 1193x360, radius 12, white. The shadow is the one deliberate
+  // departure — see --card-shadow. No rule below it either; the design draws
+  // none between this and Getting Started.
+  .home-custodianship {
+    padding-block: clamp(48px, 5.5vw, 80px);
+
+    &__card {
+      padding: clamp(32px, 4vw, 52px) clamp(24px, 4vw, 60px);
+      border-radius: 12px;
+      background: var(--white);
+      box-shadow: var(--card-shadow);
+      text-align: center;
+
+      // 179x62 is the size the logo is drawn at inside the card.
+      img {
+        display: block;
+        width: min(100%, 179px);
+        height: auto;
+        margin: 0 auto 24px;
+      }
+
+      // Two widths from the design: 918 for the heading, 888 for the paragraph,
+      // each centred.
+      h2 {
+        max-width: 918px;
+        margin: 0 auto;
+      }
+
+      p {
+        max-width: var(--measure);
+        margin: 22px auto 0;
+      }
+    }
+  }
+
+  .section-heading {
+    margin-bottom: 30px;
+    h2 { margin: 0; }
+    &--split {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px 32px;
+      > a { padding-bottom: 5px; font-weight: 800; text-underline-offset: 4px; }
+    }
+  }
+
+  .home-getting-started { padding-block: clamp(52px, 6vw, 88px); }
+  .box-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+    margin: 0;
+
+    > * {
+      min-width: 0;
+      grid-column: 1 / -1;
+    }
+
+    @media (min-width: $min-600) {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      > * { grid-column: span 6; }
+    }
+
+    @media (min-width: $min-desktop) {
+      > * { grid-column: span 4; }
+    }
+  }
+
+  // Plain white 378x360 cards, radius 12, with no coloured top edge. The shadow
+  // is the shared --card-shadow, a deliberate departure from the design's
+  // harder halo.
+  .box-grid .card {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 32px 26px 26px;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+
+    .card-content { flex: 1; }
+    h3 { margin: 0 0 18px; color: var(--primary-700); font-size: 27px; }
+    ul { padding-left: 20px; }
+    p:last-child { margin: 26px 0 0; }
+
+    // Orange uppercase text link, Nunito Black 16px.
+    .card__cta {
+      color: var(--accent-orange);
+      font-family: var(--rounded-font-family);
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: .02em;
+      line-height: 22px;
+      text-decoration: none;
+      text-transform: uppercase;
+
+      &:hover,
+      &:focus-visible { text-decoration: underline; }
+    }
+  }
+
+  // No background band, deliberately: the only filled areas on the home page are
+  // the header, the custodianship card and the footer. This section is delimited by
+  // the rule above its heading and by the cards' own hairlines, the same structure
+  // the Blog list page uses.
+  // Asymmetric padding on purpose. The top keeps the section's normal 88px so
+  // the rule above the heading sits in the same rhythm as the rest of the page.
+  // The bottom is tightened because the cards already carry 28px of their own,
+  // and .home-partners adds another 88px below — which would leave roughly 185px
+  // of blank white between the last card and "Trusted by" against the design's
+  // 73px. This lands between the two.
+  .home-latest-blog {
+    padding-block: clamp(52px, 6vw, 88px) clamp(16px, 1.5vw, 24px);
+
+    // The design's second rule sits above this section's heading. This is a plain
+    // block section, so a ::before is simply its first child and therefore lives in
+    // the content box — 1200px, container-aligned.
+    // The negative top margin lifts it onto the section's top edge, where a
+    // border-top would have been.
+    &::before {
+      content: "";
+      display: block;
+      height: 1px;
+      margin-block: calc(clamp(52px, 6vw, 88px) * -1) clamp(52px, 6vw, 88px);
+      background: var(--gray-300);
+    }
+  }
+
+  // No rule here: the design's second rule sits *above* the "Latest Blog Posts"
+  // heading, not between the heading and the cards — see the ::before on
+  // .home-latest-blog.
+  .latest-posts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    @media (max-width: $max-899) { grid-template-columns: 1fr; }
+  }
+
+  .home-partners {
+    // Tighter on top: the blog cards above already carry 28px of their own
+    // padding, and 88px here left a large blank band between the two sections.
+    padding-block: clamp(40px, 4vw, 56px) clamp(52px, 6vw, 88px);
+
+    h2 {
+      // The note below carries the gap down to the grid; the heading only has to
+      // clear the sentence that qualifies it.
+      margin: 0 0 12px;
+      color: var(--blue);
+      font-family: var(--condensed-font-family);
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 46px;
+    }
+
+    &__list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: 128px;
+      gap: 16px;
+      min-height: 416px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    &__item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      margin: 0;
+      padding: 18px;
+      background: var(--white);
+      box-shadow: var(--card-shadow);
+    }
+
+    // The two sentences that bracket the logo grid: the disclaimer above it and
+    // the sponsorship invitation below it. One rule, because they are the same
+    // kind of text — secondary to the logos, but full body size, since one of
+    // them is what keeps the logos from being read as endorsements. Muted
+    // rather than smaller; --gray-800 is 6.06:1 on white, well clear of the
+    // 4.5:1 asked of text this size.
+    // Only the margin differs: the disclaimer carries its own gap down to the
+    // grid, while below the grid that gap belongs to the rule between them.
+    &__note,
+    &__sponsor {
+      max-width: var(--measure);
+      color: var(--gray-800);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    // The 30px here is the gap the heading used to carry.
+    &__note { margin: 0 0 30px; }
+    &__sponsor { margin: 0; }
+
+    // Closes the logo grid. Same 1px of --gray-300 as .home-latest-blog::before
+    // above the Latest Blog Posts heading, so the page draws one kind of rule
+    // and not two — but on a real element, because there is no pseudo-element
+    // slot between a grid and its following paragraph: an ::after on the list
+    // becomes a grid item and opens a 128px row at the narrow breakpoints, and
+    // an ::before on the paragraph would sit in inline context.
+    // Not an <hr>: the theme gives that opacity .25 and a --black border, three
+    // declarations to cancel before it looks like the line above.
+    // It carries the gap on both sides, so the paragraph below needs no margin
+    // and the gap cannot be stated twice. 40px above against 32px below rather
+    // than an even pair: the logo cards' --card-shadow is offset 7px downward,
+    // so it fills part of the space under the grid while the space above the
+    // line stays clean white, and an even gap reads bottom-heavy. Set by eye on
+    // the rendered page.
+    &__rule {
+      height: 1px;
+      margin-top: 40px;
+      margin-bottom: 32px;
+      background: var(--gray-300);
+    }
+
+    // One <span> per logo, painted from the shared sprite built by
+    // layouts/partials/partners-sprite.html. The 131:96 aspect below MUST match
+    // the sprite's cell ratio; one cell then maps exactly onto this box and the
+    // cell's own preserveAspectRatio does the "contain" fit — so the logo is
+    // never distorted at any viewport width.
+    // --partner-count and --partner-pos are both emitted by layouts/index.html
+    // from data/partners.yaml, the same source the sprite is built from, so the
+    // number of logos is never restated here.
+    &__logo {
+      display: block;
+      width: 100%;
+      max-width: 112px;
+      aspect-ratio: 131 / 96;
+      margin-inline: auto;
+      background-image: var(--partner-sprite);
+      background-repeat: no-repeat;
+      background-size: calc(var(--partner-count) * 100%) 100%;
+      background-position: var(--partner-pos) center;
+    }
+
+    &.is-enhanced {
+      .home-partners__list {
+        position: relative;
+        isolation: isolate;
+
+        .home-partners__item {
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity var(--partner-fade-ms, 700ms) ease-in-out;
+
+        &.is-active { opacity: 1; }
+        &[data-partner-slot="0"],
+        &[data-partner-slot="2"],
+        &[data-partner-slot="4"] { grid-column: 1; }
+        &[data-partner-slot="1"],
+        &[data-partner-slot="3"],
+        &[data-partner-slot="5"] { grid-column: 2; }
+        &[data-partner-slot="0"],
+        &[data-partner-slot="1"] { grid-row: 1; }
+        &[data-partner-slot="2"],
+        &[data-partner-slot="3"] { grid-row: 2; }
+          &[data-partner-slot="4"],
+          &[data-partner-slot="5"] { grid-row: 3; }
+        }
+      }
+    }
+
+    @media (min-width: $min-600) {
+      &__list { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 128px; min-height: 272px; }
+      &.is-enhanced .home-partners__list .home-partners__item {
+        &[data-partner-slot="0"], &[data-partner-slot="3"] { grid-column: 1; }
+        &[data-partner-slot="1"], &[data-partner-slot="4"] { grid-column: 2; }
+        &[data-partner-slot="2"], &[data-partner-slot="5"] { grid-column: 3; }
+        &[data-partner-slot="0"], &[data-partner-slot="1"], &[data-partner-slot="2"] { grid-row: 1; }
+        &[data-partner-slot="3"], &[data-partner-slot="4"], &[data-partner-slot="5"] { grid-row: 2; }
+      }
+    }
+
+    @media (min-width: $min-desktop) {
+      // Row and column must be set on the same attribute-qualified selectors as the
+      // narrower breakpoints, otherwise their grid-row wins on specificity and the
+      // six slots wrap onto a second row.
+      &__list { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: auto; gap: 30px; min-height: 0; }
+      &__item { padding: 22px; aspect-ratio: 174 / 170; }
+      &__logo { max-width: 131px; }
+      &.is-enhanced .home-partners__list .home-partners__item {
+        &[data-partner-slot="0"] { grid-area: 1 / 1; }
+        &[data-partner-slot="1"] { grid-area: 1 / 2; }
+        &[data-partner-slot="2"] { grid-area: 1 / 3; }
+        &[data-partner-slot="3"] { grid-area: 1 / 4; }
+        &[data-partner-slot="4"] { grid-area: 1 / 5; }
+        &[data-partner-slot="5"] { grid-area: 1 / 6; }
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &.is-enhanced .home-partners__list .home-partners__item { transition: none; }
+    }
+  }
+
+  .latest-post {
+    display: flex;
+    flex-direction: column;
+    padding: 28px 28px 28px 0;
+    // Stacked-mobile separator only: on desktop the row needs no closing rule, the
+    // one line here belongs above the heading and none under the list.
+    border-bottom: 1px solid var(--gray-300);
+    @media (min-width: $min-900) {
+      padding: 28px;
+      border-bottom: 0;
+      // Both outer paddings are dropped, not just the first: dropping only one
+      // leaves the row flush left but inset 28px on the right. Mirrored, both ends
+      // line up with the container and with the rule above.
+      &:first-child { padding-left: 0; }
+      &:last-child { padding-right: 0; }
+      &:not(:last-child) { border-right: 1px solid var(--gray-300); }
+    }
+    &__date { margin: 0 0 12px; color: var(--gray-800); font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    h3 { margin: 0; font-size: clamp(22px, 2vw, 28px); line-height: 1.15; }
+    h3 a { color: var(--text-color); text-decoration: none; }
+    h3 a:hover, h3 a:focus-visible { color: var(--primary-700); text-decoration: underline; text-underline-offset: 4px; }
+    > p:not(.latest-post__date) { margin: 17px 0 24px; line-height: 1.5; }
+    &__link { margin-top: auto; font-weight: 800; text-underline-offset: 4px; }
+  }
+
+  @media (max-width: $max-699) {
+    .home-hero .hero-grid__col2 { order: -1; max-width: 440px; }
+    .home-overview .release-actions .button { width: 100%; text-align: center; }
+  }
+}
+
+// The homepage "live" dot's radar sweep. At root level because @keyframes
+// nested inside a selector would compile to invalid CSS.
+//
+// scale(3) takes the ring from 10px to 30px, so it reaches 10px past the dot
+// on each side — a little further than the 7px gap to the label. That overlap
+// is deliberate: a 1px ring at 0.5 opacity and falling is what makes the sweep
+// read as leaving the dot rather than as a second dot growing beside it.
+@keyframes release-status-sweep {
+  0% { transform: scale(1); opacity: .5; }
+  44% { transform: scale(3); opacity: 0; }
+  100% { transform: scale(3); opacity: 0; }
 }

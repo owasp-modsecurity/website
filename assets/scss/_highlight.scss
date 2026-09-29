@@ -1,7 +1,139 @@
-.highlight {
-    max-width: 500px;
-    pre {
-        white-space: pre-wrap;
-        word-break: break-word;
-    }
+@use "variables" as *;
+
+// Code blocks. Two shapes reach the page and only one of them arrives styled:
+//
+//   ```bash        → Chroma:  div.highlight > pre[tabindex=0] with INLINE
+//                             `background-color:#272822;color:#f8f8f2`
+//   ```  (no lang) → no Chroma at all: a bare <pre tabindex=0>, transparent,
+//                             unpadded, `overflow: visible`
+//
+// Both are styled here with the values Chroma uses inline, so a fence's language
+// does not decide whether it looks like a code block.
+//
+// `white-space: pre` with `overflow-x: auto`, deliberately not `pre-wrap`: on a
+// site whose whole purpose is copy-and-paste configuration a wrapped line is
+// indistinguishable from a real newline, and `SecRequestBodyNoFilesLimit` broken
+// across two lines is not something anyone can paste. Chroma already puts
+// `tabindex="0"` on its <pre> and js/code-copy.js adds it to the others, so every
+// scroll container is reachable from the keyboard.
+.content pre {
+  overflow-x: auto;
+  padding: 20px;
+  border-radius: 4px;
+  background-color: #272822;
+  color: #f8f8f2;
+  white-space: pre;
+  word-break: normal;
+}
+
+// The positioned shell the copy button anchors to. `.highlight` is Chroma's
+// own wrapper; `.code-block` is added by js/code-copy.js around the bare <pre>
+// blocks that have no wrapper of their own. The button must sit on the wrapper
+// and not inside the <pre>, or it would scroll away with the code.
+.highlight,
+.code-block {
+  position: relative;
+}
+
+// The theme constrains `.content > *` to --content-width but then relaxes every
+// `.content div` to 100%, and re-narrows Chroma's wrapper by name
+// (`.content div.highlight`). Wrapping a bare <pre> therefore widens it from
+// 895px to the full 1200px container unless the same exception is made by name
+// for this wrapper too.
+.content div.code-block {
+  max-width: var(--content-width);
+}
+
+// Copy-to-clipboard. Injected by assets/js/code-copy.js, so it is absent without
+// JavaScript — the code stays selectable by hand either way.
+.code-copy {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  min-height: 32px;
+  padding: 6px 12px;
+  border: 1px solid rgb(255 255 255 / .35);
+  border-radius: 6px;
+  // Opaque, not a translucent tint: the block scrolls horizontally, so at
+  // scroll position 0 the button sits directly over the first line. Reserving
+  // padding for it instead would leave a 90px hole at the far end of every
+  // block, and the text under the button is one scroll away either way.
+  background: #3a3b33;
+  color: #f8f8f2;
+  cursor: pointer;
+  font-family: var(--rounded-font-family);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1;
+  opacity: 0;
+  text-transform: uppercase;
+  transition: opacity .15s ease-out, background-color .15s ease-out;
+
+  &:hover {
+    background: #4d4e44;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--white);
+    outline-offset: 2px;
+    opacity: 1;
+  }
+
+  &[data-copied="true"] {
+    border-color: var(--status-green);
+    color: var(--status-green);
+  }
+}
+
+// Revealed on hover, but never hidden from keyboard or touch users: a device
+// with no hover reports `hover: none`, and there the button stays visible.
+.highlight:hover .code-copy,
+.highlight:focus-within .code-copy,
+.code-block:hover .code-copy,
+.code-block:focus-within .code-copy {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .code-copy { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-copy { transition: none; }
+}
+
+// Inline code — a run of code inside a sentence, as opposed to the blocks above.
+//
+// It had no styling at all, so it arrived as the browser's default monospace at
+// whatever size the paragraph was using. At 18px a monospace face reads
+// noticeably larger and heavier than the Nunito around it, and with nothing
+// marking the run as code it simply looked like the font had failed mid-sentence.
+//
+// The selector is every <code> whose parent is not a <pre>, so the block rules
+// above keep the ones they own.
+.content :not(pre) > code,
+.page-content :not(pre) > code {
+  // .25em rather than the .4em a code chip usually takes: at .4em the gap it
+  // opens beside a bracket or a comma is wide enough to read as a space, and
+  // these sentences are full of `(identifier)` and `identifier,`.
+  padding: .1em .25em;
+  border-radius: 4px;
+  background: var(--gray-200);
+  // Not 1em. A monospace face at the same nominal size sits optically larger than
+  // the body face, and matching the number rather than the appearance is what made
+  // these runs stand out in the first place.
+  font-size: .875em;
+  // Identifiers have nowhere to break: `SecRequestBodyNoFilesLimit` is one word to
+  // the line-breaker, and the article column is 895px. Without this it pushes past
+  // the measure instead of wrapping.
+  overflow-wrap: break-word;
+}
+
+// Code inside a link stays a link. The blue measures 4.85:1 on white but only
+// 4.10:1 on the tint above, so the chip is what goes rather than the colour.
+.content a code,
+.page-content a code {
+  padding: 0;
+  background: none;
 }

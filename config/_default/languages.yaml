@@ -1,9 +1,10 @@
 en:
-  languageName: English
+  # `languageName` was deprecated in Hugo v0.158.0 in favour of `label`.
+  label: English
   weight: 1
   ### copyright (markdown can be used) ###
-  copyright: "Copyright &copy; {{< current_year >}} Modsecurity Project. All Rights Reserved."
-  title: "Modsecurity Project"
+  copyright: "Copyright &copy; {{< current_year >}} ModSecurity Project. All Rights Reserved."
+  title: "ModSecurity Project"
   params:
     description: "Open Source Web Application Firewall"
     ### accessibility ###
@@ -22,57 +23,62 @@ en:
   ### example menu showing children ###
   menu:
     main:
-    - identifier: "blog"
-      name: "Blog"
-      url: "/blog/"
-      weight: 1
-    - identifier: "bloglist"
-      name: "All posts"
-      url: "/blog/"
-      weight: 1
-      post: "History"
-      parent: "blog"
-    - identifier: "news"
-      name: "News"
-      url: "tags/modsecurity-news/"
-      weight: 1
-      post: "See the latest news"
-      parent: "blog"
-    - identifier: "videos"
-      name: "Videos"
-      url: "/videos/"
-      weight: 2
-    - identifier: "docs"
-      name: "Documentation"
-      weight: 3
-    - identifier: "installation"
-      name: "Installing"
-      url: "https://github.com/owasp-modsecurity/ModSecurity/wiki/Compilation-recipes-for-v3.x"
-      weight: 1
-      post: "How to deploy Modsecurity"
-      parent: "docs"
-    - identifier: "fulldoc"
-      name: "Configuration"
-      post: "See how to configure ModSecurity "
-      url: "https://github.com/owasp-modsecurity/ModSecurity/wiki/ModSecurity-Frequently-Asked-Questions-%28FAQ%29#user-content-Configuring_ModSecurity"
-      weight: 2
-      parent: "docs"
-    - identifier: "support"
-      name: "Support"
-      url: "/support/"
-      weight: 3
-      post: "Learn how to contribute"
-      parent: "docs"
-    - identifier: "Developers"
-      name: "Developers"
-      url: "/developers/"
-      weight: 4
-    - identifier: "faq"
-      name: "FAQs"
-      url: "/faq/"
-      weight: 5
-    - identifier: "donate"
-      name: "Donate"
-      url: "https://owasp.org/donate?reponame=www-project-modsecurity&title=OWASP+ModSecurity"
-      weight: 6
-
+      - identifier: "resources"
+        name: "Resources"
+        weight: 1
+      - identifier: "articles"
+        name: "Articles, Guides & Updates"
+        url: "/blog/"
+        weight: 1
+        parent: "resources"
+      - identifier: "installation"
+        name: "Installation"
+        url: "/installation/"
+        weight: 2
+        parent: "resources"
+      - identifier: "faqs"
+        name: "FAQs"
+        url: "/faq/"
+        weight: 4
+        parent: "resources"
+      - identifier: "about-us"
+        name: "About Us"
+        weight: 2
+      # Our Team before History, the order the approved footer shows. Header and
+      # footer share this one menu, so the dropdown follows suit — the design
+      # never opens the dropdown, so it says nothing to contradict this.
+      - identifier: "our-team"
+        name: "Our Team"
+        url: "/team/"
+        weight: 1
+        parent: "about-us"
+      - identifier: "history"
+        name: "History"
+        url: "/history/"
+        weight: 2
+        parent: "about-us"
+      - identifier: "news"
+        name: "News"
+        url: "/news/"
+        weight: 3
+        parent: "about-us"
+      - identifier: "contact-us"
+        name: "Contact Us"
+        url: "/contact/"
+        weight: 4
+        parent: "about-us"
+      - identifier: "join-us"
+        name: "Join Us"
+        url: "/join/"
+        weight: 3
+      - identifier: "project-update"
+        name: "Project Update"
+        url: "/project-update/"
+        weight: 5
+        params:
+          class: "menu-button"
+    footer:
+      - identifier: "privacy-policy"
+        name: "Privacy Policy"
+        url: "/privacy-policy/"
+        weight: 1

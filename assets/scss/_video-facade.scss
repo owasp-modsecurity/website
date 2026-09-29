@@ -1,0 +1,78 @@
+@use "variables" as *;
+
+// Click-to-load video facade. See assets/js/video-facade.js for why this exists
+// rather than the theme's lite-youtube component.
+.video-facade {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--black);
+
+  &__button {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 3px solid var(--primary-400);
+      outline-offset: -3px;
+    }
+  }
+
+  &__poster {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  // The play control. A neutral shape rather than YouTube's own mark: the video
+  // is on YouTube, but this button is ours and drawing their logo is a
+  // trademark use the project has no need for.
+  &__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 72px;
+    height: 50px;
+    transform: translate(-50%, -50%);
+    border-radius: 12px;
+    background: rgb(0 0 0 / .65);
+    transition: background-color .15s ease-out;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 52%;
+      transform: translate(-50%, -50%);
+      border: solid transparent;
+      border-width: 10px 0 10px 17px;
+      border-left-color: var(--white);
+    }
+  }
+
+  &__button:hover &__play,
+  &__button:focus-visible &__play {
+    background: var(--accent-orange);
+  }
+
+  &__player {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-facade__play {
+    transition: none;
+  }
+}

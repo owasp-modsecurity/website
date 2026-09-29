@@ -1,6 +1,11 @@
 @use "hugo:vars" as h;
 $fonts-path : h.$fonts-path;
 
+// Sass colour used where compile-time colour operations (for example rgba())
+// are required. The matching CSS custom property below is derived from this
+// value so the brand blue still has a single source of truth.
+$blue: #0e98d8;
+
 // Define CSS variables
 :root {
   --condensed-font-family: "Oswald", "Impact", "Arial Black", sans-serif, -apple-system, BlinkMacSystemFont, Roboto,
@@ -11,8 +16,40 @@ $fonts-path : h.$fonts-path;
   --text-color: var(--black);
   --black: #000000;
   --white: #ffffff;
-  --crs-blue: #0e98d8;
-  --link-color: var(--primary-600);
+  // The approved brand palette. Changing one of these changes the brand, not a
+  // local style; every other colour below resolves through them.
+  --blue: #{$blue};
+  --blue2: #0379ab;
+  --orange: #ff8a3c;
+  --light-grey: #e5e5e5;
+  // The homepage hero headline is genuinely three colours — OWASP #1297d8,
+  // MODSECURITY #0379ab, PROJECT #0e98d8 — and this token exists for that first
+  // word only. Everywhere else a single blue is intended: the approved design
+  // carries three values within 4/255 of one another on one channel, which is
+  // eyedropper drift rather than intent, so every heading resolves to --blue
+  // through --primary-400 instead.
+  --hero-blue-owasp: #1297d8;
+
+  --accent-orange: var(--orange);
+  --status-green: #4aa832;
+  // Body links are blue, not the brand orange. Orange on white measures 2.35:1,
+  // against the 4.5:1 WCAG 2.1 SC 1.4.3 asks of body text; this was decided on
+  // 2026-09-11 and the orange stays on CTAs, where the large-text threshold is
+  // 3:1.
+  //
+  // --primary-700 is --blue2 (#0379ab) at 4.85:1, and is already the site's blue
+  // for the footer, focus outlines and hovers. Note that the LIGHTER brand blue,
+  // --blue (#0e98d8) behind --primary-400/500, measures only 3.23:1 and would
+  // still fail here — the criterion picks the colour, not the palette position.
+  //
+  // --primary-600 (the orange) now has no consumer. It is left in the ramp
+  // because the vendored theme's own _variables.scss still defines and uses it.
+  --link-color: var(--primary-700);
+  // _typography.scss hovers links to this token rather than naming a colour
+  // directly, so it has to exist here: without it the hover colour resolves to
+  // nothing, with no build warning. --primary-800 is 8.63:1, so the link darkens
+  // on hover and stays well clear of the minimum.
+  --link-color-hover: var(--primary-800);
   --menu-link-color: var(--black);
   --menu-link-color-hover: var(--gray-800);
   --footer-link-color: var(--white);
@@ -20,21 +57,62 @@ $fonts-path : h.$fonts-path;
   --gutter: 25px;
   --container-width: 1200px;
   --content-width: 895px;
+  // Body copy measure. Every single-column 16px text block in the approved design
+  // is 888px wide (Installation, Contact, History, Join, Project Update, Our
+  // Team); the narrower widths in it are column-constrained contexts, not a
+  // different measure. One owner, so paragraphs and lists cannot drift apart.
+  --measure: 888px;
+  // Shared card shadow, and a deliberate departure from the approved design: that
+  // specifies `0 0 10px` black at 30% on the custodianship card, the Getting
+  // Started cards and the Trusted-by tiles alike, which is a hard, evenly-spread
+  // halo. This softer, downward-cast one reads better. One owner, so the three
+  // card surfaces cannot drift apart.
+  --card-shadow: 0 7px 24px rgb(0 0 0 / .1);
 
-  --primary-400: hsl(199, 88%, 45%);
-  --primary-600: hsl(0, 0%, 40%);
-  --primary-700: hsl(198, 97%, 34%);
+  --primary-400: var(--blue);
+  --primary-500: var(--blue);
+  --primary-600: var(--orange);
+  --primary-700: var(--blue2);
   --primary-800: hsl(210, 4%, 30%);
 
   --gray-200: #eaecf0;
-  --gray-300: #e5e5e5;
+  --gray-300: var(--light-grey);
   --gray-400: #e4e4e4;
   --gray-600: #b1b1b1;
   --gray-700: #767676;
   --gray-800: #5f6367;
+
+  // This file shadows the theme's _variables.scss wholesale, so any token the
+  // theme adds has to be carried over by hand — nothing warns when one is
+  // missing. These two are Pagefind's: without them /search/ renders in
+  // Pagefind's own defaults (#393939, system font stack) in the middle of a
+  // Nunito site. `!important` because Pagefind sets them on :root as well.
+  --pagefind-ui-text: var(--text-color) !important;
+  --pagefind-ui-font: var(--rounded-font-family) !important;
 }
 
 // Define SCSS variables.
 $desktop-width: calc(1200px + 25px + 25px);
 $min-desktop: 1000px;
 $mobile-max: 999px;
+
+// Ad-hoc breakpoints used at a handful of call sites. Not tied to named
+// device tiers (unlike $min-desktop / $mobile-max) — named after their pixel
+// value so every call site stays self-documenting.
+$min-900: 900px;
+$max-899: 899px;
+$min-700: 700px;
+$max-699: 699px;
+$min-600: 600px;
+$max-599: 599px;
+$min-372: 372px;
+
+// History timeline geometry. The gap is the distance from a row's inner edge to
+// the spine, so the marker offset is derived from it rather than restated: a
+// marker is centred on the spine, which is (gap + half a dot) beyond the edge.
+$history-gap: 34px;
+$history-dot: 11px;
+$history-spine: 2px;
+$history-marker-top: 26px;
+$history-rail: 8px;
+

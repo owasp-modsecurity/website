@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="{{ .Language.Lang }}">
+    {{- partial "head.html" . -}}
+    {{- /*
+      `is-editorial` names one idea so the stylesheets do not have to spell it out
+      as a pair every time. It is not the same set as "blog and news" reads like:
+      a news POST has type `blog`, so only the news LIST is type `news`, and a rule
+      written as `.blog, .news` invites the conclusion that news articles are
+      excluded when they are not. The set is the site's read-through content —
+      both lists and every article.
+    */ -}}
+    <body class="{{ urlize .Type }} page-{{ .Kind }}{{ if in (slice "blog" "news") .Type }} is-editorial{{ end }}">
+        {{- partial "accessibility.html" . -}}
+        {{- partial "header.html" . -}}
+        
+        {{/* <main>, not <section>: this is the page's main landmark, and screen
+             reader users navigate by landmark. */}}
+        {{/* Regular pages are indexed by default; a section opts in with
+             `search_index: true` (that is how the one-page /faq/ gets indexed)
+             and any page opts out with `search_index: false` — which /search/
+             does, so it cannot return itself as a result. */}}
+        {{- $searchable := or .IsPage .Params.search_index -}}
+        {{- if eq .Params.search_index false }}{{ $searchable = false }}{{ end -}}
+        <main id="content" class="container wrap" {{ if $searchable }}data-pagefind-body{{ end }}>
+            {{ if ne .Params.showHeader false }}
+                <header>
+                    {{/* No breadcrumb into a section marked noindex. The
+                         content/pages/* routes sit under an auto-generated /pages/
+                         index that is not part of the site's page map, so their
+                         breadcrumb would read "Home > Pages" and link a route the
+                         sitemap excludes. Blog posts and FAQ answers, whose sections
+                         are real, keep theirs. */}}
+                    {{ if and (eq .Kind "page") (ne .Section "") }}
+                      {{- $section := .Parent -}}
+                      {{- if not (and $section $section.Params.noindex) -}}
+                        {{- partial "breadcrumb.html" . -}}
+                      {{- end -}}
+                    {{ end }}
+                    {{- partial "page-title.html" . -}}
+                </header>
+            {{ end }}
+            {{ if or (eq .Kind "section") (eq .Kind "home") }}
+            <div class="content">
+            {{ else }}
+            <article class="content">
+            {{ end }}
+            {{- block "main" . }}{{ .Content }}{{- end }}
+            {{ if or (eq .Kind "section") (eq .Kind "home") }}
+            </div>
+            {{ else }}
+            </article>
+            {{ end }}
+        </main>
+        {{- partial "footer.html" . -}}
+    </body>
+</html>

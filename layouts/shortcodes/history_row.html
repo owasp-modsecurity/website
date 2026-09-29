@@ -1,0 +1,18 @@
+{{- /* One era on the History timeline.
+
+       The year is a span inside the <h2> rather than a line above it, so it stays
+       part of the heading's accessible name while the two halves are styled apart.
+
+       Which side of the spine a row sits on is decided in CSS by :nth-of-type and
+       not by a parameter here: the order of the eras determines it, and that order
+       already lives in the markdown. */ -}}
+<section class="history-row" id="{{ .Get "id" }}">
+  <h2 class="history-row__title">
+    {{- with .Get "year" }}<span class="history-row__year">{{ . }}</span>{{ end }}
+    <span class="history-row__name">{{ .Get "title" }}</span>
+  </h2>
+  {{/* RenderString with display "block", not markdownify: an era is a single
+       paragraph, and markdownify renders a single paragraph inline — the copy would
+       arrive as a bare text node after the </h2>, with no <p> around it. */}}
+  {{ .Page.RenderString (dict "display" "block") .Inner }}
+</section>

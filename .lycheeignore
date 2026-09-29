@@ -1,3 +1,24 @@
-piwik.netnea.com
-github.com/*
-trustwave.com
+# Every line here hides a link the checker would otherwise report. Keep the list
+# short, exclude URLs rather than whole hosts, and say why — a host-wide rule hides
+# tomorrow's broken link as well as today's.
+
+# Dead: Trustwave removed the custodianship announcement. The URL stays in the 2024
+# blog post as the citation of what was announced at the time, and OWASP's own
+# project page still carries the same dead link.
+^https://www\.trustwave\.com/en-us/resources/blogs/spiderlabs-blog/trustwave-transfers-modsecurity-custodianship
+
+# Dead: the reporter's repository cited by CVE-2024-46292 no longer exists. Kept as
+# a record of what the CVE pointed at.
+^https://github\.com/yoloflz101/
+
+# 403 to every unauthenticated request. Slack refuses non-browser clients outright,
+# so no URL on this workspace can be checked at all — this is not a link that might
+# break, it is a host that cannot be verified. Excluded as a host rather than per
+# channel, because a per-path rule would only move the same failure to the next
+# channel link someone adds.
+^https://owasp\.slack\.com
+
+# 999 "Unknown status code" — LinkedIn's anti-bot response, returned to anything
+# that is not a signed-in browser. Both spellings appear in the team page, and the
+# profiles resolve fine by hand; CI cannot confirm that.
+^https://(www\.)?linkedin\.com/

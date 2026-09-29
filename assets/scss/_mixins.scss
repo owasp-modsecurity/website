@@ -1,0 +1,64 @@
+// Shared CTA "pill" geometry — identical across the homepage overview CTA
+// (desktop), the page-content action buttons and the desktop menu button.
+// `.installation-cta` (44px / 10px 20px, radius inherited from the theme
+// `.button` class) uses different geometry and is intentionally not converted
+// to this mixin — forcing it in would add declarations that are not there today.
+@mixin cta-pill {
+  min-height: 37px;
+  padding: 7.5px 20px;
+  border-radius: 40px;
+}
+
+// The following three mixins exist purely to de-duplicate identical
+// declaration blocks in _pages.scss that are scoped under different parent
+// selectors (body.pages.page-page vs. body.page-section) and
+// therefore cannot be merged via a shared selector list without restructuring
+// specificity relative to the later body.faq.page-section override. Because a
+// mixin re-emits the same declarations verbatim at each call site, using them
+// here is a pure source de-duplication: the compiled CSS is byte-identical to
+// writing the properties out by hand at each site.
+@mixin section-header-reset($title-max-width) {
+  padding: 0;
+  border: 0;
+
+  .title {
+    max-width: $title-max-width;
+    margin: 96px 0 24px;
+  }
+}
+
+// Applies to every body paragraph, not just the first one: bound to `p:first-child`
+// it would leave the following paragraphs on the 1200px container, and the measure
+// would change down the page.
+@mixin body-measure {
+  max-width: var(--measure);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@mixin narrow-header-title-reset {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 64px;
+  overflow-wrap: anywhere;
+}
+
+// Homepage section rule.
+//
+// The homepage bands span the viewport — their 1200px container comes from the
+// symmetric `padding-inline` on `.page-home .content > section`. A `border-bottom`
+// therefore paints on the border box and runs edge to edge, while these rules have
+// to start at the container's left edge.
+//
+// A pseudo-element is laid out as a grid item instead, so it lives in the
+// *content* box and comes out exactly 1200px wide with no extra markup —
+// `.hero-grid > *` already sets `grid-column: 1 / -1`. The margins put it back
+// where the border sat: cancel the grid's 38px row-gap above it, then pull it
+// down through the section's own bottom padding.
+@mixin band-rule($pad) {
+  content: "";
+  grid-column: 1 / -1;
+  height: 1px;
+  margin-block: calc(#{$pad} - 38px) calc(#{$pad} * -1);
+  background: var(--gray-300);
+}

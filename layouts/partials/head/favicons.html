@@ -1,0 +1,28 @@
+{{/* Project override of the theme partial, for two reasons:
+
+     1. The icons are same-origin assets, so they are emitted origin-relative
+        instead of with the production domain baked in.
+
+     2. No `rel="icon" type="image/svg+xml"`. Chrome and Firefox prefer an SVG
+        icon over every PNG when one is linked, so that link is only worth adding
+        for a real vector. A bitmap wrapped in an SVG — which is what a favicon
+        generator often produces — makes every tab fetch the largest icon in the
+        set instead of the 1.5 KB 32x32 PNG below. */}}
+{{ if (fileExists "static/favicon.ico") }}
+<link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="32x32">
+{{ end }}
+{{ if (fileExists "static/favicon-32x32.png") }}
+<link rel="icon" type="image/png" sizes="32x32" href="{{ "favicon-32x32.png" | relURL }}">
+{{ end }}
+{{ if (fileExists "static/favicon-16x16.png") }}
+<link rel="icon" type="image/png" sizes="16x16" href="{{ "favicon-16x16.png" | relURL }}">
+{{ end }}
+{{ if (fileExists "static/apple-touch-icon.png") }}
+<link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}" />
+{{ end }}
+{{ if (fileExists "static/site.webmanifest") }}
+{{/* The manifest names the two android-chrome icons, which nothing else links, so
+     without this they ship unreferenced. Its own paths are relative for the same
+     reason relURL is used here: the site has to survive a sub-path deployment. */}}
+<link rel="manifest" href="{{ "site.webmanifest" | relURL }}">
+{{ end }}

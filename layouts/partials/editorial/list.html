@@ -1,0 +1,25 @@
+{{- /*
+  Shared "blog-item" list markup used by both the Blog and News section
+  list pages. Params (dict):
+    pages    - the (already paginated) page slice to render
+    label    - the aria-label text (i18n string)
+    modifier - the editorial-list BEM modifier ("articles" or "news")
+*/ -}}
+{{- $pages := .pages -}}
+{{- $label := .label -}}
+{{- $modifier := .modifier -}}
+  <section class="editorial-list editorial-list--{{ $modifier }}" aria-label="{{ $label }}">
+    {{- range $pages }}
+      <article class="blog-item">
+        <h2 class="blog-item__title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+        {{- partial "blog/byline.html" . }}
+        <div class="blog-item__summary">{{ .Summary }}</div>
+        {{- /*
+          The visible text is the same on every item, so the title is carried in a
+          visually hidden span. Without it a screen reader listing this page's links
+          reads "Read more" once per article with nothing to tell them apart.
+        */ -}}
+        <p class="blog-item__more"><a href="{{ .RelPermalink }}">{{ i18n "readMore" }}<span class="screen-reader-text">: {{ .Title }}</span></a></p>
+      </article>
+    {{ end }}
+  </section>

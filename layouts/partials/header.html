@@ -1,33 +1,54 @@
-{{ $extra_header_class := "" }}
-{{ with .Site.Params.sticky_header }}
-  {{ $extra_header_class = "sticky" }}
+{{ $extraHeaderClass := "" }}
+{{ with site.Params.sticky_header }}
+  {{ $extraHeaderClass = "sticky" }}
 {{ end }}
-<header class="header {{ $extra_header_class }}">
+<header class="header {{ $extraHeaderClass }}">
     <div class="container wrap">
 
-        {{ with .Site.Params.logo_on_white }}
-        <a class="logo-link" href="{{ "/" | absLangURL }}">
-            <img class="logo" width="150" height="40" src="{{ . | absURL }}" alt="{{ $.Site.Title }}">
+        {{ with site.Params.logo_on_white }}
+        <a class="logo-link" href="{{ "/" | relLangURL }}">
+            <img class="logo" width="150" height="40" src="{{ . | relURL }}" alt="{{ site.Title }}">
         </a>
         {{ else }}
-        <a class="site-title-link" href="{{ "/" | absLangURL }}">
-            <span class="site-title">{{ $.Site.Title }}</span>
+        <a class="site-title-link" href="{{ "/" | relLangURL }}">
+            <span class="site-title">{{ site.Title }}</span>
         </a>
         {{ end }}
         
-        {{ with .Site.Menus.main }}
-        <nav class="main-menu">
+        {{ with site.Menus.main }}
+        {{/* One nav element serves both layouts: below $mobile-max this same
+             markup is the slide-in panel. Marking the current page here
+             therefore fixes the header and the mobile menu in one place. */}}
+        {{- $currentURLs := partial "menu/current-urls.html" $ -}}
+        <nav class="main-menu" id="primary-navigation" aria-label="{{ i18n "primaryNavigation" }}">
             <ul class="main-menu__wrapper">
-                {{ range . }}
-                <li class="top-menu-item{{ if .HasChildren }} menu-item-has-children{{ end }}">
-                    <a href="{{ if .HasChildren }}#{{ else }}{{ .URL | relLangURL }}{{ end }}" class="menu-link">{{
-                        .Name }}</a>
+                {{ range $index, $item := . }}
+                {{ $submenuID := printf "primary-submenu-%d" $index }}
+                {{- $isCurrent := partial "menu/is-current.html" (dict "url" .URL "currentURLs" $currentURLs) -}}
+                {{- $hasCurrent := false -}}
+                {{- range .Children -}}
+                  {{- if partial "menu/is-current.html" (dict "url" .URL "currentURLs" $currentURLs) -}}
+                    {{- $hasCurrent = true -}}
+                  {{- end -}}
+                {{- end -}}
+                <li class="top-menu-item{{ if .HasChildren }} menu-item-has-children{{ end }}{{ with .Params.class }} top-menu-item--{{ . }}{{ end }}{{ if $isCurrent }} is-current{{ end }}{{ if $hasCurrent }} has-current{{ end }}">
                     {{ if .HasChildren }}
-                    <div class="sub-menu">
+                    {{/* The label is wrapped so the current-page marker can attach to the
+                         text rather than to the control's box. The control is 72px tall on
+                         desktop and, for the parent entries, a flex container whose ::after
+                         is the chevron, so anything drawn on the control itself lands well
+                         below the label and runs under the chevron too. */}}
+                    <button class="menu-link submenu-toggle{{ with .Params.class }} {{ . }}{{ end }}" type="button" aria-controls="{{ $submenuID }}" aria-expanded="false"><span class="menu-link__label">{{ .Name }}</span></button>
+                    {{ else }}
+                    <a href="{{ .URL | relLangURL }}" class="menu-link{{ with .Params.class }} {{ . }}{{ end }}"{{ if $isCurrent }} aria-current="page"{{ end }}><span class="menu-link__label">{{ .Name }}</span></a>
+                    {{ end }}
+                    {{ if .HasChildren }}
+                    <div class="sub-menu" id="{{ $submenuID }}">
                         <ul class="sub-menu__nav">
                             {{ range .Children }}
-                            <li class="menu-item">
-                                <a href="{{ .URL | relLangURL }}" class="menu-link">{{ .Name }}
+                            {{- $childCurrent := partial "menu/is-current.html" (dict "url" .URL "currentURLs" $currentURLs) -}}
+                            <li class="menu-item{{ if $childCurrent }} is-current{{ end }}">
+                                <a href="{{ .URL | relLangURL }}" class="menu-link"{{ if $childCurrent }} aria-current="page"{{ end }}>{{ .Name }}
                                     {{ if .Post }}
                                     <span class="menu-item__description">{{ .Post }}</span>
                                     {{ end }}
@@ -42,35 +63,44 @@
             </ul>
 
             <div class="main-menu__cta-language-wrapper">
-                {{ with $.Site.Params.main_cta }}
+                {{ with site.Params.main_cta }}
                 {{ if and .text .link }}
-                <a href="{{ .link | absLangURL }}" class="button main-menu-cta">{{ .text }}</a>
+                <a href="{{ .link | relLangURL }}" class="button main-menu-cta">{{ .text }}</a>
                 {{ end }}
                 {{ end }}
 
-                {{ with $.Site.Params.show_search }}
+                {{ with site.Params.show_search }}
                 <div class="main-menu__search-language-wrapper">
                     
-                <a href="{{ "search" | absLangURL }}" class="main-menu-search">
-                    <svg width="30" height="31" viewBox="0 0 50 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path opacity=".945" fill-rule="evenodd" clip-rule="evenodd" d="M45.381 50.122 28.404 33.357l3.1-3.14 16.978 16.765-3.1 3.14Z" fill="#000"/><path opacity=".945" fill-rule="evenodd" clip-rule="evenodd" d="M19.372 6.63c-7.63 0-13.77 6.102-13.77 13.57 0 7.469 6.14 13.57 13.77 13.57 7.631 0 13.77-6.102 13.77-13.57S27.003 6.63 19.372 6.63ZM1.19 20.2c0-9.957 8.167-17.982 18.182-17.982 10.016 0 18.182 8.025 18.182 17.982 0 9.958-8.166 17.983-18.182 17.983C9.357 38.183 1.19 30.158 1.19 20.2Z" fill="#000"/></svg>
+                {{/* relLangURL, not absLangURL: an absolute self-link sends anyone browsing a
+                     local or preview build straight out to the production site. */}}
+                <a href="{{ "search" | relLangURL }}" class="main-menu-search" aria-label="{{ i18n "searchSite" }}">
+                    <svg width="30" height="31" viewBox="0 0 50 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path opacity=".945" fill-rule="evenodd" clip-rule="evenodd" d="M45.381 50.122 28.404 33.357l3.1-3.14 16.978 16.765-3.1 3.14Z" fill="currentColor"/><path opacity=".945" fill-rule="evenodd" clip-rule="evenodd" d="M19.372 6.63c-7.63 0-13.77 6.102-13.77 13.57 0 7.469 6.14 13.57 13.77 13.57 7.631 0 13.77-6.102 13.77-13.57S27.003 6.63 19.372 6.63ZM1.19 20.2c0-9.957 8.167-17.982 18.182-17.982 10.016 0 18.182 8.025 18.182 17.982 0 9.958-8.166 17.983-18.182 17.983C9.357 38.183 1.19 30.158 1.19 20.2Z" fill="currentColor"/></svg>
                 </a>
                 {{ end }}
 
-                {{ partial "language-selector.html" $ }}
+                {{/* The theme's language-selector partial is deliberately not called.
+                     This site is single-language, so the partial's own
+                     `gt (len .Site.Languages) 1` guard means it can never emit
+                     anything, while calling it does run an API Hugo deprecated in
+                     0.156; its .dropdown styles are dropped from
+                     assets/scss/styles.scss for the same reason. Restoring
+                     multilingual support means restoring the stylesheet import and
+                     the call together. */}}
 
-                {{ if $.Site.Params.show_search }}
+                {{ if site.Params.show_search }}
                     </div>
                 {{ end }}
             </div>
 
         </nav>
-        <button class="hamburger" type="button" aria-label="Toggle Menu">
+        <button class="hamburger" type="button" aria-label="{{ i18n "toggleNavigation" }}" aria-controls="primary-navigation" aria-expanded="false">
             <span class="hamburger-box">
                 <span class="hamburger-inner"></span>
             </span>
         </button>
         {{ else }}
-        <p>Create pages or add <pre>.Site.Menus.main</pre> to config to activate menu.</p>
+        {{- errorf "site.Menus.main is empty: the header has no navigation to render. Define the main menu in config/_default/languages.yaml." -}}
         {{ end }}
     </div>
 </header>

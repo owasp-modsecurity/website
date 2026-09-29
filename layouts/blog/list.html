@@ -1,0 +1,7 @@
+{{ define "main" }}
+  {{ .Content }}
+  {{- $posts := partial "editorial/pages.html" (dict "context" . "mode" "articles") -}}
+  {{- $paginator := .Paginate $posts 4 -}}
+  {{- partial "editorial/list.html" (dict "pages" $paginator.Pages "label" (i18n "blogListLabel") "modifier" "articles") -}}
+  {{ template "_internal/pagination.html" . }}
+{{ end }}

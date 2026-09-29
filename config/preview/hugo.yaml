@@ -1,0 +1,8 @@
+######################## local preview configuration ####################
+# Builds what deploys — minified, with the CSP, and with a Pagefind index — but
+# served from localhost and with no analytics, so previewing a change locally
+# cannot send hits to the production Matomo instance.
+#
+# Used by `npm run preview`. Everything not set here comes from config/_default/.
+baseURL: "http://localhost:1414/"
+enableRobotsTXT: true

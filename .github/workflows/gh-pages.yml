@@ -36,25 +36,45 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.152.2
+      HUGO_VERSION: 0.164.0
     steps:
       - name: Install Hugo CLI
         run: |
           wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
           && sudo dpkg -i ${{ runner.temp }}/hugo.deb
       - name: Install Dart Sass
-        run: sudo snap install dart-sass
+        env:
+          DART_SASS_VERSION: 1.103.1
+        run: |
+          # A pinned release, not `snap install dart-sass`: snap's stable channel
+          # ships whatever is current that day, so the compiler could change
+          # under an unchanged repository. Same pattern as the Hugo install
+          # above, so both compilers are versioned here. Bump deliberately.
+          #
+          # Deliberately not the npm route either. `sass-embedded` pulls in the
+          # pure-JS `sass` package through its platform fallbacks; that package
+          # claims node_modules/.bin/sass, cannot speak the embedded protocol
+          # Hugo uses, and shadows the working binary for every `npm run`
+          # script. The collision is npm's rather than the package's, so there
+          # is nothing to fix upstream, and Hugo cannot be pointed past it:
+          # PATH lookup is the only channel it has for finding Dart Sass.
+          wget -O "${{ runner.temp }}/dart-sass.tar.gz" \
+            "https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
+          tar -xf "${{ runner.temp }}/dart-sass.tar.gz" -C "${{ runner.temp }}"
+          echo "${{ runner.temp }}/dart-sass" >> "$GITHUB_PATH"
+
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          submodules: recursive
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
 
       - name: Install Node.js dependencies
-        run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
+        # Must not be made conditional: package-lock.json is load-bearing, being
+        # what pins pagefind. If `npm ci` fails the build has to fail here, not a
+        # few lines later with a confusing "no such file" from the pagefind step.
+        run: npm ci
 
       - name: Build with Hugo
         env:
@@ -62,9 +82,58 @@ jobs:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
-          hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
-          npx -y pagefind --site public
+          # No --baseURL here: config/production/hugo.yaml owns the origin.
+          # Taking it from actions/configure-pages made every shipped URL depend on
+          # a repository setting instead — with "Enforce HTTPS" off, Pages reports
+          # http://modsecurity.org, and canonical, og:url and every sitemap entry
+          # went out as http, each one then 301ing to https.
+          hugo --gc --minify
+          # The pinned devDependency, never `npx -y pagefind`: that fetches
+          # whatever the registry calls latest at deploy time, with no lockfile
+          # entry and no integrity hash, so the search index format can change
+          # between two deploys of an unchanged repository.
+          ./node_modules/.bin/pagefind --site public
 
+      - name: Verify the production base URL
+        run: |
+          # The build takes its origin from config/production/hugo.yaml, so this
+          # checks what actually shipped against that file, and separately that the
+          # repository's Pages settings still serve the same host.
+          expected=$(sed -nE 's|^baseURL:[[:space:]]*"?([^"]*[^"/])/?"?[[:space:]]*$|\1|p' config/production/hugo.yaml)
+          if [ -z "$expected" ]; then
+            echo "::error::Could not read baseURL from config/production/hugo.yaml"
+            exit 1
+          fi
+          case "$expected" in
+            https://*) ;;
+            *) echo "::error::config/production/hugo.yaml must use https, but says '$expected'."; exit 1 ;;
+          esac
+
+          # The built files are what ships, so they are what gets checked.
+          if ! grep -q "canonical href=$expected/" public/index.html; then
+            echo "::error::The built home page canonical does not point at $expected/"
+            exit 1
+          fi
+          if ! grep -q "<loc>$expected/" public/sitemap.xml; then
+            echo "::error::The sitemap does not use $expected/"
+            exit 1
+          fi
+
+          # Pages no longer decides the origin, but it still serves the site. A
+          # different HOST means the site is published somewhere its own URLs do not
+          # name, which is a real break. A different SCHEME only means Enforce HTTPS
+          # is off: visitors get redirected, nothing ships wrong, so it is said out
+          # loud rather than failing the build.
+          pages="${{ steps.pages.outputs.base_url }}"
+          pages="${pages%/}"
+          if [ -n "$pages" ] && [ "${pages#*://}" != "${expected#*://}" ]; then
+            echo "::error::GitHub Pages serves '$pages' but the site is built for '$expected'."
+            exit 1
+          fi
+          if [ -n "$pages" ] && [ "${pages%%:*}" != "https" ]; then
+            echo "::warning::GitHub Pages reports '$pages'. Turn on Enforce HTTPS in the repository Pages settings so visitors are not redirected."
+          fi
+          echo "Base URL verified: $expected"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:

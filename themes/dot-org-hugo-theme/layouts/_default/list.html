@@ -2,8 +2,8 @@
 {{ .Content }}
   {{ range .Pages }}
     <article>
-      <h2><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
-      <p>{{ .Summary }}</p>
+      <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      <p>{{ .Summary | plainify }}</p>
     </article>
   {{ end }}
 {{ end }}
