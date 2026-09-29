@@ -13,7 +13,7 @@
     padding: 0.75rem 1rem;
     margin-left: -1px;
     line-height: 1.25;
-    background-color: #fff;
+    background-color: var(--white);
     @media (max-width: 420px) {
         padding: 0.75rem 0.75rem;
     }
@@ -21,7 +21,7 @@
 
 .homepage .page-link,
 .listing .page-link {
-    background-color: #fff;
+    background-color: var(--white);
 }
 
 .page-item.disabled .page-link {

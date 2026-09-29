@@ -1,5 +1,5 @@
 {{- $date := .Date.Format "January 2, 2006" }}
-{{- $allAuthors := .Site.Data.authors }}
+{{- $allAuthors := hugo.Data.authors }}
 {{- $authorKey := .Params.author }}
 {{- $authorData := index $allAuthors $authorKey }}
 

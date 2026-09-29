@@ -1,3 +1,5 @@
+@use "../variables";
+
 .lite-youtube-fallback {
     aspect-ratio: 16 / 9;
     /* matches YouTube player */
@@ -7,8 +9,8 @@
     flex-direction: column;
     gap: 1em;
     padding: 1em;
-    background-color: #000;
-    color: #fff;
+    background-color: var(--black);
+    color: var(--white);
     text-decoration: none;
 }
 
@@ -22,7 +24,7 @@
 }
 
 .lite-youtube-fallback:hover::before {
-    border-left-color: #fff;
+    border-left-color: var(--white);
 }
 
 .lite-youtube-fallback:focus {
@@ -32,7 +34,7 @@
 lite-youtube {
     margin-top: 30px;
     margin-bottom: 30px;
-    @media (min-width: $min-desktop) {
+    @media (min-width: variables.$min-desktop) {
         margin-top: 60px;
         margin-bottom: 60px;
     }
@@ -40,7 +42,7 @@ lite-youtube {
 
 lite-youtube + lite-youtube {
     margin-top: 0;
-    @media (min-width: $min-desktop) {
+    @media (min-width: variables.$min-desktop) {
         margin-top: 0;
     }
 }
