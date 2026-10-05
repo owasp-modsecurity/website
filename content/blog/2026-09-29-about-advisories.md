@@ -118,7 +118,7 @@ Entities expanding outside that set — accented characters, typographic symbols
 ### GHSA-5m93-4h75-3p2w: `@rxGlobal` PCRE2 error handling: match-limit fail-open and invalid-pattern crash
 
 - **Severity:** MODERATE (CVSS: 5.8)
-- **CVE:** No CVE was allocated for this vulnerability.
+- **CVE:** [CVE-2026-103932](https://www.cve.org/CVERecord?id=CVE-2026-103932)
 - **Affected Versions:** `>= 3.0.5, <= 3.0.16`
 - **Patched Versions:** `3.0.17`
 - **Timeline:** Reported on 2026-07-24 | Published on 2026-09-27
@@ -135,7 +135,7 @@ Entities expanding outside that set — accented characters, typographic symbols
 
 The second defect crashes the worker process. It applies where a ruleset builds an `@rxGlobal` pattern from a macro whose value can be influenced by the request, for example `@rxGlobal %{ARGS:pattern}`; a single request carrying a pattern that does not compile is enough.
 
-**Notes:** A CVE identifier was requested through GitHub on 2026-07-25 and had not been assigned at the time of publication. Upgrade impact: regular expressions are now validated when the rule is loaded, so a configuration containing a pattern that does not compile no longer starts. Such a rule previously loaded and simply never matched, so the problem can be latent in an existing ruleset; the error message names the offending pattern and the line it is on.
+**Notes:** A CVE identifier was requested through GitHub on 2026-07-25 and had not been assigned at the time of publication. Upgrade impact: regular expressions are now validated when the rule is loaded, so a configuration containing a pattern that does not compile no longer starts. Such a rule previously loaded and simply never matched, so the problem can be latent in an existing ruleset; the error message names the offending pattern and the line it is on. **Update**: GitHub assigned a CVE ID to it on October 1.
 
 **Resolution:** Fixed in **libmodsecurity3 3.0.17**. `Regex::searchGlobal()` now converts the PCRE2 return code into a `RegexResult` and propagates errors to the caller, as the PCRE1 code path already did. The `MSC_PCRE_ERROR`, `MSC_PCRE_LIMITS_EXCEEDED` and `TX.MSC_PCRE_LIMITS_EXCEEDED` handling in `RxGlobal::evaluate()` already existed, but was unreachable on PCRE2 builds because the match loop never reported a failure. `RxGlobal::evaluate()` also gained the invalid-pattern guard that `Rx::evaluate()` already had, and both operators now validate their pattern when the rule is loaded, rejecting one that does not compile instead of loading it and silently never matching. `MSC_PCRE_ERROR` is now set on a compilation error as well.
 
@@ -146,7 +146,7 @@ The second defect crashes the worker process. It applies where a ruleset builds 
 ### GHSA-qrch-pjfr-9g47: `t:removeComments` mishandles the character after a comment terminator, bypassing rules
 
 - **Severity:** MODERATE (CVSS: 5.8)
-- **CVE:** No CVE was allocated for this vulnerability.
+- **CVE:** [CVE-2026-104259](https://www.cve.org/CVERecord?id=CVE-2026-104259)
 - **Affected Versions:** `<= 3.0.16, <= 2.9.14`
 - **Patched Versions:** `3.0.17, 2.9.15`
 - **Timeline:** Reported on 2026-07-25 | Published on 2026-09-27
@@ -162,7 +162,7 @@ The second defect crashes the worker process. It applies where a ruleset builds 
 * With adjacent HTML comments the transformed value is truncated, so the payload following them is never inspected at all.
 * No memory-safety impact; this is a logic and rule-bypass issue.
 
-**Notes:** A CVE identifier was requested through GitHub on 2026-07-27 and had not been assigned at the time of publication.
+**Notes:** A CVE identifier was requested through GitHub on 2026-07-27 and had not been assigned at the time of publication. **Update**: GitHub assigned a CVE ID to it on October 2.
 
 **Resolution:** Fixed in **libmodsecurity3 3.0.17** and **mod_security2 2.9.15**. Both engines dropped the three lines that copied and skipped the character following `*/` or `-->`, so that character is now re-examined by the transformation loop. This strips adjacent comments, removes the spurious trailing NUL byte, and stops the truncation that occurred when an HTML comment terminator was followed by another comment.
 
@@ -197,7 +197,7 @@ Input that is not valid base64 is deliberately left undecoded. A group carrying 
 ### GHSA-5pww-8rfg-9crf: RFC 2231 `filename*` parameter bypasses multipart filename rules
 
 - **Severity:** HIGH (CVSS: 8.6)
-- **CVE:** No CVE was allocated for this vulnerability.
+- **CVE:** [CVE-2026-104269](https://www.cve.org/CVERecord?id=CVE-2026-104269)
 - **Affected Versions:** `<= 3.0.16, <= 2.9.14`
 - **Patched Versions:** `3.0.17, 2.9.15`
 - **Timeline:** Reported on 2026-07-26 | Published on 2026-09-27
@@ -209,7 +209,7 @@ Input that is not valid base64 is deliberately left undecoded. A group carrying 
 
 **Impact:** An attacker can put a harmless name in `filename` and the real one in `filename*`, or omit `filename` entirely. A rule matching on the uploaded file name does not fire, while a backend written in Go, Python, Node.js or Java — whose standard multipart parsers implement RFC 2231 — receives and acts on the `filename*` value. The bypass needs a single request and no unusual encoding beyond the parameter that the specification itself defines.
 
-**Notes:** A CVE identifier was requested through GitHub on 2026-07-27 and had not been assigned at the time of publication.
+**Notes:** A CVE identifier was requested through GitHub on 2026-07-27 and had not been assigned at the time of publication. **Update**: GitHub assigned a CVE ID to it on October 2.
 
 **Behaviour changes to review before upgrading.**
 * A part carrying only `filename*` now populates `MULTIPART_FILENAME`. Previously it populated nothing and logged "no filename= but filename*", so rules that quietly never matched such a part will start matching.
