@@ -24,7 +24,7 @@ Please note that there are some advisories here which don't have CVEs. The reaso
 - **Timeline:** Reported on 2024-08-02 | Published on 2026-09-27
 - **Reported by:** [Marc Stern](https://github.com/marcstern)
 - **Fixed by / Contributors:** [Felipe Zipitria](https://github.com/fzipi)
-- **GitHub Advisory:** [GHSA-cxqf-vgrr-xxrv](https://github.com/advisories/GHSA-cxqf-vgrr-xxrv)
+- **GitHub Advisory:** [GHSA-cxqf-vgrr-xxrv](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-cxqf-vgrr-xxrv)
 
 **Summary:** Two named entities were originally reported missing from the HTML entity decoder (`&apos;` and `&colon;`). Triage established that the decoder recognized only five named entities in total, and that the hand-maintained list had drifted from the HTML specification. The fix replaces that list with a table generated from the WHATWG named character reference list.
 
@@ -53,7 +53,7 @@ Entities expanding outside that set — accented characters, typographic symbols
 - **Timeline:** Reported on 2026-06-19 | Published on 2026-09-27
 - **Reported by:** [amitu314](https://github.com/amitu314)
 - **Fixed by / Contributors:** [amitu314](https://github.com/amitu314), [Ervin Hegedüs](https://github.com/airween)
-- **GitHub Advisory:** [GHSA-2vqc-36qp-ccmw](https://github.com/advisories/GHSA-2vqc-36qp-ccmw)
+- **GitHub Advisory:** [GHSA-2vqc-36qp-ccmw](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-2vqc-36qp-ccmw)
 
 **Summary:** Both engines set `CURLOPT_SSL_VERIFYHOST` to 1 when fetching content over HTTPS. 1 is not libcurl's strict hostname verification mode; the correct value is 2.
 
@@ -76,7 +76,7 @@ Entities expanding outside that set — accented characters, typographic symbols
 - **Timeline:** Reported on 2026-07-03 | Published on 2026-09-27
 - **Reported by:** [Tobias Klein (www.trapkit.de)](https://www.trapkit.de)
 - **Fixed by / Contributors:** [Tobias Klein (www.trapkit.de)](https://www.trapkit.de), [Ervin Hegedüs](https://github.com/airween)
-- **GitHub Advisory:** [GHSA-jx3r-phvx-2jmj](https://github.com/advisories/GHSA-jx3r-phvx-2jmj)
+- **GitHub Advisory:** [GHSA-jx3r-phvx-2jmj](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-jx3r-phvx-2jmj)
 
 **Summary:** A remote, unauthenticated attacker can, with a single crafted HTTP request, make a web server worker process running ModSecurity dereference an uninitialized pointer (XMLNodes::parsing_ctx_arg) in the XML-into-ARGS SAX end-element callback, resulting in a write of a constant value to an attacker-controlled address (a restricted write-what-where primitive)
 
@@ -99,7 +99,7 @@ Entities expanding outside that set — accented characters, typographic symbols
 - **Timeline:** Reported on 2026-07-07 | Published on 2026-09-27
 - **Reported by:** [zuesdevil](https://github.com/zuesdevil)
 - **Fixed by / Contributors:** [Ervin Hegedüs](https://github.com/airween)
-- **GitHub Advisory:** [GHSA-vmg8-j66p-vgvw](https://github.com/advisories/GHSA-vmg8-j66p-vgvw)
+- **GitHub Advisory:** [GHSA-vmg8-j66p-vgvw](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-vmg8-j66p-vgvw)
 
 **Summary:** The engine compared the response `Content-Type` against the MIME type list configured with `SecResponseBodyMimeType` using an exact, case-sensitive match. A backend returning `Text/Html` instead of `text/html` therefore did not match the configured list, and the response body was not inspected: no `RESPONSE_BODY` rules were evaluated and the body was forwarded to the client, with only a debug-log line recording that inspection had been skipped.
 
@@ -124,7 +124,7 @@ Entities expanding outside that set — accented characters, typographic symbols
 - **Timeline:** Reported on 2026-07-24 | Published on 2026-09-27
 - **Reported by:** [AnnoyingTechnology](https://github.com/AnnoyingTechnology)
 - **Fixed by / Contributors:** [Ervin Hegedüs](https://github.com/airween)
-- **GitHub Advisory:** [GHSA-5m93-4h75-3p2w](https://github.com/advisories/GHSA-5m93-4h75-3p2w)
+- **GitHub Advisory:** [GHSA-5m93-4h75-3p2w](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-5m93-4h75-3p2w)
 
 **Summary:** Two defects in the PCRE2 code path of `@rxGlobal`, both present since the operator was introduced in 3.0.5. First, `Regex::searchGlobal()` converted PCRE2 match-limit errors into an ordinary no-match, so an unauthenticated remote client could make a request pass a compensating rule by supplying input that exhausts `SecPcreMatchLimit`. Second, `@rxGlobal` was missing the invalid-pattern guard that `@rx` already had, so a macro-expanded pattern that fails to compile left the operator dereferencing a null PCRE2 code pointer.
 
@@ -152,7 +152,7 @@ The second defect crashes the worker process. It applies where a ruleset builds 
 - **Timeline:** Reported on 2026-07-25 | Published on 2026-09-27
 - **Reported by:** [HEXER365](https://github.com/HEXER365)
 - **Fixed by / Contributors:** [Ervin Hegedüs](https://github.com/airween)
-- **GitHub Advisory:** [GHSA-qrch-pjfr-9g47](https://github.com/advisories/GHSA-qrch-pjfr-9g47)
+- **GitHub Advisory:** [GHSA-qrch-pjfr-9g47](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-qrch-pjfr-9g47)
 
 **Summary:** `t:removeComments` copied the character following a comment terminator straight to the output without re-examining it. When that character began a second comment, the second comment survived: `UNION/**//**/SELECT` came out as `UNION/**/SELECT`, letting inline-comment obfuscation defeat detection rules that rely on comment stripping. The same copy had two further effects. A value ending with a comment terminator gained a trailing NUL byte, so `UNION SELECT/**/` became `UNION SELECT\x00`; a single comment at the end of the input is enough to trigger this. And two adjacent HTML comments truncated the value, so `<!--a--><!--b-->x` was inspected as `<!` while the application still received the original bytes.
 
@@ -179,7 +179,7 @@ The second defect crashes the worker process. It applies where a ruleset builds 
 - **Timeline:** Reported on 2026-07-25 | Published on 2026-09-27
 - **Reported by:** [Felipe Zipitria](https://github.com/fzipi)
 - **Fixed by / Contributors:** [Ervin Hegedüs](https://github.com/airween)
-- **GitHub Advisory:** [GHSA-4j47-8qcr-jf59](https://github.com/advisories/GHSA-4j47-8qcr-jf59)
+- **GitHub Advisory:** [GHSA-4j47-8qcr-jf59](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-4j47-8qcr-jf59)
 
 **Summary:** `t:base64DecodeExt` treated `-` and `_` as invalid characters and skipped them, instead of decoding them as the URL and filename safe substitutes for `+` and `/` defined in RFC 4648 section 5. A value containing either character therefore decoded to garbage or to a truncated result, and a rule matching against the decoded content did not see the payload. JSON Web Tokens use that alphabet, so a rule that decodes a JWT segment in order to inspect it — to detect `"alg":"none"`, for example — silently failed whenever that segment contained `-` or `_`.
 
@@ -203,7 +203,7 @@ Input that is not valid base64 is deliberately left undecoded. A group carrying 
 - **Timeline:** Reported on 2026-07-26 | Published on 2026-09-27
 - **Reported by:** [0xkalawy](https://github.com/0xkalawy), [ZeyadZonkorany](https://github.com/ZeyadZonkorany), [Mohamed Gouda](https://github.com/B0YK4)
 - **Fixed by / Contributors:** [Hiroaki Nakamura](https://github.com/hnakamur), [Felipe Zipitria](https://github.com/fzipi), [Ervin Hegedüs](https://github.com/airween)
-- **GitHub Advisory:** [GHSA-5pww-8rfg-9crf](https://github.com/advisories/GHSA-5pww-8rfg-9crf)
+- **GitHub Advisory:** [GHSA-5pww-8rfg-9crf](https://github.com/owasp-modsecurity/ModSecurity/security/advisories/GHSA-5pww-8rfg-9crf)
 
 **Summary:** `Content-Disposition` headers in a multipart body may carry the file name twice: as a plain `filename` parameter and as an RFC 2231 encoded `filename*` parameter that also states a charset and an optional language. RFC-compliant parsers prefer `filename*` when both are present. ModSecurity's multipart parser did not implement RFC 2231: it recognised `filename` only, and a part that carried `filename*` alone populated no file name at all, logging a warning instead. Rules that inspect uploaded file names — through `MULTIPART_FILENAME`, `FILES`, or a regex over the raw header, as several OWASP CRS rules do — therefore saw either nothing or the decoy value from `filename`, while the application acted on the `filename*` value.
 
