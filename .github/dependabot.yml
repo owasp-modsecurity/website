@@ -14,3 +14,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+  # Documentation subsite (subsite/docs submodule)
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "docs"
