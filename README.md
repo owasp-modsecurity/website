@@ -162,6 +162,23 @@ docker run --rm -it -p 1313:1313 -v "$PWD:/src" owasp-modsecurity-website
 Now open http://localhost:1313/ in the browser. Edits you make on your system are picked up by Hugo inside the container,
 and the browser refreshes just like a local `hugo serve`.
 
+## The documentation subsite
+
+The documentation at <https://modsecurity.org/docs/> comes from the separate
+[documentation repository](https://github.com/owasp-modsecurity/documentation), checked out
+as the git submodule `subsite/docs`. Clone with `--recurse-submodules`, or run
+`git submodule update --init` in an existing clone, to get it.
+
+It is a separate Hugo site and is not part of the `npm` scripts above. CI builds it with
+`hugo -s subsite/docs --baseURL <site>/docs/` and moves the output into `public/docs`
+before the search index is built. Its theme is a Hugo module, so that build needs Go.
+To publish a newer revision of the documentation, bump the submodule and open a PR:
+
+```sh
+git -C subsite/docs pull origin main
+git add subsite/docs
+```
+
 ## Deployment
 
 Merges to `main` are built and published to <https://modsecurity.org/> by

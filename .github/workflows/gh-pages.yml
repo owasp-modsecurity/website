@@ -65,6 +65,18 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          # subsite/docs is the documentation repository, built below into
+          # public/docs the way coreruleset/website does it.
+          submodules: recursive
+
+      - name: Setup Go
+        # The docs theme is a Hugo module (subsite/docs/go.mod), fetched with
+        # the Go toolchain on first build.
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: subsite/docs/go.mod
+          cache: false
 
       - name: Setup Pages
         id: pages
@@ -88,6 +100,12 @@ jobs:
           # http://modsecurity.org, and canonical, og:url and every sitemap entry
           # went out as http, each one then 301ing to https.
           hugo --gc --minify
+          # The documentation subsite is a separate Hugo site, served under
+          # /docs/ of the same origin, so it takes the same baseURL from
+          # config/production/hugo.yaml plus the subdirectory.
+          base=$(sed -nE 's|^baseURL:[[:space:]]*"?([^"]*[^"/])/?"?[[:space:]]*$|\1|p' config/production/hugo.yaml)
+          hugo -s subsite/docs --gc --minify --baseURL "${base}/docs/"
+          mv subsite/docs/public public/docs
           # The pinned devDependency, never `npx -y pagefind`: that fetches
           # whatever the registry calls latest at deploy time, with no lockfile
           # entry and no integrity hash, so the search index format can change

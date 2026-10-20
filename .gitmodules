@@ -1,0 +1,3 @@
+[submodule "subsite/docs"]
+	path = subsite/docs
+	url = https://github.com/owasp-modsecurity/documentation.git
