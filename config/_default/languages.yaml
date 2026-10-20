@@ -23,9 +23,14 @@ en:
   ### example menu showing children ###
   menu:
     main:
+      # The documentation subsite, built from subsite/docs (see README).
+      - identifier: "documentation"
+        name: "Documentation"
+        url: "/docs/"
+        weight: 1
       - identifier: "resources"
         name: "Resources"
-        weight: 1
+        weight: 2
       - identifier: "articles"
         name: "Articles, Guides & Updates"
         url: "/blog/"
@@ -43,7 +48,7 @@ en:
         parent: "resources"
       - identifier: "about-us"
         name: "About Us"
-        weight: 2
+        weight: 3
       # Our Team before History, the order the approved footer shows. Header and
       # footer share this one menu, so the dropdown follows suit — the design
       # never opens the dropdown, so it says nothing to contradict this.
@@ -70,7 +75,7 @@ en:
       - identifier: "join-us"
         name: "Join Us"
         url: "/join/"
-        weight: 3
+        weight: 4
       - identifier: "project-update"
         name: "Project Update"
         url: "/project-update/"
