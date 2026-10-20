@@ -30,7 +30,7 @@
     "start:with-search": "hugo --baseURL=/ && ./node_modules/.bin/pagefind --site 'public' --output-subdir '../static/pagefind' && npm run start"
   },
   "dependencies": {
-    "autoprefixer": "^10.4.23",
+    "autoprefixer": "^10.6.1",
     "hugo-extended": "^0.164.0",
     "postcss": ">=8.5.6",
     "postcss-cli": "^11.0.1"
