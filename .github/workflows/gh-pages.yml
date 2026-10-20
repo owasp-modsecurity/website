@@ -14,11 +14,8 @@ on:
   repository_dispatch:
     types: [documentation]
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
@@ -64,8 +61,9 @@ jobs:
           echo "${{ runner.temp }}/dart-sass" >> "$GITHUB_PATH"
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          persist-credentials: false
           # subsite/docs is the documentation repository, built below into
           # public/docs the way coreruleset/website does it.
           submodules: recursive
@@ -73,14 +71,14 @@ jobs:
       - name: Setup Go
         # The docs theme is a Hugo module (subsite/docs/go.mod), fetched with
         # the Go toolchain on first build.
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
           go-version-file: subsite/docs/go.mod
           cache: false
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
       - name: Install Node.js dependencies
         # Must not be made conditional: package-lock.json is load-bearing, being
@@ -113,6 +111,8 @@ jobs:
           ./node_modules/.bin/pagefind --site public
 
       - name: Verify the production base URL
+        env:
+          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
         run: |
           # The build takes its origin from config/production/hugo.yaml, so this
           # checks what actually shipped against that file, and separately that the
@@ -142,7 +142,7 @@ jobs:
           # name, which is a real break. A different SCHEME only means Enforce HTTPS
           # is off: visitors get redirected, nothing ships wrong, so it is said out
           # loud rather than failing the build.
-          pages="${{ steps.pages.outputs.base_url }}"
+          pages="$PAGES_BASE_URL"
           pages="${pages%/}"
           if [ -n "$pages" ] && [ "${pages#*://}" != "${expected#*://}" ]; then
             echo "::error::GitHub Pages serves '$pages' but the site is built for '$expected'."
@@ -153,12 +153,16 @@ jobs:
           fi
           echo "Base URL verified: $expected"
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:
           path: ./public
 
   # Deployment job
   deploy:
+    # Only this job deploys, so only it gets the Pages token.
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -167,4 +171,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
