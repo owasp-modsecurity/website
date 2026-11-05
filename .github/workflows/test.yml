@@ -186,9 +186,16 @@ jobs:
           #
           # The user agent is a browser string because several documentation
           # hosts refuse lychee's default one.
+          #
+          # Root-relative links (`/developers`, `/contact/`) name pages of this site,
+          # not files under content/, so they are resolved against the site built
+          # above in public/. Without --root-dir lychee cannot resolve them: older
+          # versions skipped them with a warning, newer ones report an error. It has
+          # to be an absolute path.
           args: >-
             --no-progress
             --exclude-all-private
+            --root-dir "${{ github.workspace }}/public"
             --user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0"
             './content/**/*.md'
           jobSummary: true
