@@ -172,7 +172,7 @@ jobs:
 
       - name: Link Checker
         id: lychee
-        uses: lycheeverse/lychee-action@a8c4c7cb88f0c7386610c35eb25108e448569cb0 # for v2.7.0
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # for v2.9.0
         env:
           # Lets lychee check github.com links at the authenticated rate limit
           # instead of the anonymous one, which is what made a blanket
