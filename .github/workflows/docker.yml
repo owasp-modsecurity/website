@@ -24,15 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           submodules: recursive
 
       - name: Build the image
         run: docker build -t owasp-modsecurity-website:ci .
 
       - name: Install Node.js dependencies inside the container
-        run: docker run --rm -v "$PWD:/src" owasp-modsecurity-website:ci npm install
+        run: docker run --rm -v "$PWD:/src" owasp-modsecurity-website:ci npm ci
 
       - name: Serve the site from the container
         run: |
@@ -58,7 +59,12 @@ jobs:
       - name: Request the home page
         run: |
           curl -fsS --max-time 60 http://localhost:1313/ -o home.html
-          grep -q "<title>Modsecurity Project</title>" home.html
+          # The title text comes from the content and changes with it, so only
+          # check that the page carries a <title> naming the project.
+          if ! grep -Eq '<title>[^<]*ModSecurity[^<]*</title>' home.html; then
+            echo "::error::The home page has no <title> containing 'ModSecurity'."
+            exit 1
+          fi
 
       - name: Request the generated stylesheet
         # The stylesheet is built by dart-sass and PostCSS inside the container,
