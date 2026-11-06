@@ -150,7 +150,7 @@ The image does not contain the website — mount your clone into `/src` (the ima
 The stylesheets are compiled by Dart Sass and then run through PostCSS (autoprefixer), so the NodeJS dependencies have to be installed once before Hugo can render the pages:
 
 ```sh
-docker run --rm -it -v "$PWD:/src" owasp-modsecurity-website npm install
+docker run --rm -it -v "$PWD:/src" owasp-modsecurity-website npm ci
 ```
 
 Then start the development server:
