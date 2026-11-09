@@ -38,7 +38,7 @@
   "devDependencies": {
     "pagefind": "1.6.0",
     "standard": "^17.1.2",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "adm-zip": "^0.6.1"
