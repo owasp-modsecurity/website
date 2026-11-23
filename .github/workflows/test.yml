@@ -204,3 +204,25 @@ jobs:
             './content/**/*.md'
           jobSummary: true
 
+      - name: Link Checker (built site, internal links only)
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # for v2.9.0
+        with:
+          # The step above reads content/**/*.md, so it never sees anything that
+          # only exists in a template or in config — the Documentation entry in
+          # the main menu among them. If the documentation subsite failed to build,
+          # the menu would point at a 404 and nothing here would notice.
+          #
+          # --offline makes this a file-existence check, so it adds no network
+          # traffic and cannot go flaky; the step above still owns external links.
+          #
+          # public/docs belongs to the documentation repository, which has its own
+          # lychee.toml. Its pages carry known dangling anchors, so checking them
+          # here would fail this repository's builds for another repository's
+          # content.
+          args: >-
+            --no-progress
+            --offline
+            --root-dir "${{ github.workspace }}/public"
+            --exclude-path "${{ github.workspace }}/public/docs"
+            '${{ github.workspace }}/public/**/*.html'
+          jobSummary: true
