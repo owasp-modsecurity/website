@@ -32,13 +32,7 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    env:
-      HUGO_VERSION: 0.164.0
     steps:
-      - name: Install Hugo CLI
-        run: |
-          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
-          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
       - name: Install Dart Sass
         env:
           DART_SASS_VERSION: 1.103.1
@@ -97,12 +91,18 @@ jobs:
           # a repository setting instead — with "Enforce HTTPS" off, Pages reports
           # http://modsecurity.org, and canonical, og:url and every sitemap entry
           # went out as http, each one then 301ing to https.
-          hugo --gc --minify
+          # Hugo comes from node_modules, installed by `npm ci` above, the same
+          # way pagefind does. It used to be a second, separately pinned .deb
+          # install, so CI shipped 0.164.0 while anyone running `npm run build`
+          # locally got whatever package.json said -- 0.169.0 by then, and the
+          # gap widened every time dependabot bumped the package. package.json
+          # is now the only place the version is written.
+          ./node_modules/.bin/hugo --gc --minify
           # The documentation subsite is a separate Hugo site, served under
           # /docs/ of the same origin, so it takes the same baseURL from
           # config/production/hugo.yaml plus the subdirectory.
           base=$(sed -nE 's|^baseURL:[[:space:]]*"?([^"]*[^"/])/?"?[[:space:]]*$|\1|p' config/production/hugo.yaml)
-          hugo -s subsite/docs --gc --minify --baseURL "${base}/docs/"
+          ./node_modules/.bin/hugo -s subsite/docs --gc --minify --baseURL "${base}/docs/"
           mv subsite/docs/public public/docs
           # The pinned devDependency, never `npx -y pagefind`: that fetches
           # whatever the registry calls latest at deploy time, with no lockfile

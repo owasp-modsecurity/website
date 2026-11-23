@@ -2,17 +2,23 @@ FROM mcr.microsoft.com/devcontainers/base:debian AS build
 
 # VARIANT can be either 'hugo' for the standard version or 'hugo_extended' for the extended version.
 ARG VARIANT=hugo_extended
-# Both version arguments are interpolated into a GitHub releases API path below,
-# so they are API references and not bare version numbers: either 'latest', or a
+# Version arguments are interpolated into a GitHub releases API path below, so
+# they are API references and not bare version numbers: either 'latest', or a
 # 'tags/<tag>' reference. A bare number resolves to no release and fails the build.
-# The defaults match the versions .github/workflows/ pins, so the image builds the
-# site with the compilers it is tested against.
-ARG HUGO_VERSION=tags/v0.164.0
+#
+# HUGO_VERSION is deliberately empty: the version is read from package.json, which
+# is the one place it is written, so this image cannot drift away from what CI and
+# `npm run build` use. Set it only to test a different release.
+ARG HUGO_VERSION=
 ARG SASS_VERSION=tags/1.103.1
 
 RUN apt-get update && apt-get install -y ca-certificates jq
 
-RUN URL=$(curl -sS https://api.github.com/repos/gohugoio/hugo/releases/${HUGO_VERSION} | jq -r ".assets[] | select(.name | test(\"^${VARIANT}_[0-9].*Linux-64bit[.]tar[.]gz$\")) | .browser_download_url") && \
+COPY package.json /tmp/package.json
+
+RUN HUGO_VERSION="${HUGO_VERSION:-tags/v$(jq -r '.dependencies["hugo-extended"]' /tmp/package.json | tr -d '^~>=< ')}" && \
+    echo "Building with Hugo release ${HUGO_VERSION}" && \
+    URL=$(curl -sS https://api.github.com/repos/gohugoio/hugo/releases/${HUGO_VERSION} | jq -r ".assets[] | select(.name | test(\"^${VARIANT}_[0-9].*Linux-64bit[.]tar[.]gz$\")) | .browser_download_url") && \
     test -n "${URL}" && \
     wget -O hugo.tar.gz "${URL}" && \
     tar xf hugo.tar.gz hugo && \
