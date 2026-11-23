@@ -24,17 +24,22 @@
  * @property {HTMLElement} panel  The submenu it names through aria-controls.
  */
 
-const navigation = /** @type {HTMLElement|null} */ (
+// Not `navigation`: this file is a classic script, not a module, so its top-level
+// declarations land in the global scope — where `navigation` is now taken by the
+// Navigation API (`declare var navigation: Navigation` in lib.dom.d.ts, added in
+// TypeScript 7). Under that name tsc reports a redeclaration and then resolves
+// every use to Navigation, which has no classList, inert or contains.
+const primaryNav = /** @type {HTMLElement|null} */ (
   document.querySelector('#primary-navigation')
 )
 const hamburger = /** @type {HTMLElement|null} */ (
   document.querySelector('.hamburger')
 )
 
-if (navigation && hamburger) {
+if (primaryNav && hamburger) {
   /** @type {Submenu[]} */
   const submenuControls = Array.from(
-    navigation.querySelectorAll('.submenu-toggle')
+    primaryNav.querySelectorAll('.submenu-toggle')
   ).map((element) => {
     const control = /** @type {HTMLElement} */ (element)
     const panel = document.getElementById(control.getAttribute('aria-controls'))
@@ -133,7 +138,7 @@ if (navigation && hamburger) {
    * @returns {void}
    */
   const syncNavigationState = () => {
-    const isNavigationActive = navigation.classList.contains('is-active')
+    const isNavigationActive = primaryNav.classList.contains('is-active')
 
     hamburger.setAttribute(
       'aria-expanded',
@@ -155,7 +160,7 @@ if (navigation && hamburger) {
    * @returns {void}
    */
   const setNavigationActive = (isActive) => {
-    navigation.classList.toggle('is-active', isActive)
+    primaryNav.classList.toggle('is-active', isActive)
     hamburger.classList.toggle('is-active', isActive)
     document.body.classList.toggle('has-menu-active', isActive)
     // Off screen is not hidden from the keyboard. The theme parks the closed mobile
@@ -164,7 +169,7 @@ if (navigation && hamburger) {
     // hamburger that reveals them. `inert` takes the subtree out of both the tab
     // order and the accessibility tree, and unlike `display: none` it leaves the
     // slide transition alone.
-    navigation.inert = !desktopMediaQuery.matches && !isActive
+    primaryNav.inert = !desktopMediaQuery.matches && !isActive
 
     if (!isActive) {
       resetSubmenus()
@@ -175,8 +180,8 @@ if (navigation && hamburger) {
 
   hamburger.setAttribute('aria-expanded', 'false')
   resetSubmenus()
-  navigation.classList.add('navigation--enhanced')
-  navigation.inert = !desktopMediaQuery.matches
+  primaryNav.classList.add('navigation--enhanced')
+  primaryNav.inert = !desktopMediaQuery.matches
 
   submenuControls.forEach((submenu) => {
     submenu.control.addEventListener('click', (event) => {
@@ -247,7 +252,7 @@ if (navigation && hamburger) {
     })
   })
 
-  // Bound to the document, not to `navigation`: the hamburger lives OUTSIDE
+  // Bound to the document, not to `primaryNav`: the hamburger lives OUTSIDE
   // #primary-navigation, so after it opens the menu the focus sits on an element the
   // navigation never sees events from, and the branch below that closes the mobile
   // menu would never run.
@@ -262,7 +267,7 @@ if (navigation && hamburger) {
         event.stopPropagation()
         setSubmenuExpanded(expandedSubmenu, false)
         expandedSubmenu.control.focus()
-      } else if (!desktopMediaQuery.matches && navigation.classList.contains('is-active')) {
+      } else if (!desktopMediaQuery.matches && primaryNav.classList.contains('is-active')) {
         event.preventDefault()
         setNavigationActive(false)
         hamburger.focus()
@@ -279,7 +284,7 @@ if (navigation && hamburger) {
 
     if (
       desktopMediaQuery.matches &&
-      !navigation.contains(target) &&
+      !primaryNav.contains(target) &&
       !hamburger.contains(target)
     ) {
       closeSubmenus()
@@ -292,7 +297,7 @@ if (navigation && hamburger) {
     }
 
     event.preventDefault()
-    setNavigationActive(!navigation.classList.contains('is-active'))
+    setNavigationActive(!primaryNav.classList.contains('is-active'))
   })
 
   desktopMediaQuery.addEventListener('change', () => {
