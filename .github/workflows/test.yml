@@ -142,9 +142,14 @@ jobs:
 
           # Pages no longer decides the origin, but it still serves the site. A
           # different HOST means the site is published somewhere its own URLs do not
-          # name, which is a real break. A different SCHEME only means Enforce HTTPS
-          # is off: visitors get redirected, nothing ships wrong, so it is said out
-          # loud rather than failing the build.
+          # name, which is a real break. A different SCHEME is only worth saying out
+          # loud, never failing on: nothing shipped is wrong, and the cause may be
+          # deliberate. GitHub Pages serves this site, with Cloudflare in front of it.
+          # Cloudflare holds the certificate visitors see and fetches the Pages origin
+          # over plain http, so GitHub has no certificate for the custom domain and
+          # Enforce HTTPS is not available. Were it turned on, the origin would
+          # redirect to https, Cloudflare would fetch http again, and the two would
+          # loop. Do not prescribe a fix here.
           pages="$PAGES_BASE_URL"
           pages="${pages%/}"
           if [ -n "$pages" ] && [ "${pages#*://}" != "${expected#*://}" ]; then
@@ -152,7 +157,7 @@ jobs:
             exit 1
           fi
           if [ -n "$pages" ] && [ "${pages%%:*}" != "https" ]; then
-            echo "::warning::GitHub Pages reports '$pages'. Turn on Enforce HTTPS in the repository Pages settings so visitors are not redirected."
+            echo "::warning::GitHub Pages reports '$pages'. Nothing shipped is wrong; this only says the Pages origin itself is not https."
           fi
           echo "Base URL verified: $expected"
       - name: Check the partner logos for active content
