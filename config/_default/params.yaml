@@ -13,9 +13,9 @@ custom_css: []
 modsecurity:
   release_tag_url_prefix: "https://github.com/owasp-modsecurity/ModSecurity/releases/tag"
   release_url_prefix: "https://github.com/owasp-modsecurity/ModSecurity/releases"
-  latest_v2_major_version: "2.9.14"
-  latest_v3_major_version: "3.0.16"
-  latest_publication_date: "2026-07-02"
+  latest_v2_major_version: "2.9.15"
+  latest_v3_major_version: "3.0.17"
+  latest_publication_date: "2026-09-29"
 
 github:
   repo_url: "https://github.com/owasp-modsecurity/website/blob/main"
