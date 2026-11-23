@@ -2,26 +2,37 @@ FROM mcr.microsoft.com/devcontainers/base:debian AS build
 
 # VARIANT can be either 'hugo' for the standard version or 'hugo_extended' for the extended version.
 ARG VARIANT=hugo_extended
-# Both version arguments are interpolated into a GitHub releases API path below,
-# so they are API references and not bare version numbers: either 'latest', or a
-# 'tags/<tag>' reference. A bare number resolves to no release and fails the build.
-# The defaults match the versions .github/workflows/ pins, so the image builds the
-# site with the compilers it is tested against.
-ARG HUGO_VERSION=tags/v0.164.0
-ARG SASS_VERSION=tags/1.103.1
+# Plain version numbers, because the download URLs are built from them directly.
+#
+# HUGO_VERSION is deliberately empty: the version is read from package.json, which
+# is the one place it is written, so this image cannot drift away from what CI and
+# `npm run build` use. Set it only to build against a different release.
+ARG HUGO_VERSION=
+# Matches DART_SASS_VERSION in .github/workflows/. Dart Sass has no npm package
+# this project can take it from -- sass-embedded shadows the working binary -- so
+# this one is still written in two places. Bump both together.
+ARG SASS_VERSION=1.103.1
 
 RUN apt-get update && apt-get install -y ca-certificates jq
 
-RUN URL=$(curl -sS https://api.github.com/repos/gohugoio/hugo/releases/${HUGO_VERSION} | jq -r ".assets[] | select(.name | test(\"^${VARIANT}_[0-9].*Linux-64bit[.]tar[.]gz$\")) | .browser_download_url") && \
-    test -n "${URL}" && \
-    wget -O hugo.tar.gz "${URL}" && \
-    tar xf hugo.tar.gz hugo && \
+COPY package.json /tmp/package.json
+
+# Built straight from the release URL, never through api.github.com. The API call
+# this replaced was unauthenticated, so it shared one 60-per-hour quota with every
+# other build on the same runner IP; when it was refused the response had no
+# .assets and the build died on `jq: Cannot iterate over null`. The workflows have
+# always fetched their toolchain this way.
+RUN set -eu; \
+    version="${HUGO_VERSION}"; \
+    [ -n "$version" ] || version="$(jq -r '.dependencies["hugo-extended"]' /tmp/package.json | tr -d '^~>=< ')"; \
+    echo "Hugo ${VARIANT} $version"; \
+    wget -O hugo.tar.gz "https://github.com/gohugoio/hugo/releases/download/v$version/${VARIANT}_${version}_Linux-64bit.tar.gz"; \
+    tar xf hugo.tar.gz hugo; \
     mv hugo /usr/bin/hugo
 
-RUN URL=$(curl -s https://api.github.com/repos/sass/dart-sass/releases/${SASS_VERSION} | jq -r ".assets[] | select(.name | test(\".*linux-x64[.]tar[.]gz$\")) | .browser_download_url") && \
-    test -n "${URL}" && \
-    wget -O sass.tar.gz "${URL}" && \
-    tar xf sass.tar.gz && \
+RUN set -eu; \
+    wget -O sass.tar.gz "https://github.com/sass/dart-sass/releases/download/${SASS_VERSION}/dart-sass-${SASS_VERSION}-linux-x64.tar.gz"; \
+    tar xf sass.tar.gz; \
     mv dart-sass /opt/dart-sass
 
 FROM mcr.microsoft.com/devcontainers/javascript-node
