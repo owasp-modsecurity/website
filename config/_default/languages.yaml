@@ -23,23 +23,27 @@ en:
   ### example menu showing children ###
   menu:
     main:
-      # The documentation subsite, built from subsite/docs (see README).
+      - identifier: "resources"
+        name: "Resources"
+        weight: 1
+      # The documentation subsite, built from subsite/docs (see README). It sits
+      # under Resources rather than at the top level: the approved header design
+      # has four top-level entries, and a fifth one wraps the navigation at the
+      # desktop breakpoint it was measured at.
       - identifier: "documentation"
         name: "Documentation"
         url: "/docs/"
         weight: 1
-      - identifier: "resources"
-        name: "Resources"
-        weight: 2
+        parent: "resources"
       - identifier: "articles"
         name: "Articles, Guides & Updates"
         url: "/blog/"
-        weight: 1
+        weight: 2
         parent: "resources"
       - identifier: "installation"
         name: "Installation"
         url: "/installation/"
-        weight: 2
+        weight: 3
         parent: "resources"
       - identifier: "faqs"
         name: "FAQs"
@@ -48,7 +52,7 @@ en:
         parent: "resources"
       - identifier: "about-us"
         name: "About Us"
-        weight: 3
+        weight: 2
       # Our Team before History, the order the approved footer shows. Header and
       # footer share this one menu, so the dropdown follows suit — the design
       # never opens the dropdown, so it says nothing to contradict this.
@@ -75,7 +79,7 @@ en:
       - identifier: "join-us"
         name: "Join Us"
         url: "/join/"
-        weight: 4
+        weight: 3
       - identifier: "project-update"
         name: "Project Update"
         url: "/project-update/"
