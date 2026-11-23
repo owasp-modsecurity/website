@@ -7,9 +7,9 @@ This repository contains the website for the OWASP ModSecurity Project.
 You can edit the documentation on your local system. You will need three things: the latest [Hugo binary](https://gohugo.io/getting-started/installing/) for your OS (Windows, Linux, Mac), a working NodeJS (required by the theme we use), and the [Dart Sass](https://sass-lang.com/dart-sass/) compiler.
 
 **Important: you need Hugo _extended_.** The version the site is built and tested
-with is pinned in `.github/workflows/` (`HUGO_VERSION`) and installed by
-`npm install` through the `hugo-extended` dependency in `package.json`. Older
-releases may work; that pair is what CI uses.
+with is pinned by the `hugo-extended` dependency in `package.json`, which is the
+only place it is written: `npm ci` installs that binary into `node_modules/.bin`,
+and CI builds the site with it. Older releases may work; that one is what ships.
 
 ### Dart Sass
 
@@ -112,8 +112,9 @@ Python, so nothing needs installing beyond Python 3 itself.
 
 ## Using the Docker image
 
-If you would rather not install Hugo and NodeJS on your system, the `Dockerfile` in this repository builds an image that already contains
-everything needed to render the site: the Hugo *extended* binary, `dart-sass`, and NodeJS.
+If you would rather not install Hugo and NodeJS on your system, the `Dockerfile` in this repository builds an image with
+`dart-sass` and NodeJS. Hugo is not baked in: `hugo-extended` is a dependency in `package.json`, so `npm ci` installs the
+pinned binary into `node_modules/.bin`, and the image runs that one — the same binary CI builds the site with.
 
 ### Building the image
 
@@ -123,25 +124,22 @@ From the root of your clone:
 docker build -t owasp-modsecurity-website .
 ```
 
-The build accepts three arguments. The two version arguments default to the releases
-CI pins, so the image matches what the site is tested against; both are passed to the
-GitHub releases API, which accepts `latest` or a `tags/…` reference and not a bare
-version number:
+The build accepts one argument, defaulting to the release CI pins so the image
+matches what the site is tested against:
 
-| Argument        | Default          | Description                                              |
-| --------------- | ---------------- | -------------------------------------------------------- |
-| `VARIANT`       | `hugo_extended`  | Hugo flavour to install: `hugo` or `hugo_extended`.       |
-| `HUGO_VERSION`  | `tags/v0.164.0`  | A Hugo release. `latest`, or `tags/v<version>`.           |
-| `SASS_VERSION`  | `tags/1.103.1`   | A `dart-sass` release. `latest`, or `tags/<version>`.     |
+| Argument       | Default   | Description                     |
+| -------------- | --------- | ------------------------------- |
+| `SASS_VERSION` | `1.103.1` | The `dart-sass` release to use. |
 
-To track the newest releases instead of the pinned ones:
+To build against a different one:
 
 ```sh
-docker build \
-  --build-arg HUGO_VERSION=latest \
-  --build-arg SASS_VERSION=latest \
-  -t modsecurity-website .
+docker build --build-arg SASS_VERSION=1.104.0 -t modsecurity-website .
 ```
+
+Hugo has no argument here. To change the version the image runs, change
+`hugo-extended` in `package.json` and run `npm ci` again — that is the only place
+the Hugo version is written.
 
 ### Serving the site locally
 

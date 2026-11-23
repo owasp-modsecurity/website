@@ -6,15 +6,11 @@
 		"dockerfile": "../Dockerfile",
 		"context": "..",
 		"args": {
-			// Update VARIANT to pick hugo variant.
-			// Example variants: hugo, hugo_extended
+			// Hugo is not a build argument: it comes from package.json through
+			// `npm ci`, like it does in CI. Only Dart Sass is baked in, pinned to
+			// match DART_SASS_VERSION in .github/workflows/.
 			// Rebuild the container if it already exists to update.
-			"VARIANT": "hugo_extended",
-			// Both are GitHub releases API references, not bare version numbers:
-			// 'latest' or 'tags/<tag>'. Pinned to match CI (.github/workflows/).
-			// Rebuild the container if it already exists to update.
-			"HUGO_VERSION": "tags/v0.164.0",
-			"SASS_VERSION": "tags/1.103.1"
+			"SASS_VERSION": "1.103.1"
 		}
 	},
 	// Set *default* container specific settings.json values on container create.
