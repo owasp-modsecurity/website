@@ -6,15 +6,19 @@
   Every source below was measured against the built site, not guessed:
 
     'self'                        CSS, JS, fonts, images, the pagefind index
-    piwik.netnea.com              matomo.js, injected by assets/js/matomo.js,
-                                  and the tracker's own requests. It stays in
-                                  img-src even though the HTML <img> beacon is
-                                  gone: Matomo's JS tracker sends its hit as an
-                                  image GET by default. Do not tighten that
-                                  without checking on a browser that is NOT
-                                  sending Do Not Track — on one that is, the
-                                  tracker sends nothing at all and the check
-                                  proves nothing.
+    piwik.netnea.com              matomo.js, injected by assets/js/matomo.js, and
+                                  the tracker's own requests. Measured 2026-11-24
+                                  against the fixed tracker: the hit goes out as a
+                                  sendBeacon POST to matomo.php with send_image=0,
+                                  so connect-src is the directive carrying it — not
+                                  the image GET this comment used to claim. img-src
+                                  keeps the host all the same: alwaysUseSendBeacon
+                                  is Matomo's default, and when sendBeacon is
+                                  unavailable or fails it falls back to an image GET
+                                  for a request this short. Do not tighten either
+                                  without checking on a browser that is NOT sending
+                                  Do Not Track — on one that is, the tracker sends
+                                  nothing at all and the check proves nothing.
     www.youtube-nocookie.com      the video iframe. Deliberately the ONLY frame
                                   source allowed: an embed that regressed to
                                   cookie-setting youtube.com would fail visibly
